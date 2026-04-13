@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Injetores Diesel – SNX Diesel Lab</title>
+<meta name="description" content="Especificações técnicas, parâmetros de teste e diagnóstico para bicos injetores diesel Common Rail. Bosch, Denso, Delphi, Siemens.">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:#0E0E0E;color:#F0EDE8;font-family:'Barlow',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(14,14,14,0.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,34,0,0.25)}
+.logo{text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:#F0EDE8;letter-spacing:0.04em}
+.logo span{color:#CC2200}
+.tool-links{display:flex;align-items:center;gap:0.3rem}
+.tool-link{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,237,232,0.45);text-decoration:none;padding:0.2rem 0.55rem;border:1px solid rgba(240,237,232,0.1);transition:all 0.2s;white-space:nowrap}
+.tool-link:hover{color:#F0EDE8;border-color:rgba(204,34,0,0.5);background:rgba(204,34,0,0.06)}
+.tool-link.active-page{color:#CC2200;border-color:rgba(204,34,0,0.4);background:rgba(204,34,0,0.08)}
+@media(max-width:600px){.tool-link{font-size:0.62rem;padding:0.15rem 0.3rem}}
+
+/* HERO */
+.hero{position:relative;padding:110px 1.5rem 0;text-align:center;overflow:hidden}
+.hero::before{content:'INJETOR';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(6rem,22vw,16rem);color:rgba(204,34,0,0.04);letter-spacing:0.08em;pointer-events:none;white-space:nowrap;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:0.5rem;border:1px solid rgba(204,34,0,0.5);padding:0.3rem 1.1rem;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:0.22em;text-transform:uppercase;color:#CC2200;margin-bottom:1.4rem}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2.4rem,8vw,5rem);line-height:0.95;text-transform:uppercase;margin-bottom:0.9rem}
+h1 span{color:#CC2200}
+.sub{font-size:0.95rem;opacity:0.55;line-height:1.65;max-width:540px;margin:0 auto}
+.stats-bar{display:flex;justify-content:center;align-items:center;margin:2.2rem auto 0;max-width:580px;border:1px solid rgba(204,34,0,0.2);background:#111111}
+.stat-item{flex:1;text-align:center;padding:1rem 0.5rem;position:relative}
+.stat-item+.stat-item::before{content:'';position:absolute;left:0;top:20%;height:60%;width:1px;background:rgba(204,34,0,0.2)}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:#CC2200;display:block;line-height:1}
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;opacity:0.45;display:block;margin-top:0.25rem}
+
+/* SEARCH */
+.search-block{max-width:700px;margin:2.5rem auto 0;padding:0 1rem}
+.search-label{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:#CC2200;margin-bottom:0.65rem;display:block}
+.sb{display:flex;border:1px solid rgba(204,34,0,0.3);background:#141414;overflow:hidden;transition:border-color 0.3s;height:58px}
+.sb:focus-within{border-color:#CC2200;box-shadow:0 0 0 1px rgba(204,34,0,0.12)}
+.si{flex:1;background:transparent;border:none;outline:none;padding:0 1.4rem;font-family:'Barlow',sans-serif;font-size:1rem;color:#F0EDE8;caret-color:#CC2200}
+.si::placeholder{color:rgba(240,237,232,0.22)}
+.sbtn{background:#CC2200;border:none;padding:0 1.8rem;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:0.18em;text-transform:uppercase;color:white;transition:background 0.2s;white-space:nowrap}
+.sbtn:hover{background:#E53010}
+.hint{font-size:0.75rem;opacity:0.28;margin-top:0.7rem}
+
+/* FILTERS */
+.filter-area{max-width:700px;margin:1.5rem auto 0;padding:0 1rem;display:flex;flex-direction:column;gap:0.7rem}
+.filter-row{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap}
+.filter-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(204,34,0,0.7);white-space:nowrap;min-width:70px}
+.fc{background:#141414;border:1px solid rgba(240,237,232,0.1);color:rgba(240,237,232,0.45);padding:0.32rem 0.9rem;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.fc:hover{border-color:rgba(204,34,0,0.4);color:#F0EDE8}
+.fc.active{border-color:#CC2200;color:#CC2200;background:rgba(204,34,0,0.1)}
+
+/* RESULT CARD */
+#resultArea{max-width:900px;margin:2rem auto 0;padding:0 1rem}
+.result-card{background:#141414;border:1px solid rgba(204,34,0,0.2);animation:fi 0.3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.back-btn{display:inline-flex;align-items:center;gap:0.4rem;background:transparent;border:1px solid rgba(240,237,232,0.15);color:rgba(240,237,232,0.5);padding:0.4rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;margin:1.2rem 1.5rem;transition:all 0.2s}
+.back-btn:hover{border-color:#CC2200;color:#CC2200}
+
+/* Result card header */
+.rc-header{display:grid;grid-template-columns:auto 1fr;gap:0;border-bottom:1px solid rgba(204,34,0,0.12)}
+.rc-code-col{padding:1.5rem 2rem;border-right:1px solid rgba(204,34,0,0.12);min-width:200px}
+.rc-main-code{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.4rem;color:#CC2200;letter-spacing:0.1em;display:block;line-height:1}
+.rc-alias{font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;color:rgba(204,34,0,0.5);letter-spacing:0.08em;display:block;margin-top:0.3rem}
+.rc-fab{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;margin-top:0.8rem;display:block;opacity:0.5}
+.rc-serie{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:0.12em;color:rgba(204,34,0,0.6);display:block;margin-top:0.2rem}
+.tipo-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.28rem 0.8rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;margin-top:0.8rem}
+.tipo-badge.eletromagnetico{background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.3);color:#4FC3F7}
+.tipo-badge.piezoeletrico{background:rgba(255,140,0,0.08);border:1px solid rgba(255,140,0,0.35);color:#FF8C00}
+.rc-meta-col{padding:1.5rem 2rem}
+.apl-table{display:flex;flex-direction:column;gap:0.4rem;margin-top:0.6rem}
+.apl-row{display:grid;grid-template-columns:1fr 1fr auto;gap:0.5rem;align-items:center;padding:0.5rem 0.7rem;background:rgba(240,237,232,0.03);border-left:2px solid rgba(204,34,0,0.25)}
+.apl-v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.88rem;letter-spacing:0.04em}
+.apl-m{font-size:0.8rem;opacity:0.6}
+.apl-a{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;opacity:0.4;white-space:nowrap}
+.apl-label{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:0.2em;color:#CC2200;text-transform:uppercase;margin-bottom:0.4rem}
+
+/* Params section */
+.rc-section{padding:1.5rem 2rem;border-bottom:1px solid rgba(204,34,0,0.08)}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:#CC2200;margin-bottom:1.1rem;display:flex;align-items:center;gap:0.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(204,34,0,0.15)}
+.params-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1px;background:rgba(204,34,0,0.1)}
+.param-box{background:#141414;padding:1rem 1.2rem;position:relative}
+.param-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:#F0EDE8;display:block;line-height:1}
+.param-unit{font-size:0.75rem;opacity:0.4}
+.param-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;opacity:0.4;display:block;margin-top:0.3rem}
+.param-note{font-size:0.7rem;color:#FF8C00;display:block;margin-top:0.2rem}
+.param-box.highlight .param-val{color:#CC2200}
+.param-box.warn{border:1px solid rgba(255,140,0,0.2)}
+.param-box.warn .param-val{color:#FF8C00}
+
+/* Components */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.comp-item{background:#111111;border:1px solid rgba(240,237,232,0.06);padding:0.9rem 1.1rem}
+.comp-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;display:block;margin-bottom:0.35rem}
+.comp-val{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:0.1em;color:#F0EDE8}
+.comp-val.na{font-size:0.8rem;opacity:0.35;font-weight:400;letter-spacing:0.03em}
+
+/* Diagnostics */
+.diag-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(204,34,0,0.08)}
+.diag-col{background:#141414;padding:1.2rem 1.4rem}
+.diag-col-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.8rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(204,34,0,0.15)}
+.diag-col-title.fault{color:#ff7070}
+.diag-col-title.symptom{color:#ffaa40}
+.diag-col-title.solution{color:#44dd88}
+.diag-item{display:flex;gap:0.5rem;font-size:0.82rem;opacity:0.75;line-height:1.5;padding:0.3rem 0;border-bottom:1px solid rgba(240,237,232,0.04)}
+.diag-item:last-child{border-bottom:none}
+.diag-icon{flex-shrink:0;margin-top:0.1rem;opacity:0.6}
+
+/* CTA */
+.rc-cta{padding:1.4rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;background:rgba(204,34,0,0.04)}
+.rc-cta p{font-size:0.85rem;opacity:0.5}
+.wa-btn{display:inline-flex;align-items:center;gap:0.5rem;background:#25D366;color:white;text-decoration:none;padding:0.6rem 1.4rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;transition:background 0.2s}
+.wa-btn:hover{background:#1da851}
+
+/* GRID */
+#gridArea{max-width:940px;margin:2.5rem auto 5rem;padding:0 1rem}
+.grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(204,34,0,0.12)}
+.grid-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.22em;text-transform:uppercase;color:#CC2200}
+.grid-count{font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.1em;color:rgba(240,237,232,0.3)}
+.inj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:2px}
+.inj-card{background:#141414;border:1px solid rgba(204,34,0,0.1);padding:1rem 1.1rem;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden}
+.inj-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:#CC2200;transform:scaleY(0);transition:transform 0.2s;transform-origin:bottom}
+.inj-card:hover{background:rgba(204,34,0,0.05);border-color:rgba(204,34,0,0.3)}
+.inj-card:hover::before{transform:scaleY(1)}
+.ic-fab{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;padding:0.15rem 0.45rem;display:inline-block;margin-bottom:0.5rem}
+.ic-fab.bosch{background:rgba(204,34,0,0.1);color:#CC2200;border:1px solid rgba(204,34,0,0.25)}
+.ic-fab.denso{background:rgba(79,195,247,0.08);color:#4FC3F7;border:1px solid rgba(79,195,247,0.2)}
+.ic-fab.delphi{background:rgba(34,204,100,0.08);color:#22CC64;border:1px solid rgba(34,204,100,0.2)}
+.ic-fab.siemens{background:rgba(255,140,0,0.08);color:#FF8C00;border:1px solid rgba(255,140,0,0.2)}
+.ic-code{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:0.08em;color:#F0EDE8;display:block;line-height:1.1}
+.ic-apl{font-size:0.75rem;opacity:0.45;margin-top:0.4rem;line-height:1.4;display:block}
+.ic-tipo{font-family:'Barlow Condensed',sans-serif;font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-top:0.5rem;display:block}
+.ic-tipo.eletromagnetico{color:rgba(79,195,247,0.6)}
+.ic-tipo.piezoeletrico{color:rgba(255,140,0,0.7)}
+.empty-state{text-align:center;padding:4rem 1rem;grid-column:1/-1}
+.es-big{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:4rem;color:#CC2200;opacity:0.15;display:block;margin-bottom:0.5rem}
+.es-p{font-size:0.9rem;opacity:0.4}
+
+/* WhatsApp float */
+.wf{position:fixed;bottom:2rem;right:2rem;z-index:200;text-decoration:none}
+.wb{width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(37,211,102,0.35);transition:transform 0.2s;position:relative}
+.wb:hover{transform:scale(1.1)}
+.wb::before{content:'';position:absolute;width:58px;height:58px;border-radius:50%;border:2px solid #25D366;animation:wp 2s ease-out infinite}
+@keyframes wp{0%{transform:scale(1);opacity:0.7}100%{transform:scale(1.7);opacity:0}}
+footer{border-top:1px solid rgba(204,34,0,0.12);padding:2rem;text-align:center;font-size:0.78rem;opacity:0.3;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.05em}
+
+@media(max-width:700px){
+  .rc-header{grid-template-columns:1fr}
+  .rc-code-col{border-right:none;border-bottom:1px solid rgba(204,34,0,0.12)}
+  .diag-grid{grid-template-columns:1fr}
+  .comp-grid{grid-template-columns:1fr}
+  .apl-row{grid-template-columns:1fr 1fr}
+  .apl-a{display:none}
+  .rc-cta{flex-direction:column}
+}
+@media(max-width:480px){.inj-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">SNX DIESEL<span>LAB</span></a>
+  <div class="tool-links">
+    <a href="index.html" class="tool-link">← Início</a>
+    <a href="diagnostico.html" class="tool-link">Diagnóstico</a>
+    <a href="obd.html" class="tool-link">OBD</a>
+    <a href="retorno.html" class="tool-link">Retorno</a>
+    <a href="injetor.html" class="tool-link active-page">Injetores</a>
+    <a href="catalogo.html" class="tool-link">Catálogo</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="badge">● Banco de Dados Técnicos</div>
+  <h1>BANCO DE<br><span>INJETORES DIESEL</span></h1>
+  <p class="sub">Especificações técnicas, parâmetros de teste e diagnóstico para bicos injetores Common Rail. Bosch · Denso · Delphi · Siemens.</p>
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num" id="statTotal">—</span><span class="stat-lbl">Injetores</span></div>
+    <div class="stat-item"><span class="stat-num">4</span><span class="stat-lbl">Fabricantes</span></div>
+    <div class="stat-item"><span class="stat-num">2</span><span class="stat-lbl">Tecnologias</span></div>
+  </div>
+</div>
+
+<div class="search-block">
+  <span class="search-label">Buscar por código, veículo ou motor</span>
+  <div class="sb">
+    <input type="text" class="si" id="sI" placeholder="Ex: 0445110379  ·  Hilux  ·  1KD-FTV  ·  Amarok…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    <button class="sbtn" onclick="buscar()">Buscar →</button>
+  </div>
+  <p class="hint">Aceita código do injetor, nome do veículo, código do motor ou fabricante</p>
+</div>
+
+<div class="filter-area">
+  <div class="filter-row">
+    <span class="filter-lbl">Fabricante</span>
+    <button class="fc active" data-fab="todos" onclick="setFab(this)">Todos</button>
+    <button class="fc" data-fab="Bosch" onclick="setFab(this)">Bosch</button>
+    <button class="fc" data-fab="Denso" onclick="setFab(this)">Denso</button>
+    <button class="fc" data-fab="Delphi" onclick="setFab(this)">Delphi</button>
+    <button class="fc" data-fab="Siemens/VDO" onclick="setFab(this)">Siemens/VDO</button>
+  </div>
+  <div class="filter-row">
+    <span class="filter-lbl">Tipo</span>
+    <button class="fc active" data-tipo="todos" onclick="setTipo(this)">Todos</button>
+    <button class="fc" data-tipo="eletromagnetico" onclick="setTipo(this)">Eletromagnético</button>
+    <button class="fc" data-tipo="piezoeletrico" onclick="setTipo(this)">Piezoelétrico</button>
+  </div>
+</div>
+
+<div id="resultArea" style="display:none"></div>
+
+<div id="gridArea">
+  <div class="grid-header">
+    <div class="grid-label" id="gridLabel">● Todos os injetores catalogados</div>
+    <div class="grid-count" id="gridCount"></div>
+  </div>
+  <div class="inj-grid" id="injGrid"></div>
+</div>
+
+<footer>© 2026 SNX Diesel Lab · Consultoria em Injeção Eletrônica Diesel</footer>
+<a href="https://wa.me/5567996342998?text=Olá!%20Gostaria%20de%20uma%20consultoria%20sobre%20injetores%20diesel." class="wf" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <div class="wb"><svg viewBox="0 0 32 32" fill="white" width="26" height="26"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm7.27 21.363c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1a7 7 0 0 1-2.06-1.27 7.7 7.7 0 0 1-1.42-1.77c-.15-.26 0-.4.11-.53s.26-.3.39-.46a1.8 1.8 0 0 0 .26-.43.48.48 0 0 0 0-.46c-.07-.13-.58-1.4-.8-1.92s-.42-.44-.58-.45h-.49a.94.94 0 0 0-.68.32A2.87 2.87 0 0 0 12 17a5 5 0 0 0 1.05 2.65 11.45 11.45 0 0 0 4.38 3.87c.49.21.96.37 1.46.54a3.52 3.52 0 0 0 1.61.1 2.64 2.64 0 0 0 1.73-1.22 2.14 2.14 0 0 0 .15-1.22c-.07-.1-.24-.18-.5-.3z"/></svg></div>
+</a>
+
+<script>
+const WA='<svg viewBox="0 0 32 32" fill="currentColor" width="14" height="14"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm7.27 21.363c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1a7 7 0 0 1-2.06-1.27 7.7 7.7 0 0 1-1.42-1.77c-.15-.26 0-.4.11-.53s.26-.3.39-.46a1.8 1.8 0 0 0 .26-.43.48.48 0 0 0 0-.46c-.07-.13-.58-1.4-.8-1.92s-.42-.44-.58-.45h-.49a.94.94 0 0 0-.68.32A2.87 2.87 0 0 0 12 17a5 5 0 0 0 1.05 2.65 11.45 11.45 0 0 0 4.38 3.87c.49.21.96.37 1.46.54a3.52 3.52 0 0 0 1.61.1 2.64 2.64 0 0 0 1.73-1.22 2.14 2.14 0 0 0 .15-1.22c-.07-.1-.24-.18-.5-.3z"/></svg>';
+
+const DB = [
+// ─── BOSCH ──────────────────────────────────────────────────────────────────
+{id:"0445110379",codigos:["0445110379","0445110647"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"VW Amarok",m:"2.0 TDI EA189 (CSHA/CSUA)",a:"2011–2016"},{v:"VW Crafter",m:"2.0 TDI",a:"2012–2017"},{v:"Ford Transit",m:"2.2 TDCi",a:"2013–2015"}],
+ ponteira:"DLLA145P1720",valvula:"F00VC01383",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"3",rmax:"18"},
+ defeitos:["Válvula F00VC01383 desgastada (peça mais comum)","Ponteira com depósito de carbono","Vedação interna comprometida por cavitação"],
+ sintomas:["Falha em marcha lenta","Fumaça preta ao acelerar","P0201–P0204","Consumo excessivo de combustível"],
+ solucoes:["Substituir válvula F00VC01383 (disponível avulsa)","Limpeza ultrassônica + nova ponteira DLLA145P1720","Rebuild completo se retorno > 22 ml/min"]},
+
+{id:"0445110419",codigos:["0445110419"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2-14",
+ apl:[{v:"VW Amarok",m:"2.0 TDI EA288",a:"2017–2022"},{v:"VW Crafter",m:"2.0 TDI EA288",a:"2017–2022"}],
+ ponteira:"DLLA145P2317",valvula:"F00VC01459",
+ p:{res:"0.35–0.55",ind:"0.25",tpico:"80–100",pbar:"1800",rmin:"2",rmax:"15"},
+ defeitos:["Válvula F00VC01459 desgastada","Bico parcialmente obstruído por coque","Junta de cobre com micro-vazamento"],
+ sintomas:["Motor cortando em plena carga","P0087 associado","Dificuldade de partida a frio"],
+ solucoes:["Trocar válvula + ponteira em conjunto","Verificar pressão do rail antes de intervir","Limpar filtro de combustível"]},
+
+{id:"0445110646",codigos:["0445110646"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2-20",
+ apl:[{v:"VW Amarok",m:"3.0 TDI V6 EA897",a:"2016–2022"},{v:"Audi Q5",m:"3.0 TDI",a:"2016–2020"},{v:"Porsche Cayenne",m:"3.0 TDI",a:"2015–2019"}],
+ ponteira:"DLLA152P2339",valvula:"F00VC01459",
+ p:{res:"0.35–0.5",ind:"0.22",tpico:"80–100",pbar:"2000",rmin:"1",rmax:"12"},
+ defeitos:["Ponteira com desgaste prematuro (uso com diesel S500)","Válvula de controle com folga excessiva","Filtro interno entupido por partículas"],
+ sintomas:["Fumaça branca a frio","Parada de emergência sob carga","P2291"],
+ solucoes:["Usar diesel S10 exclusivamente","Trocar ponteira DLLA152P2339","Recondicionamento em bancada certificada"]},
+
+{id:"0445110189",codigos:["0445110189","0445110230"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"Mercedes-Benz Sprinter",m:"2.2 CDI OM646",a:"2006–2012"},{v:"Mercedes-Benz C 200 CDI",m:"OM646",a:"2004–2010"},{v:"Mercedes-Benz E 220 CDI",m:"OM646",a:"2004–2010"}],
+ ponteira:"DLLA140P1790",valvula:"F00VC01359",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"3",rmax:"20"},
+ defeitos:["Válvula F00VC01359 com desgaste","Ponteira com abertura irregular","Retorno acima do padrão após 120k km"],
+ sintomas:["Falha no 4° cilindro","Fumaça azul-preta","P0204"],
+ solucoes:["Trocar válvula F00VC01359","Testar retorno individual antes de remover","Rebuild se retorno > 25 ml/min"]},
+
+{id:"0445110248",codigos:["0445110248"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"Fiat Ducato",m:"2.3 Multijet F1AE3481B",a:"2006–2014"},{v:"Iveco Daily",m:"2.3 HPI",a:"2006–2014"},{v:"Peugeot Boxer",m:"2.2 HDi",a:"2006–2014"}],
+ ponteira:"DLLA138P1580",valvula:"F00VC01349",
+ p:{res:"0.4–0.7",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"2",rmax:"18"},
+ defeitos:["Válvula com desgaste mecânico","Ponteira com coque","Junta de cobre ressecada"],
+ sintomas:["Ruído de pancada no motor","Dificuldade de partir frio","Fumaça preta intensa"],
+ solucoes:["Trocar válvula F00VC01349","Limpeza ultrassônica","Retorno ideal < 15 ml/min"]},
+
+{id:"0445110293",codigos:["0445110293","0445110291"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"Iveco Daily",m:"2.3 HPI F1AE",a:"2007–2016"},{v:"Renault Master",m:"2.3 dCi M9T",a:"2012–2020"},{v:"Nissan NV400",m:"2.3 dCi",a:"2012–2020"}],
+ ponteira:"DLLA138P1580",valvula:"F00VC01349",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"2",rmax:"18"},
+ defeitos:["Contaminação por água no combustível","Válvula de dosagem com desgaste","Entupimento parcial da ponteira"],
+ sintomas:["Falha em 1 cilindro","Ralenti irregular","P0200 + P0087"],
+ solucoes:["Drenar filtro de combustível","Testar resistência da válvula (0.4–0.6 Ω)","Rebuild ou troca conforme retorno"]},
+
+{id:"0445110343",codigos:["0445110343","1465A041"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"Mitsubishi L200",m:"2.5 4D56",a:"2008–2012"},{v:"Mitsubishi Pajero Sport",m:"2.5 4D56",a:"2008–2015"}],
+ ponteira:"DLLA145P1720",valvula:"F00VC01383",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"2",rmax:"18"},
+ defeitos:["Válvula solenoide desgastada","Ponteira com carbonização por má qualidade do diesel"],
+ sintomas:["Fumaça preta","Falha no cilindro 2 (mais comum)","P0202"],
+ solucoes:["Trocar válvula F00VC01383","Limpeza ultrassônica + ponteira DLLA145P1720"]},
+
+{id:"0445110376",codigos:["0445110376","0445110432"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"Ford Ranger",m:"2.2 TDCi JMC",a:"2012–2016"},{v:"Ford Transit",m:"2.2 TDCi 125cv",a:"2012–2016"}],
+ ponteira:"DLLA145P1720",valvula:"F00VC01383",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"3",rmax:"18"},
+ defeitos:["Válvula F00VC01383 com desgaste","Ponteira com carbonização"],
+ sintomas:["Falha no 1° cilindro","Fumaça preta","P0201"],
+ solucoes:["Trocar válvula + ponteira","Rebuild completo se retorno > 20 ml/min"]},
+
+{id:"0445110475",codigos:["0445110475","03L130277"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2-14",
+ apl:[{v:"VW Golf / Jetta",m:"2.0 TDI EA288",a:"2013–2019"},{v:"Audi A3 / Q3",m:"2.0 TDI",a:"2013–2019"},{v:"Skoda Octavia",m:"2.0 TDI",a:"2013–2019"}],
+ ponteira:"DLLA145P2317",valvula:"F00VC01459",
+ p:{res:"0.35–0.55",ind:"0.25",tpico:"80–100",pbar:"1800",rmin:"2",rmax:"15"},
+ defeitos:["Válvula F00VC01459 com desgaste","Ponteira com obstrução parcial","Retorno excessivo"],
+ sintomas:["Consumo elevado","P0087 + P0201","Vibração em marcha lenta"],
+ solucoes:["Trocar válvula + ponteira","Testar retorno individual","Verificar qualidade do diesel"]},
+
+{id:"0445110614",codigos:["0445110614","55218886"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2-14",
+ apl:[{v:"Jeep Compass / Renegade",m:"2.0 Multijet II",a:"2014–2021"},{v:"Fiat Toro",m:"2.0 Multijet II",a:"2016–2022"},{v:"Fiat Ducato",m:"2.0 Multijet",a:"2012–2020"}],
+ ponteira:"DLLA152P2261",valvula:"F00VC01459",
+ p:{res:"0.35–0.55",ind:"0.25",tpico:"80–100",pbar:"1800",rmin:"2",rmax:"15"},
+ defeitos:["Válvula de controle com desgaste","Ponteira com depósito de carbono"],
+ sintomas:["Falha isolada em cilindro","Fumaça preta","P0202"],
+ solucoes:["Rebuild: trocar válvula + ponteira","Limpeza ultrassônica","Usar diesel S10"]},
+
+{id:"0445110614b",codigos:["33800-4A710","0445110279"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2",
+ apl:[{v:"Hyundai H1 / Grand Starex",m:"2.5 CRDi D4CB",a:"2006–2015"},{v:"Kia Carnival / Sorento",m:"2.9 CRDi",a:"2006–2015"}],
+ ponteira:"DLLA145P1637",valvula:"F00VC01359",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"3",rmax:"20"},
+ defeitos:["Ponteira com depósito (diesel S500)","Válvula F00VC01359 desgastada"],
+ sintomas:["Fumaça preta ao arrancar","Ralenti instável","P0201–P0204"],
+ solucoes:["Trocar ponteira + válvula","Usar diesel S10 após recondicionamento"]},
+
+{id:"0445120007",codigos:["0445120007","3975929"],fab:"Bosch",tipo:"eletromagnetico",serie:"CRI 2 HD",
+ apl:[{v:"Cummins ISBe 4.5 / 6.7",m:"Euro 3",a:"2003–2012"},{v:"VW Trucks / Agrale",m:"Motor Cummins ISBe",a:"2003–2012"},{v:"Case / New Holland",m:"Cummins ISB",a:"2003–2012"}],
+ ponteira:"DSLA124P974",valvula:"F00VC01034",
+ p:{res:"0.4–0.6",ind:"0.28",tpico:"80–100",pbar:"1600",rmin:"3",rmax:"20"},
+ defeitos:["Contaminação por água no diesel (frota off-road)","Ponteira com erosão","Retorno elevado por desgaste interno"],
+ sintomas:["Fumaça preta sob carga","Falha de cilindro","P0201–P0206"],
+ solucoes:["Rebuild a cada 100k km preventivamente","Trocar ponteira DSLA124P974 + válvula F00VC01034","Verificar qualidade do diesel da frota"]},
+
+// Bosch Piezoelétrico
+{id:"0445116004",codigos:["0445116004","0445116005"],fab:"Bosch",tipo:"piezoeletrico",serie:"CRI 3-20 Piezo",
+ apl:[{v:"Audi Q7 / A6",m:"3.0 TDI V6 (ASB/BMK)",a:"2004–2010"},{v:"VW Touareg",m:"3.0 TDI",a:"2004–2010"},{v:"Porsche Cayenne",m:"3.0 TDI",a:"2009–2014"}],
+ ponteira:"DLLA140P1723",valvula:"—",
+ p:{res:"N/A",cap:"3–5 µF",tpico:"150",pbar:"2000",rmin:"1",rmax:"8"},
+ defeitos:["Elemento piezoelétrico fraturado","Módulo de controle interno com falha","Contaminação por partículas metálicas"],
+ sintomas:["Falhamento grave em qualquer rotação","P120B / P2602","Motor entra em limp mode"],
+ solucoes:["NUNCA medir resistência — medir capacitância: 3–5 µF","Não testar com testador de solenóide","Trocar injetor completo ou recondicionamento especializado"]},
+
+{id:"0445117021",codigos:["0445117021","0445117022"],fab:"Bosch",tipo:"piezoeletrico",serie:"CRI 3-18 Piezo",
+ apl:[{v:"BMW 330d / 530d",m:"3.0d M57N",a:"2003–2010"},{v:"BMW X5 3.0d",m:"M57N",a:"2003–2010"}],
+ ponteira:"DLLA142P1380",valvula:"—",
+ p:{res:"N/A",cap:"3–5 µF",tpico:"150",pbar:"1800",rmin:"1",rmax:"8"},
+ defeitos:["Módulo piezo degradado","Falha no circuito de pré-carga","Vedação interna com micro-vazamento"],
+ sintomas:["Batimento irregular no motor","P1345 / P120B","Consumo anormal"],
+ solucoes:["Medir capacitância com LCR meter","Apenas recondicionamento especializado","Verificar módulo EDC antes de trocar injetor"]},
+
+// ─── DENSO ──────────────────────────────────────────────────────────────────
+{id:"23670-30400",codigos:["23670-30400","23670-39225","9709500-563"],fab:"Denso",tipo:"eletromagnetico",serie:"G2 CRS",
+ apl:[{v:"Toyota Hilux",m:"3.0 1KD-FTV",a:"2005–2011"},{v:"Toyota Fortuner",m:"3.0 1KD-FTV",a:"2005–2011"},{v:"Toyota Land Cruiser Prado",m:"3.0 1KD-FTV",a:"2005–2010"}],
+ ponteira:"DLLA145P870",valvula:"095000-563#",
+ p:{res:"0.4–0.5",ind:"0.30",tpico:"80–90",pbar:"1800",rmin:"2",rmax:"15"},
+ defeitos:["Ponteira com desgaste por diesel S500","Válvula de controle interna desgastada","Filtro de entrada do injetor entupido"],
+ sintomas:["Fumaça preta com mau cheiro","Falha em aceleração brusca","P0201–P0204","Ralenti oscilante"],
+ solucoes:["Substituir ponteira DLLA145P870","Medir retorno: > 15 ml/min = rebuild","Usar somente diesel S10 após recondicionamento"]},
+
+{id:"23670-3270",codigos:["23670-3270","23670-39295","23670-30250"],fab:"Denso",tipo:"eletromagnetico",serie:"G2 CRS",
+ apl:[{v:"Toyota Hilux",m:"3.0 1KD-FTV",a:"2012–2015"},{v:"Toyota Fortuner",m:"3.0 1KD-FTV",a:"2012–2015"},{v:"Toyota SW4",m:"3.0 1KD-FTV",a:"2012–2015"}],
+ ponteira:"DLLA145P870",valvula:"F00VC30041",
+ p:{res:"0.4–0.5",ind:"0.30",tpico:"80–90",pbar:"1800",rmin:"2",rmax:"15"},
+ defeitos:["Desgaste da válvula de dosagem","Ponteira com abertura irregular","Entupimento do micro-filtro interno"],
+ sintomas:["Instabilidade em marcha lenta","P0087 associado","Dificuldade de arranque"],
+ solucoes:["Limpar micro-filtro interno","Trocar ponteira + válvula","Rebuild se retorno > 18 ml/min"]},
+
+{id:"23670-0L050",codigos:["23670-0L050","23670-09380"],fab:"Denso",tipo:"eletromagnetico",serie:"G2 CRS",
+ apl:[{v:"Toyota Hilux",m:"3.0 1KD-FTV (4x4)",a:"2008–2011"},{v:"Toyota Land Cruiser",m:"3.0 1KD-FTV",a:"2008–2011"}],
+ ponteira:"DLLA145P870",valvula:"F00VC30041",
+ p:{res:"0.4–0.5",ind:"0.30",tpico:"80–90",pbar:"1800",rmin:"2",rmax:"15"},
+ defeitos:["Desgaste da ponteira por diesel de má qualidade","Válvula com folga excessiva"],
+ sintomas:["Fumaça preta","P0201–P0204","Consumo aumentado"],
+ solucoes:["Teste de retorno obrigatório antes de decidir por rebuild","Limpeza ultrassônica","Nova ponteira DLLA145P870"]},
+
+{id:"23670-11030",codigos:["23670-11030","23670-11031"],fab:"Denso",tipo:"eletromagnetico",serie:"G3 CRS",
+ apl:[{v:"Toyota Hilux",m:"2.8 1GD-FTV 150cv",a:"2016–presente"},{v:"Toyota SW4",m:"2.8 1GD-FTV",a:"2016–presente"},{v:"Toyota Fortuner",m:"2.8 1GD-FTV",a:"2016–presente"}],
+ ponteira:"DLLA152P2238",valvula:"F00VC30044",
+ p:{res:"0.4–0.5",ind:"0.28",tpico:"90–100",pbar:"2000",rmin:"1",rmax:"12"},
+ defeitos:["Retorno excessivo por desgaste do êmbolo","Ponteira com erosão na ponta","Contaminação por partículas metálicas"],
+ sintomas:["Vibrações excessivas no motor frio","P0087 + P2291","Emissões fora do padrão"],
+ solucoes:["Medir retorno individual com injector return tester","Rebuild somente em bancada certificada","Garantir diesel S10 e filtro em dia"]},
+
+{id:"23670-11080",codigos:["23670-11080","23670-11090"],fab:"Denso",tipo:"eletromagnetico",serie:"G3 CRS",
+ apl:[{v:"Toyota Hilux GR Sport",m:"2.8 1GD-FTV 177cv",a:"2021–presente"},{v:"Toyota Fortuner",m:"2.8 1GD-FTV 177cv",a:"2021–presente"}],
+ ponteira:"DLLA152P2238",valvula:"F00VC30044",
+ p:{res:"0.4–0.5",ind:"0.28",tpico:"90–100",pbar:"2000",rmin:"1",rmax:"12"},
+ defeitos:["Similares ao 23670-11030","Alta sensibilidade à qualidade do combustível"],
+ sintomas:["Perda de potência","Ralenti instável","P0087 / P2291"],
+ solucoes:["Teste de balanceamento antes de rebuild","Limpeza ultrassônica em alta frequência","Nova ponteira + validação em bancada"]},
+
+{id:"295050-0460",codigos:["295050-0460","23670-11050"],fab:"Denso",tipo:"eletromagnetico",serie:"G3 CRS",
+ apl:[{v:"Toyota Hilux",m:"2.8 GD6",a:"2018–presente"},{v:"Toyota Prado",m:"2.8 GD6",a:"2018–presente"}],
+ ponteira:"DLLA152P2492",valvula:"F00VC30059",
+ p:{res:"0.35–0.55",ind:"0.28",tpico:"90–100",pbar:"2000",rmin:"1",rmax:"10"},
+ defeitos:["Vazamento interno pelo êmbolo","Ponteira com depósitos por sulfato de cálcio"],
+ sintomas:["Fumaça branca a frio","Consumo aumentado 20%+","P0201 isolado"],
+ solucoes:["Teste de compressão de combustível no bico","Rebuild ou troca do conjunto completo"]},
+
+{id:"23670-11040",codigos:["23670-11040"],fab:"Denso",tipo:"eletromagnetico",serie:"G3 CRS",
+ apl:[{v:"Toyota Hilux",m:"2.4 2GD-FTV 110cv",a:"2016–presente"},{v:"Toyota Prado",m:"2.4 2GD-FTV",a:"2016–presente"}],
+ ponteira:"DLLA152P2238",valvula:"F00VC30044",
+ p:{res:"0.4–0.5",ind:"0.28",tpico:"90–100",pbar:"1800",rmin:"1",rmax:"12"},
+ defeitos:["Retorno excessivo","Ponteira com desgaste por uso com S500"],
+ sintomas:["Motor falhando em baixa rotação","P0201–P0204","Fumaça preta"],
+ solucoes:["Testar retorno individual","Rebuild com nova ponteira","Usar exclusivamente diesel S10"]},
+
+{id:"095000-5600",codigos:["095000-5600","1465A054","095000-5603"],fab:"Denso",tipo:"eletromagnetico",serie:"ECD-V3",
+ apl:[{v:"Mitsubishi L200",m:"2.5 TD 4D56",a:"2004–2012"},{v:"Mitsubishi Pajero",m:"2.5 TD 4D56",a:"2004–2010"},{v:"Hyundai H1",m:"2.5 CRDi D4CB",a:"2004–2010"}],
+ ponteira:"DLLA155P760",valvula:"095000-563#",
+ p:{res:"0.4–0.6",ind:"0.30",tpico:"80–100",pbar:"1350",rmin:"2",rmax:"20"},
+ defeitos:["Ponteira com desgaste por cavitação","Vazamento pelo corpo do injetor","Entupimento do filtro de entrada"],
+ sintomas:["Fumaça preta persistente","Arranque difícil a quente","P0200–P0204"],
+ solucoes:["Trocar ponteira DLLA155P760","Testar retorno: > 22 ml/min = rebuild","Verificar filtro de combustível"]},
+
+{id:"095000-8903",codigos:["095000-8903","1465A257","095000-8906"],fab:"Denso",tipo:"eletromagnetico",serie:"ECD-V3",
+ apl:[{v:"Mitsubishi L200 Triton",m:"2.5 TD 4D56T",a:"2012–2020"},{v:"Mitsubishi Pajero Full",m:"3.2 4M41",a:"2012–2020"}],
+ ponteira:"DLLA155P865",valvula:"095000-8903v",
+ p:{res:"0.4–0.5",ind:"0.30",tpico:"80–100",pbar:"1600",rmin:"2",rmax:"15"},
+ defeitos:["Alta sensibilidade à contaminação do diesel","Retorno excessivo após 100k km"],
+ sintomas:["Rotação irregular","P0087 frequente","Motor pulsando em carga"],
+ solucoes:["Rebuild completo com limpeza ultrassônica","Nova ponteira DLLA155P865","Trocar filtro de combustível"]},
+
+{id:"095000-6353",codigos:["095000-6353","16600-VM00D","095000-6352"],fab:"Denso",tipo:"eletromagnetico",serie:"ECD-V3",
+ apl:[{v:"Nissan Frontier",m:"2.5 YD25DDTi",a:"2008–2016"},{v:"Nissan Pathfinder",m:"2.5 dCi",a:"2008–2016"},{v:"Nissan Navara",m:"2.5 dCi",a:"2008–2016"}],
+ ponteira:"DLLA150P1238",valvula:"F00VC30041",
+ p:{res:"0.4–0.5",ind:"0.30",tpico:"80–100",pbar:"1600",rmin:"2",rmax:"18"},
+ defeitos:["Desgaste prematuro da ponteira","Válvula de controle com folga","Contaminação por água"],
+ sintomas:["Fumaça cinza-preta","Falha no 3° cilindro (mais comum)","P0203"],
+ solucoes:["Rebuild: trocar ponteira + válvula","Testar balanceamento individual","Usar somente diesel S10"]},
+
+{id:"095000-5760",codigos:["095000-5760","16600-ES60A"],fab:"Denso",tipo:"eletromagnetico",serie:"ECD-V3",
+ apl:[{v:"Nissan Frontier",m:"2.5 YD25 (fase 1)",a:"2002–2007"},{v:"Nissan Navara",m:"2.5 dCi",a:"2002–2007"}],
+ ponteira:"DLLA150P1238",valvula:"095000-5760v",
+ p:{res:"0.4–0.6",ind:"0.30",tpico:"80–100",pbar:"1350",rmin:"3",rmax:"22"},
+ defeitos:["Ponteira com desgaste (pressão mais baixa)","Vazamento por obturador"],
+ sintomas:["Fumaça preta em aceleração","Ralenti irregular","Arranque difícil"],
+ solucoes:["Rebuild: nova ponteira + vedações","Verificar pressão do rail antes de intervir"]},
+
+{id:"095000-5480",codigos:["095000-5480","16600-EB300"],fab:"Denso",tipo:"eletromagnetico",serie:"ECD-V3",
+ apl:[{v:"Nissan Frontier",m:"2.5 YD25DDTi 4WD",a:"2007–2012"},{v:"Nissan Pathfinder",m:"2.5 dCi",a:"2007–2012"}],
+ ponteira:"DLLA150P1238",valvula:"F00VC30041",
+ p:{res:"0.4–0.5",ind:"0.30",tpico:"80–90",pbar:"1600",rmin:"2",rmax:"18"},
+ defeitos:["Desgaste da ponteira","Válvula com folga excessiva"],
+ sintomas:["Fumaça preta","P0087 + P0201","Consumo elevado"],
+ solucoes:["Rebuild: ponteira + válvula","Testar retorno antes de decidir"]},
+
+// ─── DELPHI ─────────────────────────────────────────────────────────────────
+{id:"EJBR02301Z",codigos:["EJBR02301Z","28236381"],fab:"Delphi",tipo:"eletromagnetico",serie:"EMC 2",
+ apl:[{v:"Renault Master",m:"2.5 dCi G9U",a:"2003–2012"},{v:"Nissan Interstar",m:"2.5 dCi",a:"2003–2010"},{v:"Opel Movano",m:"2.5 DTI",a:"2003–2010"}],
+ ponteira:"DSLA143P970",valvula:"7135-576",
+ p:{res:"0.5–0.7",ind:"0.35",tpico:"80",pbar:"1350",rmin:"5",rmax:"25"},
+ defeitos:["Válvula 7135-576 desgastada (peça de desgaste conhecido)","Filtro interno entupido","Vedação interna com vazamento"],
+ sintomas:["Fumaça branca persistente","P0201–P0204","Consumo muito elevado"],
+ solucoes:["Trocar válvula 7135-576 (disponível avulsa)","Teste de retorno: > 30 ml/min = rebuild","Limpeza ultrassônica"]},
+
+{id:"EJBR03301D",codigos:["EJBR03301D","28277709"],fab:"Delphi",tipo:"eletromagnetico",serie:"EMC 3",
+ apl:[{v:"Ford Transit",m:"2.4 TDCi Duratorq",a:"2006–2014"},{v:"Land Rover Defender",m:"2.4 TDCi Puma",a:"2007–2016"}],
+ ponteira:"DSLA143P970",valvula:"7135-576",
+ p:{res:"0.5–0.7",ind:"0.35",tpico:"80",pbar:"1600",rmin:"3",rmax:"20"},
+ defeitos:["Válvula de controle com desgaste","Ponteira com erosão","Retorno excessivo"],
+ sintomas:["Partida difícil a frio","Ruído de pancada no motor","P0087 + P0201"],
+ solucoes:["Trocar válvula 7135-576","Rebuild em bancada Delphi autorizada","Verificar qualidade do diesel"]},
+
+{id:"28342997",codigos:["28342997","A0001402551"],fab:"Delphi",tipo:"eletromagnetico",serie:"EMC 3",
+ apl:[{v:"Mercedes-Benz Sprinter",m:"2.2 CDI OM651",a:"2012–presente"},{v:"Mercedes-Benz C 200 CDI",m:"OM651",a:"2012–2014"},{v:"Mercedes-Benz E 220 CDI",m:"OM651",a:"2012–2014"}],
+ ponteira:"DLLA143P2262",valvula:"7135-791",
+ p:{res:"0.5–0.8",ind:"0.35",tpico:"80",pbar:"1800",rmin:"2",rmax:"18"},
+ defeitos:["Válvula 7135-791 desgastada","Ponteira com deformação por alta pressão","Filtro de entrada entupido"],
+ sintomas:["Vibração excessiva em marcha lenta","P0201–P0204","Fumaça branca a frio"],
+ solucoes:["Trocar válvula 7135-791","Limpeza ultrassônica + ponteira nova","Verificar pressão rail com scanner antes de intervir"]},
+
+{id:"28264952",codigos:["28264952","1903084"],fab:"Delphi",tipo:"eletromagnetico",serie:"EMC 3",
+ apl:[{v:"Ford Ranger",m:"2.2 TDCi Puma",a:"2012–2019"},{v:"Ford Transit",m:"2.2 TDCi Duratorq",a:"2012–2017"},{v:"Land Rover Freelander",m:"2.2 TD4",a:"2012–2015"}],
+ ponteira:"DSLA143P970",valvula:"7135-576",
+ p:{res:"0.5–0.7",ind:"0.35",tpico:"80",pbar:"1600",rmin:"3",rmax:"20"},
+ defeitos:["Válvula 7135-576 desgastada após 150k km","Ponteira entupida por diesel S500"],
+ sintomas:["Falhamento no 1° e 4° cilindro","Fumaça preta","P0087"],
+ solucoes:["Trocar válvulas individualmente","Rebuild + limpeza ultrassônica","Filtro novo + diesel S10"]},
+
+{id:"EJBR04901D",codigos:["EJBR04901D","28230891"],fab:"Delphi",tipo:"eletromagnetico",serie:"EMC 4",
+ apl:[{v:"Iveco Daily",m:"3.0 HPI F1CE",a:"2007–2016"},{v:"Iveco Cursor 8",m:"3.0 HPI",a:"2007–2016"}],
+ ponteira:"DSLA127P5562",valvula:"7135-576",
+ p:{res:"0.5–0.7",ind:"0.35",tpico:"80",pbar:"1600",rmin:"3",rmax:"22"},
+ defeitos:["Válvula com desgaste pelo combustível","Retorno acima de 25 ml/min"],
+ sintomas:["Motor sem potência","Fumaça preta densa","Falha em 1 cilindro"],
+ solucoes:["Rebuild completo","Trocar válvula 7135-576","Verificar filtro primário e secundário"]},
+
+{id:"28565336",codigos:["28565336","2865779"],fab:"Delphi",tipo:"eletromagnetico",serie:"EMC 3",
+ apl:[{v:"Ford Transit",m:"2.2 TDCi Duratorq 125cv",a:"2013–2018"},{v:"Ford Custom",m:"2.2 TDCi",a:"2013–2018"}],
+ ponteira:"DSLA143P970",valvula:"7135-576",
+ p:{res:"0.5–0.7",ind:"0.35",tpico:"80",pbar:"1600",rmin:"3",rmax:"20"},
+ defeitos:["Válvula 7135-576 com desgaste antecipado","Contaminação por óxido de ferro no combustível"],
+ sintomas:["Mau funcionamento em 1–2 cilindros","P0200 + P0087","Fumaça escura"],
+ solucoes:["Trocar válvulas 7135-576","Flush do sistema de combustível","Rebuild após inspeção"]},
+
+// ─── SIEMENS / CONTINENTAL VDO ───────────────────────────────────────────────
+{id:"A2C59513554",codigos:["A2C59513554","BK3Q-9K546-AG"],fab:"Siemens/VDO",tipo:"piezoeletrico",serie:"VDO Piezo CRI",
+ apl:[{v:"Ford Ranger",m:"3.2 TDCi Puma 5-cil",a:"2012–presente"},{v:"Ford Transit",m:"3.2 TDCi Puma",a:"2012–2018"}],
+ ponteira:"A2C59513554-N",valvula:"—",
+ p:{res:"N/A",cap:"3–4 µF",tpico:"100–150",pbar:"2000",rmin:"1",rmax:"6"},
+ defeitos:["Elemento piezoelétrico fraturado (impacto/queda)","Módulo de controle interno com falha","Vedação do injetor com vazamento externo"],
+ sintomas:["Falha grave no cilindro afetado","Barulho de pancada no bloco","P120B / P2602","Fumaça branca densa"],
+ solucoes:["NUNCA medir resistência — medir capacitância: 3–4 µF","Trocar injetor completo","Verificar ECU antes de substituir"]},
+
+{id:"A2C59513484",codigos:["A2C59513484","AB39-9K546-GB"],fab:"Siemens/VDO",tipo:"piezoeletrico",serie:"VDO Piezo CRI",
+ apl:[{v:"Ford Ranger",m:"2.2 TDCi Puma 4-cil",a:"2012–presente"},{v:"Ford Transit",m:"2.2 TDCi Puma 4-cil",a:"2012–2017"}],
+ ponteira:"A2C59513484-N",valvula:"—",
+ p:{res:"N/A",cap:"3–4 µF",tpico:"100–150",pbar:"1800",rmin:"1",rmax:"8"},
+ defeitos:["Elemento piezo com degradação","Conector elétrico oxidado","Vedação lateral com escape de combustível"],
+ sintomas:["P120B / P0201–P0204","Parada súbita do motor","Fumaça branca contínua"],
+ solucoes:["Medir capacitância com LCR meter","Trocar injetor completo","Verificar conectores e chicote elétrico"]},
+
+{id:"5WS40000-Z",codigos:["5WS40000-Z","5WS40000Z"],fab:"Siemens/VDO",tipo:"piezoeletrico",serie:"Siemens PCR2",
+ apl:[{v:"Peugeot 307 / 407",m:"2.0 HDi DW10 FAP",a:"2002–2010"},{v:"Citroën C5",m:"2.0 HDi DW10",a:"2002–2010"},{v:"Ford Focus",m:"2.0 TDCi",a:"2005–2010"}],
+ ponteira:"5WS40000-N",valvula:"—",
+ p:{res:"N/A",cap:"3–5 µF",tpico:"150",pbar:"1600",rmin:"1",rmax:"8"},
+ defeitos:["Módulo piezo com microfraturas","Vazamento externo pelo O-ring superior","ECU com drivers danificados (curto no injetor)"],
+ sintomas:["Perda de potência","P1345","Motor trepidando com cheiro de diesel"],
+ solucoes:["Testar capacitância: fora de 3–5 µF = defeito","Verificar ECU (curto pode queimar drivers)","Trocar injetor completo + verificar ECU"]},
+];
+
+let curFab='todos', curTipo='todos', curQ='';
+
+function getFabKey(fab){return fab.toLowerCase().split('/')[0];}
+
+function getLista(){
+  return DB.filter(inj=>{
+    const fabOk = curFab==='todos'||inj.fab===curFab;
+    const tipoOk = curTipo==='todos'||inj.tipo===curTipo;
+    const q = curQ.toLowerCase();
+    const qOk = !q||
+      inj.codigos.some(c=>c.toLowerCase().includes(q))||
+      inj.apl.some(a=>a.v.toLowerCase().includes(q)||a.m.toLowerCase().includes(q))||
+      inj.fab.toLowerCase().includes(q)||
+      inj.serie.toLowerCase().includes(q)||
+      (inj.ponteira&&inj.ponteira.toLowerCase().includes(q));
+    return fabOk&&tipoOk&&qOk;
+  });
+}
+
+function renderGrid(){
+  const lista=getLista();
+  document.getElementById('gridCount').textContent=lista.length+' encontrado'+(lista.length!==1?'s':'');
+  document.getElementById('statTotal').textContent=DB.length;
+  if(lista.length===0){
+    document.getElementById('injGrid').innerHTML='<div class="empty-state"><span class="es-big">?</span><p class="es-p">Nenhum injetor encontrado para os filtros aplicados.</p></div>';
+    return;
+  }
+  document.getElementById('injGrid').innerHTML=lista.map(inj=>{
+    const fabKey=getFabKey(inj.fab);
+    const aliases=inj.codigos.slice(1).map(c=>'<span style="font-size:0.72rem;opacity:0.45;display:block;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:0.05em">'+c+'</span>').join('');
+    return '<div class="inj-card" onclick="showInjetor(\''+inj.id+'\')">'
+      +'<span class="ic-fab '+fabKey+'">'+inj.fab+'</span>'
+      +'<span class="ic-code">'+inj.codigos[0]+'</span>'
+      +aliases
+      +'<span class="ic-apl">'+inj.apl[0].v+' · '+inj.apl[0].m+'</span>'
+      +'<span class="ic-tipo '+inj.tipo+'">'+(inj.tipo==='eletromagnetico'?'⚡ Eletromagnético':'◈ Piezoelétrico')+'</span>'
+      +'</div>';
+  }).join('');
+}
+
+function showInjetor(id){
+  const inj=DB.find(x=>x.id===id);
+  if(!inj)return;
+  document.getElementById('gridArea').style.display='none';
+  const ra=document.getElementById('resultArea');
+  ra.style.display='block';
+  const isPiezo=inj.tipo==='piezoeletrico';
+  const aliases=inj.codigos.slice(1).map(c=>'<span class="rc-alias">↳ '+c+'</span>').join('');
+  const aplRows=inj.apl.map(a=>'<div class="apl-row"><span class="apl-v">'+a.v+'</span><span class="apl-m">'+a.m+'</span><span class="apl-a">'+a.a+'</span></div>').join('');
+  let paramBoxes;
+  if(isPiezo){
+    paramBoxes='<div class="param-box warn"><span class="param-val">N/A</span><span class="param-lbl">Resistência (Ω)</span><span class="param-note">⚠ Não medir! Piezo.</span></div>'
+      +'<div class="param-box"><span class="param-val">'+inj.p.cap+'</span><span class="param-lbl">Capacitância</span></div>';
+  } else {
+    paramBoxes='<div class="param-box"><span class="param-val">'+inj.p.res+' <span class="param-unit">Ω</span></span><span class="param-lbl">Resistência Bobina</span></div>'
+      +'<div class="param-box"><span class="param-val">'+inj.p.ind+' <span class="param-unit">mH</span></span><span class="param-lbl">Indutância</span></div>';
+  }
+  paramBoxes+='<div class="param-box"><span class="param-val">'+inj.p.tpico+' <span class="param-unit">V</span></span><span class="param-lbl">Tensão Pico</span></div>'
+    +'<div class="param-box highlight"><span class="param-val">'+inj.p.pbar+' <span class="param-unit">bar</span></span><span class="param-lbl">Pressão de Trabalho</span></div>'
+    +'<div class="param-box"><span class="param-val">'+inj.p.rmin+'–'+inj.p.rmax+' <span class="param-unit">ml/min</span></span><span class="param-lbl">Retorno Aceitável</span></div>';
+  const wa=encodeURIComponent('Olá! Preciso de ajuda com o injetor '+inj.codigos[0]);
+  ra.innerHTML='<div class="result-card">'
+    +'<button class="back-btn" onclick="closeCard()">← Voltar à lista</button>'
+    +'<div class="rc-header">'
+      +'<div class="rc-code-col">'
+        +'<span class="rc-main-code">'+inj.codigos[0]+'</span>'
+        +aliases
+        +'<span class="rc-fab">'+inj.fab+'</span>'
+        +'<span class="rc-serie">'+inj.serie+'</span>'
+        +'<div class="tipo-badge '+inj.tipo+'">'+(inj.tipo==='eletromagnetico'?'⚡ Eletromagnético':'◈ Piezoelétrico')+'</div>'
+      +'</div>'
+      +'<div class="rc-meta-col">'
+        +'<div class="apl-label">Aplicações</div>'
+        +'<div class="apl-table">'+aplRows+'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="rc-section">'
+      +'<div class="section-title">Parâmetros Técnicos</div>'
+      +'<div class="params-grid">'+paramBoxes+'</div>'
+    +'</div>'
+    +'<div class="rc-section">'
+      +'<div class="section-title">Códigos de Componentes</div>'
+      +'<div class="comp-grid">'
+        +'<div class="comp-item"><span class="comp-lbl">Ponteira (Nozzle)</span><span class="comp-val">'+inj.ponteira+'</span></div>'
+        +(inj.valvula!=='—'
+          ?'<div class="comp-item"><span class="comp-lbl">Válvula de Controle</span><span class="comp-val">'+inj.valvula+'</span></div>'
+          :'<div class="comp-item"><span class="comp-lbl">Válvula de Controle</span><span class="comp-val na">Não disponível avulsa — conjunto piezo</span></div>')
+      +'</div>'
+    +'</div>'
+    +'<div class="rc-section" style="border-bottom:none">'
+      +'<div class="section-title">Diagnóstico</div>'
+      +'<div class="diag-grid">'
+        +'<div class="diag-col"><div class="diag-col-title fault">⚠ Defeitos Comuns</div>'
+          +inj.defeitos.map(d=>'<div class="diag-item"><span class="diag-icon">⚠</span>'+d+'</div>').join('')
+        +'</div>'
+        +'<div class="diag-col"><div class="diag-col-title symptom">◆ Sintomas</div>'
+          +inj.sintomas.map(s=>'<div class="diag-item"><span class="diag-icon">◆</span>'+s+'</div>').join('')
+        +'</div>'
+        +'<div class="diag-col"><div class="diag-col-title solution">✓ Soluções</div>'
+          +inj.solucoes.map(s=>'<div class="diag-item"><span class="diag-icon">✓</span>'+s+'</div>').join('')
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="rc-cta"><p>Precisa de diagnóstico ou recondicionamento?</p>'
+      +'<a href="https://wa.me/5567996342998?text='+wa+'" target="_blank" class="wa-btn">'+WA+' Falar com Especialista</a>'
+    +'</div>'
+  +'</div>';
+  window.scrollTo({top:ra.offsetTop-80,behavior:'smooth'});
+}
+
+function closeCard(){
+  document.getElementById('resultArea').style.display='none';
+  document.getElementById('gridArea').style.display='block';
+}
+
+function setFab(btn){
+  document.querySelectorAll('[data-fab]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  curFab=btn.dataset.fab;
+  closeCard();
+  renderGrid();
+}
+
+function setTipo(btn){
+  document.querySelectorAll('[data-tipo]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  curTipo=btn.dataset.tipo;
+  closeCard();
+  renderGrid();
+}
+
+function buscar(){
+  const v=document.getElementById('sI').value.trim();
+  curQ=v;
+  const exact=DB.find(inj=>inj.codigos.some(c=>c.toLowerCase()===v.toLowerCase()));
+  if(exact){showInjetor(exact.id);return;}
+  closeCard();
+  renderGrid();
+}
+
+document.getElementById('sI').addEventListener('input',e=>{
+  curQ=e.target.value.trim();
+  closeCard();
+  renderGrid();
+});
+document.getElementById('sI').addEventListener('keydown',e=>{if(e.key==='Enter')buscar();});
+
+renderGrid();
+</script>
+</body>
+</html>
