@@ -1,0 +1,9 @@
+[
+  { "codigo": "0445110379 / 0445110647", "disponivel": true,  "preco": "R$ 950,00"   },
+  { "codigo": "23670-11030",             "disponivel": true,  "preco": "R$ 1.350,00" },
+  { "codigo": "23670-3270",              "disponivel": true,  "preco": "R$ 1.400,00" },
+  { "codigo": "23670-0L050",             "disponivel": true,  "preco": "R$ 900,00"   },
+  { "codigo": "294000-0570",             "disponivel": true,  "preco": "R$ 2.300,00" },
+  { "codigo": "0445110231",              "disponivel": true,  "preco": "R$ 850,00"   },
+  { "codigo": "238100L040",              "disponivel": true,  "preco": "R$ 2.500,00" }
+]
