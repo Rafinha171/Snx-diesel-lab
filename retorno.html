@@ -21,6 +21,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .logo span{color:#CC2200}
 .back{font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#F0EDE8;text-decoration:none;opacity:0.5;transition:opacity 0.2s}
 .back:hover{opacity:1}
+.tool-links{display:flex;align-items:center;gap:0.3rem}
+.tool-link{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,237,232,0.45);text-decoration:none;padding:0.2rem 0.55rem;border:1px solid rgba(240,237,232,0.1);transition:all 0.2s;white-space:nowrap}
+.tool-link:hover{color:#F0EDE8;border-color:rgba(204,34,0,0.5);background:rgba(204,34,0,0.06)}
+.tool-link.active-page{color:#CC2200;border-color:rgba(204,34,0,0.4);background:rgba(204,34,0,0.08)}
+@media(max-width:560px){.tool-link{font-size:0.68rem;padding:0.18rem 0.4rem}}
 
 /* HERO */
 .hero{padding:90px 1.5rem 0;max-width:1100px;margin:0 auto}
@@ -43,31 +48,35 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 
 /* TIMER */
 .timer-section{max-width:1100px;margin:0 auto;padding:0 1.5rem 2rem}
-.ts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem}
-.ts-title{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em}
+.ts-header{margin-bottom:1.2rem}
+.ts-title{font-family:’Barlow Condensed’,sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em}
 .ts-sub{font-size:0.8rem;opacity:0.45;margin-top:0.15rem}
-.timer-card{background:#141414;border:1px solid rgba(204,34,0,0.2);padding:1.5rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
-.timer-display{text-align:center;min-width:140px}
-.td-num{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:5rem;line-height:1;color:#CC2200;letter-spacing:-0.02em;transition:color 0.3s}
-.td-num.done{color:#22cc64}
-.td-num.warning{color:#ffa500}
-.td-label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;margin-top:0.3rem}
-.timer-progress{flex:1;min-width:200px}
-.tp-bar-bg{height:8px;background:rgba(240,237,232,0.06);border-radius:4px;margin-bottom:1rem;overflow:hidden}
-.tp-bar-fill{height:100%;background:#CC2200;border-radius:4px;transition:width 0.5s linear;width:0%}
-.tp-bar-fill.done{background:#22cc64}
+.timer-card{background:#141414;border:1px solid rgba(204,34,0,0.2);padding:2rem 2.5rem;display:flex;align-items:center;gap:3rem;flex-wrap:wrap}
+/* Ring */
+.timer-ring-wrap{position:relative;flex-shrink:0;width:164px;height:164px}
+.timer-ring-svg{width:164px;height:164px;display:block}
+.ring-track{fill:none;stroke:rgba(240,237,232,0.06);stroke-width:10}
+.ring-progress{fill:none;stroke:#22cc64;stroke-width:10;stroke-linecap:round;stroke-dasharray:452.39;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke 0.5s ease}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.tc-num{font-family:’Barlow Condensed’,sans-serif;font-weight:900;font-size:3.4rem;line-height:1;color:#22cc64;transition:color 0.5s ease;letter-spacing:-0.02em}
+.tc-lbl{font-family:’Barlow Condensed’,sans-serif;font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;margin-top:0.15rem}
+/* Controls */
+.timer-controls{flex:1;min-width:200px;display:flex;flex-direction:column;gap:1.1rem}
+.dur-row{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap}
+.dur-label{font-family:’Barlow Condensed’,sans-serif;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;opacity:0.4;white-space:nowrap}
+.dur-chips{display:flex;gap:0.35rem}
+.dur-chip{font-family:’Barlow Condensed’,sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:0.06em;padding:0.35rem 0.8rem;background:transparent;border:1px solid rgba(240,237,232,0.12);color:rgba(240,237,232,0.45);cursor:pointer;transition:all 0.2s}
+.dur-chip:hover{border-color:rgba(240,237,232,0.35);color:#F0EDE8}
+.dur-chip.active{background:rgba(204,34,0,0.12);border-color:rgba(204,34,0,0.6);color:#F0EDE8}
+.timer-status{font-size:0.84rem;opacity:0.45;font-style:italic;line-height:1.55;min-height:1.3em}
+.timer-status.running{color:#ffa500;opacity:1;font-style:normal}
+.timer-status.done{color:#22cc64;opacity:1;font-style:normal}
 .timer-btns{display:flex;gap:0.6rem;flex-wrap:wrap}
-.tbtn{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.2rem;border:none;cursor:pointer;transition:all 0.2s}
+.tbtn{font-family:’Barlow Condensed’,sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.4rem;border:none;cursor:pointer;transition:all 0.2s}
 .tbtn-start{background:#CC2200;color:white}
 .tbtn-start:hover{background:#E53010}
-.tbtn-reset{background:transparent;border:1px solid rgba(240,237,232,0.2);color:#F0EDE8;opacity:0.6}
+.tbtn-reset{background:transparent;border:1px solid rgba(240,237,232,0.18);color:#F0EDE8;opacity:0.55}
 .tbtn-reset:hover{opacity:1}
-.timer-duration{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem}
-.timer-duration label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5}
-.timer-duration select{background:#1C1C1C;border:1px solid rgba(240,237,232,0.1);color:#F0EDE8;padding:0.3rem 0.6rem;font-family:‘Barlow Condensed’,sans-serif;font-size:0.85rem;font-weight:600;outline:none;appearance:none}
-.timer-status{font-size:0.82rem;opacity:0.5;font-style:italic}
-.timer-status.running{color:#ffa500;opacity:1}
-.timer-status.done{color:#22cc64;opacity:1}
 
 /* FORM */
 .form-section{max-width:1100px;margin:0 auto;padding:0 1.5rem 2rem}
@@ -233,7 +242,9 @@ body{background:#1C1C1C!important;color:#F0EDE8!important}
 .cards-row{grid-template-columns:1fr}
 .ir{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
 .ir-right{grid-column:2;text-align:left}
-.timer-card{flex-direction:column;gap:1rem}
+.timer-card{flex-direction:column;align-items:center;gap:1.5rem;padding:1.5rem}
+.timer-controls{align-items:center;text-align:center;width:100%}
+.timer-btns{justify-content:center}
 .sc-grid{grid-template-columns:1fr}
 }
 </style>
@@ -242,7 +253,13 @@ body{background:#1C1C1C!important;color:#F0EDE8!important}
 <body>
 <nav>
   <a href="index.html" class="logo">SNX DIESEL<span>LAB</span></a>
-  <a href="index.html" class="back">← Voltar ao site</a>
+  <nav class="tool-links">
+    <a href="index.html" class="tool-link">← Início</a>
+    <a href="diagnostico.html" class="tool-link">Diagnóstico</a>
+    <a href="obd.html" class="tool-link">OBD</a>
+    <a href="catalogo.html" class="tool-link">Catálogo</a>
+    <a href="retorno.html" class="tool-link active-page">Retorno</a>
+  </nav>
 </nav>
 
 <!-- HERO -->
@@ -254,7 +271,7 @@ body{background:#1C1C1C!important;color:#F0EDE8!important}
       <h1>CALCULADORA DE<br><span>RETORNO</span><br>DE INJETORES</h1>
       <p class="hero-desc">Ferramenta especializada para diagnóstico de retorno de combustível em injetores Common Rail. Insira os valores medidos na bancada e receba o laudo técnico automático com limites baseados em dados do fabricante.</p>
       <div class="hero-tags">
-        <span class="htag">Timer 60s integrado</span>
+        <span class="htag">Timer circular 30–120s</span>
         <span class="htag">Limites por modelo</span>
         <span class="htag">Laudo em PDF</span>
         <span class="htag">Histórico de laudos</span>
@@ -265,7 +282,7 @@ body{background:#1C1C1C!important;color:#F0EDE8!important}
       <div class="hr-title">● Como usar a ferramenta</div>
       <div class="info-list">
         <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>1. Selecione o veículo</strong> — marca, modelo e ano para carregar os limites técnicos do fabricante</div></div>
-        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>2. Inicie o timer</strong> — use o contador de 60 segundos integrado para padronizar o teste</div></div>
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>2. Inicie o timer</strong> — selecione a duração (30/60/90/120s) e inicie o contador circular para padronizar o teste</div></div>
         <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>3. Insira os volumes</strong> — anote o retorno de cada injetor em ml coletado durante o teste</div></div>
         <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>4. Gere o laudo</strong> — resultado automático com status, gráfico e conclusão técnica</div></div>
         <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>Condição do teste:</strong> motor em marcha lenta (idle), temperatura <strong style="color:#CC2200">70–90°C</strong> — sempre com motor quente</div></div>
@@ -282,30 +299,39 @@ body{background:#1C1C1C!important;color:#F0EDE8!important}
 <div class="timer-section">
   <div class="ts-header">
     <div>
-      <div class="ts-title">⏱ Contador de Teste</div>
-      <div class="ts-sub">Motor deve estar quente (70–90°C) — 60 segundos em marcha lenta</div>
+      <div class="ts-title">Contador de Teste</div>
+      <div class="ts-sub">Motor deve estar quente (70–90°C) — colete o retorno durante o tempo selecionado em marcha lenta</div>
     </div>
   </div>
   <div class="timer-card">
-    <div class="timer-display">
-      <div class="td-num" id="timerNum">60</div>
-      <div class="td-label">segundos restantes</div>
-    </div>
-    <div class="timer-progress">
-      <div class="timer-duration">
-        <label>Duração do teste:</label>
-        <select id="timerDur" onchange="resetTimer()">
-          <option value="60">60 segundos</option>
-          <option value="90">90 segundos</option>
-          <option value="120">120 segundos</option>
-        </select>
+    <!-- SVG Ring -->
+    <div class="timer-ring-wrap">
+      <svg class="timer-ring-svg" viewBox="0 0 164 164">
+        <circle class="ring-track" cx="82" cy="82" r="72"/>
+        <circle class="ring-progress" cx="82" cy="82" r="72"
+          transform="rotate(-90 82 82)" id="timerRing"/>
+      </svg>
+      <div class="ring-center">
+        <div class="tc-num" id="timerNum">60</div>
+        <div class="tc-lbl">seg</div>
       </div>
-      <div class="tp-bar-bg"><div class="tp-bar-fill" id="timerBar"></div></div>
+    </div>
+    <!-- Controls -->
+    <div class="timer-controls">
+      <div class="dur-row">
+        <span class="dur-label">Duração:</span>
+        <div class="dur-chips">
+          <button class="dur-chip" data-sec="30" onclick="selectDur(30)">30s</button>
+          <button class="dur-chip active" data-sec="60" onclick="selectDur(60)">60s</button>
+          <button class="dur-chip" data-sec="90" onclick="selectDur(90)">90s</button>
+          <button class="dur-chip" data-sec="120" onclick="selectDur(120)">120s</button>
+        </div>
+      </div>
+      <div class="timer-status" id="timerStatus">Pronto para iniciar o teste</div>
       <div class="timer-btns">
         <button class="tbtn tbtn-start" id="btnTimer" onclick="toggleTimer()">▶ Iniciar</button>
         <button class="tbtn tbtn-reset" onclick="resetTimer()">↺ Resetar</button>
       </div>
-      <div class="timer-status" id="timerStatus">Pronto para iniciar o teste</div>
     </div>
   </div>
 </div>
@@ -648,10 +674,43 @@ const VEICULOS={
 };
 
 // ===================== TIMER =====================
+const TIMER_CIRC = 2 * Math.PI * 72; // r=72, circumference ≈ 452.39
 let timerInterval=null;
 let timerRunning=false;
 let timerTotal=60;
 let timerLeft=60;
+
+function timerColor(pctLeft){
+  if(pctLeft>0.5)return'#22cc64';
+  if(pctLeft>0.2)return'#ffa500';
+  return'#CC2200';
+}
+
+function updateRing(left,total){
+  const pct=total>0?left/total:0;
+  const offset=TIMER_CIRC*(1-pct);
+  const color=timerColor(pct);
+  const ring=document.getElementById('timerRing');
+  const num=document.getElementById('timerNum');
+  ring.style.strokeDashoffset=offset;
+  ring.style.stroke=color;
+  num.textContent=left>0?left:'OK';
+  num.style.color=color;
+}
+
+function selectDur(sec){
+  document.querySelectorAll('.dur-chip').forEach(b=>{
+    b.classList.toggle('active',parseInt(b.dataset.sec)===sec);
+  });
+  clearInterval(timerInterval);
+  timerRunning=false;
+  timerTotal=sec;
+  timerLeft=sec;
+  updateRing(timerLeft,timerTotal);
+  document.getElementById('btnTimer').textContent='▶ Iniciar';
+  document.getElementById('timerStatus').textContent='Pronto para iniciar o teste';
+  document.getElementById('timerStatus').className='timer-status';
+}
 
 function toggleTimer(){
   initAudio();
@@ -662,7 +721,7 @@ function toggleTimer(){
     document.getElementById('timerStatus').textContent='Timer pausado';
     document.getElementById('timerStatus').className='timer-status';
   } else {
-    if(timerLeft<=0) resetTimer();
+    if(timerLeft<=0){timerLeft=timerTotal;updateRing(timerLeft,timerTotal);}
     timerRunning=true;
     document.getElementById('btnTimer').textContent='⏸ Pausar';
     document.getElementById('timerStatus').textContent='Teste em andamento — colete o combustível de retorno...';
@@ -673,18 +732,10 @@ function toggleTimer(){
 
 function tickTimer(){
   timerLeft--;
-  const pct=((timerTotal-timerLeft)/timerTotal)*100;
-  document.getElementById('timerBar').style.width=pct+'%';
-  const num=document.getElementById('timerNum');
-  num.textContent=timerLeft;
-  if(timerLeft<=10&&timerLeft>0){num.className='td-num warning'}
+  updateRing(timerLeft,timerTotal);
   if(timerLeft<=0){
     clearInterval(timerInterval);
     timerRunning=false;
-    num.textContent='PRONTO';
-    num.className='td-num done';
-    document.getElementById('timerBar').className='tp-bar-fill done';
-    document.getElementById('timerBar').style.width='100%';
     document.getElementById('btnTimer').textContent='▶ Novo teste';
     document.getElementById('timerStatus').textContent='Teste concluído! Anote os volumes e insira abaixo.';
     document.getElementById('timerStatus').className='timer-status done';
@@ -695,12 +746,8 @@ function tickTimer(){
 function resetTimer(){
   clearInterval(timerInterval);
   timerRunning=false;
-  timerTotal=parseInt(document.getElementById('timerDur').value);
   timerLeft=timerTotal;
-  document.getElementById('timerNum').textContent=timerTotal;
-  document.getElementById('timerNum').className='td-num';
-  document.getElementById('timerBar').style.width='0%';
-  document.getElementById('timerBar').className='tp-bar-fill';
+  updateRing(timerLeft,timerTotal);
   document.getElementById('btnTimer').textContent='▶ Iniciar';
   document.getElementById('timerStatus').textContent='Pronto para iniciar o teste';
   document.getElementById('timerStatus').className='timer-status';

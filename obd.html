@@ -21,6 +21,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .logo span{color:#CC2200}
 .back{font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#F0EDE8;text-decoration:none;opacity:0.6}
 .back:hover{opacity:1}
+.tool-links{display:flex;align-items:center;gap:0.3rem}
+.tool-link{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,237,232,0.45);text-decoration:none;padding:0.2rem 0.55rem;border:1px solid rgba(240,237,232,0.1);transition:all 0.2s;white-space:nowrap}
+.tool-link:hover{color:#F0EDE8;border-color:rgba(204,34,0,0.5);background:rgba(204,34,0,0.06)}
+.tool-link.active-page{color:#CC2200;border-color:rgba(204,34,0,0.4);background:rgba(204,34,0,0.08)}
+@media(max-width:560px){.tool-link{font-size:0.65rem;padding:0.15rem 0.35rem}}
 .hero{padding:100px 1.5rem 40px;text-align:center;max-width:680px;margin:0 auto}
 .badge{display:inline-flex;align-items:center;gap:0.5rem;border:1px solid #CC2200;padding:0.3rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#CC2200;margin-bottom:1.2rem}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2rem,6vw,4rem);line-height:1;text-transform:uppercase;margin-bottom:0.8rem}
@@ -77,7 +82,13 @@ footer{border-top:1px solid rgba(204,34,0,0.15);padding:2rem;text-align:center;f
 <body>
 <nav>
   <a href="index.html" class="logo">SNX DIESEL<span>LAB</span></a>
-  <a href="index.html" class="back">← Voltar</a>
+  <nav class="tool-links">
+    <a href="index.html" class="tool-link">← Início</a>
+    <a href="diagnostico.html" class="tool-link">Diagnóstico</a>
+    <a href="obd.html" class="tool-link active-page">OBD</a>
+    <a href="retorno.html" class="tool-link">Retorno</a>
+    <a href="catalogo.html" class="tool-link">Catálogo</a>
+  </nav>
 </nav>
 <div class="hero">
   <div class="badge">● Base de Dados Diesel</div>
