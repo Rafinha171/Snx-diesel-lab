@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SNX Diesel Lab – Consultoria em Injeção Eletrônica Diesel</title>
-<meta name="description" content="Consultoria especializada em injeção eletrônica diesel. Diagnóstico de injetores Common Rail, calculadora de retorno, base de códigos OBD e catálogo de peças. Campo Grande – MS.">
+<meta name="description" content="Consultoria especializada em injeção eletrônica diesel. Diagnóstico de injetores Common Rail, calculadora de retorno, base de códigos OBD e catálogo de peças.">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SNX Diesel Lab – Consultoria em Injeção Eletrônica Diesel">
@@ -187,25 +187,26 @@ margin-bottom: 2.5rem;
 }
 
 .btn-group { display: flex; gap: 0.8rem; flex-wrap: wrap; }
-.btn-group-tools { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.6rem; }
+.btn-group-tools { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
 .btn-tool {
 font-family: ‘Barlow Condensed’, sans-serif;
-font-weight: 600;
-font-size: 0.78rem;
-letter-spacing: 0.1em;
+font-weight: 700;
+font-size: 0.72rem;
+letter-spacing: 0.12em;
 text-transform: uppercase;
-padding: 8px 16px;
-border: 1px solid rgba(204,34,0,0.4);
+padding: 9px 18px;
+border: 1px solid rgba(240,237,232,0.12);
 cursor: pointer;
 text-decoration: none;
 display: inline-flex;
 align-items: center;
-gap: 6px;
-transition: all 0.2s;
-color: #CC2200;
-background: rgba(204,34,0,0.05);
+gap: 7px;
+transition: all 0.22s;
+color: rgba(240,237,232,0.55);
+background: rgba(240,237,232,0.03);
 }
-.btn-tool:hover { border-color: #CC2200; background: rgba(204,34,0,0.12); }
+.btn-tool:hover { border-color: rgba(204,34,0,0.5); color: #F0EDE8; background: rgba(204,34,0,0.07); transform: translateY(-1px); }
+.btn-tool .ticon { font-size: 0.85rem; }
 
 .btn {
 font-family: ‘Barlow Condensed’, sans-serif;
@@ -958,14 +959,13 @@ nav { padding: 0 1.5rem; }
 <!-- MOBILE MENU -->
 <div class="mob-menu" id="mobMenu">
   <div class="mob-menu-sep"></div>
-  <a href="#catalogo" onclick="closeMenu()">Catálogo</a>
   <a href="obd.html" onclick="closeMenu()">Códigos OBD</a>
   <a href="diagnostico.html" onclick="closeMenu()">Diagnóstico</a>
   <a href="retorno.html" onclick="closeMenu()">Calc. Retorno</a>
+  <a href="injetor.html" onclick="closeMenu()">Banco de Injetores</a>
+  <a href="catalogo.html" onclick="closeMenu()">Catálogo</a>
   <a href="#servicos" onclick="closeMenu()">Serviços</a>
   <a href="#diferenciais" onclick="closeMenu()">Diferenciais</a>
-  <a href="#processo" onclick="closeMenu()">Processo</a>
-  <a href="#contato" onclick="closeMenu()">Contato</a>
   <div class="mob-menu-sep"></div>
 </div>
 
@@ -992,9 +992,10 @@ nav { padding: 0 1.5rem; }
       <a href="catalogo.html" class="btn btn-outline">Ver Catálogo</a>
     </div>
     <div class="btn-group-tools">
-      <a href="obd.html" class="btn-tool">🔍 Códigos OBD</a>
-      <a href="diagnostico.html" class="btn-tool">🔧 Simulador de Diagnóstico</a>
-      <a href="retorno.html" class="btn-tool">📊 Calculadora de Retorno</a>
+      <a href="obd.html" class="btn-tool"><span class="ticon">⬡</span> Códigos OBD</a>
+      <a href="diagnostico.html" class="btn-tool"><span class="ticon">◈</span> Diagnóstico</a>
+      <a href="retorno.html" class="btn-tool"><span class="ticon">◎</span> Calc. Retorno</a>
+      <a href="injetor.html" class="btn-tool"><span class="ticon">◆</span> Banco Injetores</a>
     </div>
   </div>
 
@@ -1027,7 +1028,7 @@ nav { padding: 0 1.5rem; }
     <span class="ticker-item">Delphi HP3</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Continental VDO</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Sistema 2500 bar</span><span class="ticker-dot">●</span>
-    <span class="ticker-item">Campo Grande · MS</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Injetores Piezoelétricos</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Hilux · Ranger · Amarok · S10</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Calibração de Precisão</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Bosch Common Rail</span><span class="ticker-dot">●</span>
@@ -1035,7 +1036,7 @@ nav { padding: 0 1.5rem; }
     <span class="ticker-item">Delphi HP3</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Continental VDO</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Sistema 2500 bar</span><span class="ticker-dot">●</span>
-    <span class="ticker-item">Campo Grande · MS</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Injetores Piezoelétricos</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Hilux · Ranger · Amarok · S10</span><span class="ticker-dot">●</span>
     <span class="ticker-item">Calibração de Precisão</span><span class="ticker-dot">●</span>
   </div>
@@ -1484,9 +1485,10 @@ window.addEventListener('DOMContentLoaded',()=>filtrarPecas('todos'));
       <a href="diagnostico.html">Diagnóstico</a>
       <a href="obd.html">OBD</a>
       <a href="retorno.html">Retorno</a>
+      <a href="injetor.html">Injetores</a>
       <a href="catalogo.html">Catálogo</a>
     </nav>
-    <div class="footer-copy">© 2026 SNX Diesel Lab<br>Campo Grande · MS</div>
+    <div class="footer-copy">© 2026 SNX Diesel Lab<br>Consultoria em Injeção Diesel</div>
   </div>
 </footer>
 
