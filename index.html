@@ -760,6 +760,82 @@ from { opacity: 0; transform: translateY(20px); }
 to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── TICKER ── */
+.ticker-strip{background:#0E0E0E;border-top:1px solid rgba(204,34,0,0.2);border-bottom:1px solid rgba(204,34,0,0.2);padding:0.7rem 0;overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-flex;gap:2.5rem;animation:tickerScroll 30s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+.ticker-item{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(240,237,232,0.35)}
+.ticker-dot{color:#CC2200;opacity:0.6}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── STATS REDESIGN ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:#0E0E0E;border-top:1px solid rgba(204,34,0,0.15);border-bottom:1px solid rgba(204,34,0,0.15)}
+.stat-item{padding:2.2rem 2rem;border-right:1px solid rgba(204,34,0,0.1);display:flex;flex-direction:column;gap:0.3rem}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.6rem;line-height:1;color:#CC2200;letter-spacing:-0.01em}
+.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(240,237,232,0.35)}
+
+/* ── FERRAMENTAS SECTION ── */
+.tools-section{background:#0E0E0E;padding:0}
+.tools-intro{max-width:1100px;margin:0 auto;padding:5rem 2rem 3rem}
+.tools-intro-top{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;background:rgba(204,34,0,0.1);border-top:1px solid rgba(204,34,0,0.12)}
+.tool-card{background:#111111;padding:2.8rem 3rem;position:relative;overflow:hidden;text-decoration:none;color:#F0EDE8;display:flex;flex-direction:column;border-right:1px solid rgba(204,34,0,0.1);border-bottom:1px solid rgba(204,34,0,0.1);transition:background 0.3s}
+.tool-card:hover{background:#161616}
+.tool-card:nth-child(2n){border-right:none}
+.tc-bg-num{position:absolute;top:-0.4rem;right:0.5rem;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:9rem;line-height:1;color:rgba(204,34,0,0.05);letter-spacing:-0.02em;pointer-events:none;user-select:none;transition:color 0.3s}
+.tool-card:hover .tc-bg-num{color:rgba(204,34,0,0.09)}
+.tc-badge{display:inline-flex;align-items:center;border:1px solid rgba(204,34,0,0.35);color:#CC2200;font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:0.18rem 0.65rem;margin-bottom:1.4rem;width:fit-content}
+.tc-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(1.6rem,2.2vw,2.1rem);text-transform:uppercase;line-height:0.97;letter-spacing:0.01em;margin-bottom:0.9rem;color:#F0EDE8}
+.tc-desc{font-size:0.83rem;opacity:0.5;line-height:1.7;margin-bottom:1.5rem;flex:1;max-width:380px}
+.tc-features{list-style:none;display:flex;flex-direction:column;gap:0.35rem;margin-bottom:1.8rem}
+.tc-features li{font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;font-weight:600;letter-spacing:0.04em;color:rgba(240,237,232,0.55);padding-left:1.1rem;position:relative}
+.tc-features li::before{content:'—';position:absolute;left:0;color:#CC2200;font-weight:900}
+.tc-cta{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(240,237,232,0.3);transition:color 0.2s;margin-top:auto}
+.tool-card:hover .tc-cta{color:#CC2200}
+
+/* ── SERVICES REDESIGN ── */
+.services-section{background:#141414}
+.services-header{max-width:1100px;margin:0 auto;padding:5rem 2rem 3rem;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);background:rgba(240,237,232,0.04);border-top:1px solid rgba(240,237,232,0.06)}
+.service-card{background:transparent;padding:2.2rem;border-right:1px solid rgba(240,237,232,0.05);border-bottom:1px solid rgba(240,237,232,0.05);position:relative;overflow:hidden;transition:background 0.3s}
+.service-card:hover{background:rgba(204,34,0,0.04)}
+.service-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:#CC2200;transform:scaleY(0);transform-origin:bottom;transition:transform 0.3s}
+.service-card:hover::before{transform:scaleY(1)}
+.service-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:0.7rem;color:#CC2200;letter-spacing:0.2em;margin-bottom:1.2rem;opacity:0.6}
+.service-icon{width:28px;height:28px;stroke:#CC2200;margin-bottom:1rem;opacity:0.7}
+.service-card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.6rem;color:#F0EDE8}
+.service-card p{font-size:0.82rem;opacity:0.5;line-height:1.65}
+
+/* ── PROCESS REDESIGN ── */
+.process-section{background:#0E0E0E;padding:6rem 2rem}
+.process-inner{max-width:1100px;margin:0 auto}
+.process-header{margin-bottom:3.5rem}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);position:relative;gap:0}
+.process-steps::before{content:'';position:absolute;top:28px;left:calc(12.5%);right:calc(12.5%);height:1px;background:rgba(204,34,0,0.25);z-index:0}
+.process-step{padding:0 1.5rem;position:relative;z-index:1}
+.step-num{width:56px;height:56px;border:1px solid rgba(204,34,0,0.4);background:#0E0E0E;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.1rem;color:#CC2200;margin-bottom:1.5rem;position:relative}
+.process-step h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;color:#F0EDE8}
+.process-step p{font-size:0.8rem;opacity:0.45;line-height:1.6}
+
+/* ── CTA REDESIGN ── */
+.cta-section{background:#CC2200;padding:6rem 2rem;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'DIESEL';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(6rem,18vw,14rem);line-height:1;color:rgba(0,0,0,0.12);letter-spacing:0.05em;pointer-events:none;white-space:nowrap}
+.cta-section h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(2.4rem,5vw,4rem);text-transform:uppercase;line-height:0.95;color:white;margin-bottom:1rem;position:relative}
+.cta-section p{font-size:1rem;color:rgba(255,255,255,0.75);margin-bottom:2.5rem;max-width:500px;margin-left:auto;margin-right:auto;position:relative;line-height:1.6}
+.btn-white{display:inline-flex;align-items:center;gap:0.7rem;background:white;color:#CC2200;padding:1rem 2.2rem;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;position:relative}
+.btn-white:hover{background:#F0EDE8;transform:translateY(-2px)}
+
+/* ── FOOTER REDESIGN ── */
+footer{background:#080808;padding:3rem 2rem;border-top:1px solid rgba(204,34,0,0.15)}
+.footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2rem}
+.footer-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.3rem;color:#F0EDE8;letter-spacing:0.04em}
+.footer-logo span{color:#CC2200}
+.footer-links{display:flex;gap:2rem;justify-content:center}
+.footer-links a{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(240,237,232,0.3);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:#CC2200}
+.footer-copy{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,237,232,0.2);text-align:right}
+
 /* ── HAMBURGER / MOBILE MENU ── */
 .ham-btn {
 display: none;
@@ -832,13 +908,25 @@ nav { padding: 0 1.5rem; }
 .hero-visual { margin-bottom: 3rem; order: -1; }
 .hero-injector-wrap { width: 200px; height: 260px; }
 .stats { grid-template-columns: repeat(2, 1fr); }
-section { padding: 5rem 1.5rem; }
-.services-grid { grid-template-columns: 1fr; }
+.stat-item { border-bottom: 1px solid rgba(204,34,0,0.1); }
+.tools-grid { grid-template-columns: 1fr; }
+.tool-card { border-right: none; }
+.services-grid { grid-template-columns: 1fr 1fr; }
+.services-header { padding: 3rem 1.5rem 2rem; flex-direction: column; align-items: flex-start; }
+.process-steps { grid-template-columns: repeat(2,1fr); gap: 2rem; }
+.process-steps::before { display: none; }
 .why { grid-template-columns: 1fr; gap: 3rem; }
 .why-visual { height: 260px; }
-.process-steps { grid-template-columns: repeat(2, 1fr); gap: 3rem; }
-.process-steps::before { display: none; }
-footer { flex-direction: column; gap: 1rem; text-align: center; }
+.footer-inner { grid-template-columns: 1fr; text-align: center; gap: 1.2rem; }
+.footer-copy { text-align: center; }
+.footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+}
+@media (max-width: 600px) {
+.stats { grid-template-columns: 1fr 1fr; }
+.services-grid { grid-template-columns: 1fr; }
+.tools-intro-top { flex-direction: column; align-items: flex-start; }
+.process-steps { grid-template-columns: 1fr; }
+.tool-card { padding: 2rem 1.5rem; }
 }
 </style>
 
@@ -929,6 +1017,29 @@ footer { flex-direction: column; gap: 1rem; text-align: center; }
   </div>
 </section>
 
+<!-- TICKER -->
+
+<div class="ticker-strip">
+  <div class="ticker-track">
+    <span class="ticker-item">Bosch Common Rail</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Denso Piezo</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Delphi HP3</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Continental VDO</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Sistema 2500 bar</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Campo Grande · MS</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Hilux · Ranger · Amarok · S10</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Calibração de Precisão</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Bosch Common Rail</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Denso Piezo</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Delphi HP3</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Continental VDO</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Sistema 2500 bar</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Campo Grande · MS</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Hilux · Ranger · Amarok · S10</span><span class="ticker-dot">●</span>
+    <span class="ticker-item">Calibração de Precisão</span><span class="ticker-dot">●</span>
+  </div>
+</div>
+
 <!-- STATS -->
 
 <div class="stats">
@@ -950,63 +1061,123 @@ footer { flex-direction: column; gap: 1rem; text-align: center; }
   </div>
 </div>
 
+<!-- FERRAMENTAS -->
+
+<section id="ferramentas" class="tools-section">
+  <div class="tools-intro">
+    <div class="tools-intro-top">
+      <div>
+        <div class="section-label">Plataforma Digital</div>
+        <h2 class="section-title" style="margin-bottom:0.3rem">Ferramentas Técnicas</h2>
+      </div>
+      <p style="font-size:0.85rem;opacity:0.4;max-width:320px;line-height:1.7;text-align:right">Acesso gratuito · Sem cadastro<br>Desenvolvido para técnicos diesel</p>
+    </div>
+  </div>
+  <div class="tools-grid">
+
+    <a href="diagnostico.html" class="tool-card">
+      <div class="tc-bg-num">01</div>
+      <div class="tc-badge">Diagnóstico</div>
+      <h3 class="tc-title">SIMULADOR DE<br>DIAGNÓSTICO</h3>
+      <p class="tc-desc">Descreva os sintomas, informe os códigos do scanner e receba diagnóstico técnico com causas prováveis e estimativa de custo de reparo.</p>
+      <ul class="tc-features">
+        <li>12 marcas · 35+ modelos catalogados</li>
+        <li>Pontuação inteligente por sintoma</li>
+        <li>Estimativa de custo de reparo</li>
+      </ul>
+      <div class="tc-cta">Acessar Ferramenta →</div>
+    </a>
+
+    <a href="obd.html" class="tool-card">
+      <div class="tc-bg-num">02</div>
+      <div class="tc-badge">Códigos OBD</div>
+      <h3 class="tc-title">BASE DE DADOS<br>DE FALHAS</h3>
+      <p class="tc-desc">Base exclusiva com 80+ códigos de falha para motores diesel Common Rail. Causas, soluções e veículos afetados por categoria.</p>
+      <ul class="tc-features">
+        <li>80+ códigos P, U e específicos</li>
+        <li>7 categorias: pressão, injetor, turbo…</li>
+        <li>Solução técnica para cada código</li>
+      </ul>
+      <div class="tc-cta">Consultar Códigos →</div>
+    </a>
+
+    <a href="retorno.html" class="tool-card">
+      <div class="tc-bg-num">03</div>
+      <div class="tc-badge">Calculadora</div>
+      <h3 class="tc-title">CALCULADORA DE<br>RETORNO</h3>
+      <p class="tc-desc">Timer circular integrado para teste padronizado. Insira os volumes medidos na bancada e gere laudo técnico com status por injetor.</p>
+      <ul class="tc-features">
+        <li>Timer 30 / 60 / 90 / 120 segundos</li>
+        <li>Limites técnicos por fabricante</li>
+        <li>Laudo em PDF com histórico</li>
+      </ul>
+      <div class="tc-cta">Abrir Calculadora →</div>
+    </a>
+
+    <a href="catalogo.html" class="tool-card">
+      <div class="tc-bg-num">04</div>
+      <div class="tc-badge">Estoque</div>
+      <h3 class="tc-title">CATÁLOGO DE<br>PEÇAS</h3>
+      <p class="tc-desc">32 peças em estoque para pronta entrega. Injetores, bombas, flautas, sensores e kits de reparo. Disponibilidade atualizada em tempo real.</p>
+      <ul class="tc-features">
+        <li>32 peças · 5 categorias</li>
+        <li>Bosch · Denso · Delphi · Continental</li>
+        <li>Disponibilidade em tempo real</li>
+      </ul>
+      <div class="tc-cta">Ver Catálogo →</div>
+    </a>
+
+  </div>
+</section>
+
 <!-- SERVICES -->
 
-<section id="servicos">
+<section id="servicos" class="services-section">
+  <div class="services-header">
+    <div>
+      <div class="section-label">O que fazemos</div>
+      <h2 class="section-title" style="margin-bottom:0">Nossos Serviços</h2>
+    </div>
+    <p style="font-size:0.85rem;opacity:0.4;max-width:340px;line-height:1.7;text-align:right">Soluções completas em sistemas de injeção eletrônica diesel para veículos leves, pesados e equipamentos agrícolas.</p>
+  </div>
   <div class="section-label">O que fazemos</div>
   <h2 class="section-title">Nossos Serviços</h2>
-  <p class="section-sub">Soluções completas em sistemas de injeção eletrônica diesel para veículos leves, pesados e equipamentos agrícolas.</p>
-
   <div class="services-grid">
     <div class="service-card">
-      <div class="service-num">01</div>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        <path d="M8 11h6M11 8v6"/>
-      </svg>
+      <div class="service-num">01 ——</div>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6M11 8v6"/></svg>
       <h3>Diagnóstico Eletrônico</h3>
-      <p>Leitura avançada de falhas com equipamentos de última geração. Identificamos com precisão a causa raiz de qualquer problema na injeção diesel.</p>
+      <p>Leitura avançada de falhas com equipamentos de última geração. Identificamos com precisão a causa raiz do problema na injeção diesel.</p>
     </div>
     <div class="service-card">
-      <div class="service-num">02</div>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-      </svg>
+      <div class="service-num">02 ——</div>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
       <h3>Calibração de Injetores</h3>
-      <p>Ajuste fino e calibração precisa de injetores Common Rail, bomba injetora e sistemas eletrônicos para restaurar a eficiência original do motor.</p>
+      <p>Calibração precisa de injetores Common Rail e bomba injetora para restaurar a eficiência original do motor.</p>
     </div>
     <div class="service-card">
-      <div class="service-num">03</div>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/>
-      </svg>
+      <div class="service-num">03 ——</div>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
       <h3>Laudo Técnico</h3>
-      <p>Elaboração de laudos técnicos detalhados para seguros, garantias e processos judiciais. Documentação completa com embasamento técnico e normativo.</p>
+      <p>Laudos detalhados para seguros, garantias e processos. Documentação com embasamento técnico e normativo completo.</p>
     </div>
     <div class="service-card">
-      <div class="service-num">04</div>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-      </svg>
+      <div class="service-num">04 ——</div>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
       <h3>Reparo Especializado</h3>
-      <p>Reparo de bombas injetoras rotativas e lineares, injetores piezoelétricos e solenoides. Peças originais e garantia de serviço.</p>
+      <p>Reparo de bombas injetoras, injetores piezo e solenoides. Peças originais com procedência e garantia de serviço.</p>
     </div>
     <div class="service-card">
-      <div class="service-num">05</div>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
+      <div class="service-num">05 ——</div>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <h3>Análise de Desempenho</h3>
-      <p>Mapeamento completo de pressão de injeção, temporização e eficiência de combustão. Otimize consumo e potência do seu motor diesel.</p>
+      <p>Mapeamento de pressão de injeção, temporização e eficiência de combustão. Otimize consumo e potência.</p>
     </div>
     <div class="service-card">
-      <div class="service-num">06</div>
-      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
+      <div class="service-num">06 ——</div>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <h3>Consultoria Técnica</h3>
-      <p>Suporte técnico para mecânicos, frotas e gestores. Treinamento, orientação de manutenção preventiva e gestão de custos operacionais.</p>
+      <p>Suporte para mecânicos, frotas e gestores. Treinamento e orientação de manutenção preventiva diesel.</p>
     </div>
   </div>
 </section>
@@ -1019,7 +1190,6 @@ footer { flex-direction: column; gap: 1rem; text-align: center; }
     <h2 class="section-title">Nossos Diferenciais</h2>
     <p class="section-sub">Tecnologia de ponta aliada a expertise técnica para os melhores resultados.</p>
 
-```
 <ul class="why-list">
   <li class="why-item">
     <div class="why-item-icon">
@@ -1086,32 +1256,34 @@ footer { flex-direction: column; gap: 1rem; text-align: center; }
 
 <!-- PROCESS -->
 
-<section id="processo" style="background: #1A1A1A;">
-  <div style="text-align:center; margin-bottom: 1rem;">
-    <div class="section-label" style="justify-content: center;">Como trabalhamos</div>
-    <h2 class="section-title">Nosso Processo</h2>
-    <p class="section-sub" style="margin-left: auto; margin-right: auto; text-align: center;">Quatro etapas simples para resolver qualquer problema na injeção eletrônica diesel.</p>
-  </div>
-  <div class="process process-steps">
-    <div class="process-step">
-      <div class="step-num">01</div>
-      <h4>Contato Inicial</h4>
-      <p>Entre em contato via WhatsApp e descreva o problema. Faremos uma triagem técnica gratuita.</p>
+<section id="processo" class="process-section">
+  <div class="process-inner">
+    <div class="process-header">
+      <div class="section-label">Como trabalhamos</div>
+      <h2 class="section-title" style="margin-bottom:0.3rem">Nosso Processo</h2>
+      <p style="font-size:0.85rem;opacity:0.4;max-width:400px;line-height:1.7">Quatro etapas para resolver qualquer problema na injeção eletrônica diesel.</p>
     </div>
-    <div class="process-step">
-      <div class="step-num">02</div>
-      <h4>Diagnóstico</h4>
-      <p>Recebemos o componente e realizamos leitura completa com equipamentos especializados.</p>
-    </div>
-    <div class="process-step">
-      <div class="step-num">03</div>
-      <h4>Orçamento</h4>
-      <p>Enviamos orçamento detalhado com prazo de entrega e garantia antes de iniciar qualquer reparo.</p>
-    </div>
-    <div class="process-step">
-      <div class="step-num">04</div>
-      <h4>Entrega</h4>
-      <p>Componente calibrado, reparado e testado. Entregamos com laudo técnico e nota fiscal.</p>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <h4>Contato</h4>
+        <p>Entre em contato via WhatsApp e descreva o problema. Triagem técnica gratuita.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <h4>Diagnóstico</h4>
+        <p>Leitura completa com equipamentos especializados Bosch, Denso e Delphi.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <h4>Orçamento</h4>
+        <p>Orçamento detalhado com prazo e garantia antes de qualquer reparo.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <h4>Entrega</h4>
+        <p>Componente calibrado e testado. Laudo técnico + nota fiscal inclusos.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1292,9 +1464,16 @@ window.addEventListener('DOMContentLoaded',()=>filtrarPecas('todos'));
 <!-- FOOTER -->
 
 <footer>
-  <div class="footer-logo">SNX DIESEL<span>LAB</span></div>
-  <p>© 2026 Diesel Lab · Todos os direitos reservados</p>
-  <p>Consultoria em Injeção Eletrônica Diesel</p>
+  <div class="footer-inner">
+    <div class="footer-logo">SNX DIESEL<span>LAB</span></div>
+    <nav class="footer-links">
+      <a href="diagnostico.html">Diagnóstico</a>
+      <a href="obd.html">OBD</a>
+      <a href="retorno.html">Retorno</a>
+      <a href="catalogo.html">Catálogo</a>
+    </nav>
+    <div class="footer-copy">© 2026 SNX Diesel Lab<br>Campo Grande · MS</div>
+  </div>
 </footer>
 
 <!-- WHATSAPP FLOAT -->
