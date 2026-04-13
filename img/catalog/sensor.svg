@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" width="320" height="220">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#0d0d0d"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#444"/><stop offset="30%" stop-color="#999"/>
+      <stop offset="60%" stop-color="#bbb"/><stop offset="100%" stop-color="#555"/>
+    </linearGradient>
+    <linearGradient id="hex" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#555"/><stop offset="40%" stop-color="#ccc"/>
+      <stop offset="60%" stop-color="#eee"/><stop offset="100%" stop-color="#555"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#4FC3F7" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#4FC3F7" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/></filter>
+  </defs>
+  <rect width="320" height="220" fill="url(#bg)"/>
+  <rect width="320" height="220" fill="url(#glow)"/>
+
+  <!-- Connector housing (top) -->
+  <rect x="120" y="14" width="80" height="52" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="124" y="18" width="72" height="10" rx="3" fill="#333"/>
+  <!-- 2-pin connector -->
+  <rect x="132" y="32" width="18" height="24" rx="3" fill="#1a1a1a" stroke="#555" stroke-width="1"/>
+  <rect x="170" y="32" width="18" height="24" rx="3" fill="#1a1a1a" stroke="#555" stroke-width="1"/>
+  <circle cx="141" cy="44" r="5" fill="#b8860b" stroke="#888" stroke-width="1"/>
+  <circle cx="179" cy="44" r="5" fill="#b8860b" stroke="#888" stroke-width="1"/>
+  <!-- Lock tab -->
+  <rect x="144" y="60" width="32" height="6" rx="2" fill="#3a3a3a" stroke="#555"/>
+
+  <!-- Hex body / wrench section -->
+  <polygon points="135,66 145,60 175,60 185,66 185,84 175,90 145,90 135,84" fill="url(#hex)" stroke="#666" stroke-width="0.5" filter="url(#shadow)"/>
+
+  <!-- Sensor body -->
+  <rect x="140" y="90" width="40" height="70" fill="url(#body)" stroke="#666" stroke-width="0.5"/>
+  <!-- O-ring groove -->
+  <rect x="138" y="108" width="44" height="5" fill="#333" stroke="#444" stroke-width="0.5"/>
+  <!-- Body detail ring -->
+  <rect x="140" y="124" width="40" height="3" fill="#888" stroke="#777" stroke-width="0.3"/>
+
+  <!-- Thread section -->
+  <rect x="143" y="160" width="34" height="38" rx="3" fill="#777" stroke="#555" stroke-width="0.5"/>
+  <!-- Thread lines -->
+  <line x1="143" y1="165" x2="177" y2="165" stroke="#555" stroke-width="0.5"/>
+  <line x1="143" y1="170" x2="177" y2="170" stroke="#555" stroke-width="0.5"/>
+  <line x1="143" y1="175" x2="177" y2="175" stroke="#555" stroke-width="0.5"/>
+  <line x1="143" y1="180" x2="177" y2="180" stroke="#555" stroke-width="0.5"/>
+  <line x1="143" y1="185" x2="177" y2="185" stroke="#555" stroke-width="0.5"/>
+  <line x1="143" y1="190" x2="177" y2="190" stroke="#555" stroke-width="0.5"/>
+  <!-- Sensing tip -->
+  <polygon points="145,198 175,198 172,208 148,208" fill="#666" stroke="#444" stroke-width="0.5"/>
+  <polygon points="150,208 170,208 164,216 156,216" fill="#555" stroke="#333" stroke-width="0.5"/>
+
+  <!-- Accent -->
+  <line x1="0" y1="218" x2="320" y2="218" stroke="#4FC3F7" stroke-width="2"/>
+
+  <text x="40" y="100" font-family="'Arial Narrow',sans-serif" font-size="11" font-weight="bold" fill="#4FC3F7" letter-spacing="2" opacity="0.9">SENSOR</text>
+  <text x="40" y="116" font-family="'Arial Narrow',sans-serif" font-size="9" fill="#666" letter-spacing="1">PRESSÃO · TEMPERATURA</text>
+  <text x="40" y="148" font-family="'Arial Narrow',sans-serif" font-size="8" fill="#444">Rail · Combustível</text>
+  <text x="40" y="162" font-family="'Arial Narrow',sans-serif" font-size="8" fill="#444">Temperatura · MAF</text>
+</svg>

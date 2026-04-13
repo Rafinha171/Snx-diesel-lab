@@ -320,7 +320,7 @@ function renderGrid(){
   if(gcEl)gcEl.textContent=lista.length+' código'+(lista.length!==1?'s':'');
   const stEl=document.getElementById('statTotal');
   if(stEl)stEl.textContent=DB.length+'+';
-  document.getElementById('cG').innerHTML=lista.map(d=>'<div class="cc" onclick="selC(''+d.c+'')"><div class="cc-c">'+d.c+'</div><div class="cc-d">'+d.t+'</div><div class="cc-sev '+d.sev+'"></div></div>').join('');
+  document.getElementById('cG').innerHTML=lista.map(d=>'<div class="cc" data-code="'+d.c+'" onclick="selC(this.dataset.code)"><div class="cc-c">'+d.c+'</div><div class="cc-d">'+d.t+'</div><div class="cc-sev '+d.sev+'">' +'</div></div>').join('');
 }
 function selC(code){
   document.getElementById('sI').value=code;
