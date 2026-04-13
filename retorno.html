@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Retorno de Injetores – SNX Diesel Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:#1C1C1C;color:#F0EDE8;font-family:'Barlow',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(14,14,14,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,34,0,0.25)}
+.logo{text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.15rem;color:#F0EDE8;letter-spacing:0.04em}
+.logo span{color:#CC2200}
+.back{font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#F0EDE8;text-decoration:none;opacity:0.5;transition:opacity 0.2s}
+.back:hover{opacity:1}
+
+/* HERO */
+.hero{padding:90px 1.5rem 0;max-width:1100px;margin:0 auto}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;padding:3rem 0 2rem}
+.hero-left{}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;border:1px solid rgba(204,34,0,0.5);padding:0.25rem 0.8rem;font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#CC2200;margin-bottom:1.2rem}
+.hero h1{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:clamp(2.2rem,4vw,3.5rem);line-height:0.95;text-transform:uppercase;margin-bottom:1rem}
+.hero h1 span{color:#CC2200}
+.hero-desc{font-size:0.9rem;opacity:0.6;line-height:1.7;margin-bottom:1.5rem;max-width:420px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:0.5rem}
+.htag{background:rgba(204,34,0,0.08);border:1px solid rgba(204,34,0,0.2);padding:0.25rem 0.7rem;font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#CC2200}
+.hero-right{background:#141414;border:1px solid rgba(204,34,0,0.2);padding:1.5rem}
+.hr-title{font-family:‘Barlow Condensed’,sans-serif;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:#CC2200;margin-bottom:1rem}
+.info-list{display:grid;gap:0.6rem}
+.info-item{display:flex;gap:0.8rem;align-items:flex-start}
+.info-dot{width:6px;height:6px;background:#CC2200;border-radius:50%;flex-shrink:0;margin-top:0.4rem}
+.info-text{font-size:0.83rem;opacity:0.7;line-height:1.5}
+.info-text strong{color:#F0EDE8;font-weight:500}
+.divider{border:none;border-top:1px solid rgba(240,237,232,0.06);margin:2rem 0}
+
+/* TIMER */
+.timer-section{max-width:1100px;margin:0 auto;padding:0 1.5rem 2rem}
+.ts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem}
+.ts-title{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em}
+.ts-sub{font-size:0.8rem;opacity:0.45;margin-top:0.15rem}
+.timer-card{background:#141414;border:1px solid rgba(204,34,0,0.2);padding:1.5rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.timer-display{text-align:center;min-width:140px}
+.td-num{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:5rem;line-height:1;color:#CC2200;letter-spacing:-0.02em;transition:color 0.3s}
+.td-num.done{color:#22cc64}
+.td-num.warning{color:#ffa500}
+.td-label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;margin-top:0.3rem}
+.timer-progress{flex:1;min-width:200px}
+.tp-bar-bg{height:8px;background:rgba(240,237,232,0.06);border-radius:4px;margin-bottom:1rem;overflow:hidden}
+.tp-bar-fill{height:100%;background:#CC2200;border-radius:4px;transition:width 0.5s linear;width:0%}
+.tp-bar-fill.done{background:#22cc64}
+.timer-btns{display:flex;gap:0.6rem;flex-wrap:wrap}
+.tbtn{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.2rem;border:none;cursor:pointer;transition:all 0.2s}
+.tbtn-start{background:#CC2200;color:white}
+.tbtn-start:hover{background:#E53010}
+.tbtn-reset{background:transparent;border:1px solid rgba(240,237,232,0.2);color:#F0EDE8;opacity:0.6}
+.tbtn-reset:hover{opacity:1}
+.timer-duration{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem}
+.timer-duration label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5}
+.timer-duration select{background:#1C1C1C;border:1px solid rgba(240,237,232,0.1);color:#F0EDE8;padding:0.3rem 0.6rem;font-family:‘Barlow Condensed’,sans-serif;font-size:0.85rem;font-weight:600;outline:none;appearance:none}
+.timer-status{font-size:0.82rem;opacity:0.5;font-style:italic}
+.timer-status.running{color:#ffa500;opacity:1}
+.timer-status.done{color:#22cc64;opacity:1}
+
+/* FORM */
+.form-section{max-width:1100px;margin:0 auto;padding:0 1.5rem 2rem}
+.section-header{margin-bottom:1.2rem}
+.sh-title{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em}
+.sh-sub{font-size:0.8rem;opacity:0.45;margin-top:0.15rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr}
+.field label{display:block;font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.45;margin-bottom:0.4rem}
+.field select,.field input[type=text],.field input[type=number]{width:100%;background:#141414;border:1px solid rgba(240,237,232,0.1);outline:none;padding:0.7rem 0.9rem;font-family:‘Barlow Condensed’,sans-serif;font-size:0.92rem;font-weight:600;color:#F0EDE8;transition:border-color 0.2s;appearance:none}
+.field select:focus,.field input:focus{border-color:#CC2200}
+.field input::placeholder{color:rgba(240,237,232,0.2);font-weight:400}
+
+/* REF BOX */
+.ref-box{background:#0E0E0E;border:1px solid rgba(204,34,0,0.3);padding:1.2rem 1.5rem;margin-bottom:1.2rem;display:none}
+.ref-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.ref-title-wrap{}
+.ref-veiculo{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.05em}
+.ref-injetor{font-size:0.8rem;opacity:0.5;margin-top:0.2rem}
+.ref-alerta{background:rgba(204,34,0,0.1);border:1px solid rgba(204,34,0,0.3);padding:0.4rem 0.8rem;font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#CC2200;align-self:flex-start}
+.ref-limits{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.8rem}
+.rl{display:flex;flex-direction:column;align-items:center;background:#1C1C1C;border:1px solid rgba(240,237,232,0.06);padding:0.6rem 1.2rem;min-width:100px;text-align:center}
+.rl-num{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.8rem;line-height:1}
+.rl-num.ok{color:#22cc64}
+.rl-num.warn{color:#ffa500}
+.rl-num.bad{color:#CC2200}
+.rl-label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-top:0.2rem}
+.ref-nota{font-size:0.8rem;opacity:0.55;line-height:1.6;border-top:1px solid rgba(240,237,232,0.05);padding-top:0.8rem}
+.ref-nota strong{color:#F0EDE8;font-weight:500}
+.ref-falhas{margin-top:0.8rem;border-top:1px solid rgba(240,237,232,0.05);padding-top:0.8rem}
+.rf-title{font-family:‘Barlow Condensed’,sans-serif;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#CC2200;margin-bottom:0.5rem}
+.rf-list{display:flex;flex-wrap:wrap;gap:0.4rem}
+.rf-tag{background:rgba(204,34,0,0.07);border:1px solid rgba(204,34,0,0.2);padding:0.2rem 0.55rem;font-size:0.78rem;opacity:0.85}
+
+/* INJETORES */
+.inj-section{background:#141414;border:1px solid rgba(240,237,232,0.07);padding:1.2rem;margin-bottom:1rem}
+.inj-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.inj-title{font-family:‘Barlow Condensed’,sans-serif;font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:#CC2200}
+.inj-tip{font-size:0.75rem;opacity:0.35}
+.inj-grid{display:grid;gap:0.5rem}
+.inj-row{display:grid;grid-template-columns:40px 1fr 100px auto;align-items:center;gap:0.8rem;background:#1C1C1C;border:1px solid rgba(240,237,232,0.06);padding:0.7rem 1rem;transition:border-color 0.3s}
+.inj-row.ok-row{border-color:rgba(34,204,100,0.2)}
+.inj-row.warn-row{border-color:rgba(255,165,0,0.2)}
+.inj-row.bad-row{border-color:rgba(204,34,0,0.3)}
+.inj-num{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.1rem;color:#CC2200;text-align:center}
+.inj-label{font-family:‘Barlow Condensed’,sans-serif;font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6}
+.inj-input{background:transparent;border:none;border-bottom:1px solid rgba(240,237,232,0.15);outline:none;padding:0.3rem 0;font-family:‘Barlow Condensed’,sans-serif;font-size:1.2rem;font-weight:900;color:#F0EDE8;width:100%;text-align:center;caret-color:#CC2200;transition:border-color 0.2s}
+.inj-input:focus{border-bottom-color:#CC2200}
+.inj-input::placeholder{color:rgba(240,237,232,0.15);font-weight:400;font-size:0.9rem}
+.inj-unit{font-size:0.72rem;opacity:0.35;font-family:‘Barlow Condensed’,sans-serif;white-space:nowrap;text-align:right}
+.inj-status-dot{width:10px;height:10px;border-radius:50%;background:rgba(240,237,232,0.1);transition:background 0.3s}
+.inj-status-dot.ok{background:#22cc64}
+.inj-status-dot.warn{background:#ffa500}
+.inj-status-dot.bad{background:#CC2200}
+
+.btn-calc{width:100%;background:#CC2200;border:none;color:white;padding:1.1rem;font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.1rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;margin-top:0.5rem;display:flex;align-items:center;justify-content:center;gap:0.8rem}
+.btn-calc:hover{background:#E53010}
+.btn-calc:disabled{opacity:0.25;cursor:not-allowed}
+
+/* RESULTADO */
+.result-section{max-width:1100px;margin:0 auto;padding:0 1.5rem 5rem;display:none}
+.rs-header{background:#141414;border:1px solid rgba(204,34,0,0.3);border-top:4px solid #CC2200;padding:1.5rem;margin-bottom:1rem}
+.rsh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.rsh-title{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;letter-spacing:0.05em}
+.rsh-badge{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.35rem 1rem;border:1px solid}
+.rsh-badge.aprovado{background:rgba(34,204,100,0.1);border-color:rgba(34,204,100,0.4);color:#22cc64}
+.rsh-badge.atencao{background:rgba(255,165,0,0.1);border-color:rgba(255,165,0,0.4);color:#ffa500}
+.rsh-badge.reprovado{background:rgba(204,34,0,0.15);border-color:#CC2200;color:#ff6b6b}
+.rsh-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem}
+.rm-item{border-left:2px solid rgba(204,34,0,0.3);padding-left:0.8rem}
+.rm-lbl{font-size:0.7rem;opacity:0.4;margin-bottom:0.15rem;font-family:‘Barlow Condensed’,sans-serif;text-transform:uppercase;letter-spacing:0.05em}
+.rm-val{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.9rem}
+.inj-results{display:grid;gap:0.5rem;margin-bottom:1rem}
+.ir{background:#141414;border:1px solid rgba(240,237,232,0.06);border-left:4px solid;padding:1rem 1.2rem;display:grid;grid-template-columns:50px 1fr 120px;align-items:center;gap:1rem}
+.ir.ok{border-left-color:#22cc64}
+.ir.atencao{border-left-color:#ffa500}
+.ir.reprovado{border-left-color:#CC2200}
+.ir-num{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.5rem;opacity:0.35;text-align:center}
+.ir-center{}
+.ir-name{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem}
+.ir-bar-wrap{height:5px;background:rgba(240,237,232,0.06);border-radius:3px;position:relative}
+.ir-bar{height:100%;border-radius:3px}
+.ir-bar.ok{background:#22cc64}
+.ir-bar.atencao{background:#ffa500}
+.ir-bar.reprovado{background:#CC2200}
+.ir-bar-line{position:absolute;top:-4px;height:13px;width:2px;background:rgba(240,237,232,0.2)}
+.ir-rec{font-size:0.78rem;opacity:0.55;margin-top:0.4rem;line-height:1.5}
+.ir-right{text-align:right}
+.ir-val{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:1.6rem;line-height:1}
+.ir-val.ok{color:#22cc64}
+.ir-val.atencao{color:#ffa500}
+.ir-val.reprovado{color:#CC2200}
+.ir-status{font-family:‘Barlow Condensed’,sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-top:0.2rem}
+.cards-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.stat-card{background:#141414;border:1px solid rgba(240,237,232,0.07);padding:1.2rem}
+.sc-lbl{font-family:‘Barlow Condensed’,sans-serif;font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:#CC2200;margin-bottom:0.8rem}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem}
+.sci-lbl{font-size:0.73rem;opacity:0.4;margin-bottom:0.15rem}
+.sci-val{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.95rem}
+.sci-val.good{color:#22cc64}
+.sci-val.warn{color:#ffa500}
+.sci-val.bad{color:#CC2200}
+.conclusao-card{background:#0E0E0E;border:1px solid rgba(204,34,0,0.2);padding:1.3rem;margin-bottom:1rem}
+.cc-lbl{font-family:‘Barlow Condensed’,sans-serif;font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:#CC2200;margin-bottom:0.7rem}
+.cc-text{font-size:0.87rem;opacity:0.78;line-height:1.75}
+.cc-fonte{font-size:0.75rem;opacity:0.35;margin-top:0.6rem;font-style:italic}
+.action-row{display:flex;gap:0.7rem;flex-wrap:wrap;margin-bottom:1rem}
+.btn-pdf{display:inline-flex;align-items:center;gap:0.5rem;background:#CC2200;color:white;border:none;padding:0.7rem 1.3rem;font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+.btn-pdf:hover{background:#E53010}
+.btn-wa{display:inline-flex;align-items:center;gap:0.5rem;background:#25D366;color:white;text-decoration:none;padding:0.7rem 1.3rem;font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;transition:background 0.2s}
+.btn-wa:hover{background:#1da851}
+.btn-reset{background:transparent;border:1px solid rgba(240,237,232,0.15);color:#F0EDE8;padding:0.7rem 1.2rem;font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;opacity:0.5;transition:opacity 0.2s}
+.btn-reset:hover{opacity:1}
+
+/* HISTORICO */
+.hist-section{max-width:1100px;margin:0 auto;padding:0 1.5rem 5rem}
+.hist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.8rem}
+.hist-title{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:0.08em}
+.hist-count{font-family:‘Barlow Condensed’,sans-serif;font-size:0.75rem;opacity:0.4;letter-spacing:0.08em}
+.hist-empty{text-align:center;padding:2rem;background:#141414;border:1px solid rgba(240,237,232,0.06);opacity:0.4;font-size:0.88rem}
+.hist-grid{display:grid;gap:0.5rem}
+.hist-item{background:#141414;border:1px solid rgba(240,237,232,0.06);border-left:3px solid;padding:0.9rem 1.2rem;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:1rem;cursor:pointer;transition:background 0.2s}
+.hist-item:hover{background:#1A1A1A}
+.hist-item.aprovado{border-left-color:#22cc64}
+.hist-item.atencao{border-left-color:#ffa500}
+.hist-item.reprovado{border-left-color:#CC2200}
+.hi-main{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.04em}
+.hi-sub{font-size:0.75rem;opacity:0.45;margin-top:0.15rem}
+.hi-status{font-family:‘Barlow Condensed’,sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase}
+.hi-status.aprovado{color:#22cc64}
+.hi-status.atencao{color:#ffa500}
+.hi-status.reprovado{color:#CC2200}
+.hi-date{font-size:0.75rem;opacity:0.35;font-family:‘Barlow Condensed’,sans-serif;white-space:nowrap}
+.btn-clear-hist{background:transparent;border:1px solid rgba(240,237,232,0.1);color:#F0EDE8;padding:0.35rem 0.8rem;font-family:‘Barlow Condensed’,sans-serif;font-weight:600;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;opacity:0.4;transition:opacity 0.2s}
+.btn-clear-hist:hover{opacity:1}
+
+.wf{position:fixed;bottom:2rem;right:2rem;z-index:200;text-decoration:none}
+.wb{width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:transform 0.2s;position:relative}
+.wb:hover{transform:scale(1.1)}
+.wb::before{content:’’;position:absolute;width:58px;height:58px;border-radius:50%;border:2px solid #25D366;animation:wp 2s ease-out infinite}
+@keyframes wp{0%{transform:scale(1);opacity:0.8}100%{transform:scale(1.6);opacity:0}}
+footer{border-top:1px solid rgba(240,237,232,0.05);padding:2rem;text-align:center;font-size:0.78rem;opacity:0.3;font-family:‘Barlow Condensed’,sans-serif;letter-spacing:0.04em}
+
+@media print{
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+nav,.wf,footer,.timer-section,.hist-section,.action-row,.hero,.divider,.form-section{display:none!important}
+body{background:#1C1C1C!important;color:#F0EDE8!important}
+.result-section{display:block!important;padding:0;margin:0}
+.print-header{display:block!important}
+.ir{page-break-inside:avoid}
+.cards-row{page-break-inside:avoid}
+.conclusao-card{page-break-inside:avoid}
+}
+.print-header{display:none;text-align:center;padding:1rem 0 1.5rem;border-bottom:3px solid #CC2200;margin-bottom:1.5rem}
+.print-header h2{font-family:‘Barlow Condensed’,sans-serif;font-weight:900;font-size:2rem;color:#CC2200;letter-spacing:0.1em}
+.print-header p{font-size:0.82rem;color:#555;margin-top:0.3rem}
+
+@media(max-width:768px){
+.hero-inner{grid-template-columns:1fr}
+.hero-right{display:none}
+.form-grid,.form-grid.three{grid-template-columns:1fr}
+.rsh-meta{grid-template-columns:1fr 1fr}
+.cards-row{grid-template-columns:1fr}
+.ir{grid-template-columns:40px 1fr;grid-template-rows:auto auto}
+.ir-right{grid-column:2;text-align:left}
+.timer-card{flex-direction:column;gap:1rem}
+.sc-grid{grid-template-columns:1fr}
+}
+</style>
+
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">SNX DIESEL<span>LAB</span></a>
+  <a href="index.html" class="back">← Voltar ao site</a>
+</nav>
+
+<!-- HERO -->
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge">● Ferramenta Técnica Profissional</div>
+      <h1>CALCULADORA DE<br><span>RETORNO</span><br>DE INJETORES</h1>
+      <p class="hero-desc">Ferramenta especializada para diagnóstico de retorno de combustível em injetores Common Rail. Insira os valores medidos na bancada e receba o laudo técnico automático com limites baseados em dados do fabricante.</p>
+      <div class="hero-tags">
+        <span class="htag">Timer 60s integrado</span>
+        <span class="htag">Limites por modelo</span>
+        <span class="htag">Laudo em PDF</span>
+        <span class="htag">Histórico de laudos</span>
+        <span class="htag">Gratuito</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hr-title">● Como usar a ferramenta</div>
+      <div class="info-list">
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>1. Selecione o veículo</strong> — marca, modelo e ano para carregar os limites técnicos do fabricante</div></div>
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>2. Inicie o timer</strong> — use o contador de 60 segundos integrado para padronizar o teste</div></div>
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>3. Insira os volumes</strong> — anote o retorno de cada injetor em ml coletado durante o teste</div></div>
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>4. Gere o laudo</strong> — resultado automático com status, gráfico e conclusão técnica</div></div>
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>Condição do teste:</strong> motor em marcha lenta (idle), temperatura <strong style="color:#CC2200">70–90°C</strong> — sempre com motor quente</div></div>
+        <div class="info-item"><div class="info-dot"></div><div class="info-text"><strong>Atenção:</strong> teste a frio pode mascarar falhas e gerar resultado incorreto</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- TIMER -->
+
+<div class="timer-section">
+  <div class="ts-header">
+    <div>
+      <div class="ts-title">⏱ Contador de Teste</div>
+      <div class="ts-sub">Motor deve estar quente (70–90°C) — 60 segundos em marcha lenta</div>
+    </div>
+  </div>
+  <div class="timer-card">
+    <div class="timer-display">
+      <div class="td-num" id="timerNum">60</div>
+      <div class="td-label">segundos restantes</div>
+    </div>
+    <div class="timer-progress">
+      <div class="timer-duration">
+        <label>Duração do teste:</label>
+        <select id="timerDur" onchange="resetTimer()">
+          <option value="60">60 segundos</option>
+          <option value="90">90 segundos</option>
+          <option value="120">120 segundos</option>
+        </select>
+      </div>
+      <div class="tp-bar-bg"><div class="tp-bar-fill" id="timerBar"></div></div>
+      <div class="timer-btns">
+        <button class="tbtn tbtn-start" id="btnTimer" onclick="toggleTimer()">▶ Iniciar</button>
+        <button class="tbtn tbtn-reset" onclick="resetTimer()">↺ Resetar</button>
+      </div>
+      <div class="timer-status" id="timerStatus">Pronto para iniciar o teste</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FORM -->
+
+<div class="form-section" id="formSection">
+  <div class="section-header">
+    <div class="sh-title">📋 Dados do Teste</div>
+    <div class="sh-sub">Preencha as informações do veículo e os valores medidos</div>
+  </div>
+
+  <!-- Veículo -->
+
+  <div class="form-grid" style="margin-bottom:0.8rem">
+    <div class="field">
+      <label>Marca</label>
+      <select id="marca" onchange="updateModelos()">
+        <option value="">Selecione a marca...</option>
+        <option>Toyota</option>
+        <option>Volkswagen</option>
+        <option>Chevrolet</option>
+        <option>Ford</option>
+        <option>Mitsubishi</option>
+        <option>Fiat</option>
+        <option>Mercedes-Benz</option>
+        <option>Renault</option>
+        <option>Nissan</option>
+        <option>Outro</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Modelo</label>
+      <select id="modelo" onchange="updateSpecs()">
+        <option value="">Selecione a marca primeiro...</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-grid three" style="margin-bottom:1rem">
+    <div class="field">
+      <label>Ano do veículo</label>
+      <input type="number" id="ano" placeholder="Ex: 2019" min="2000" max="2025"/>
+    </div>
+    <div class="field">
+      <label>Quilometragem</label>
+      <input type="number" id="km" placeholder="Ex: 150000"/>
+    </div>
+    <div class="field">
+      <label>Placa (opcional)</label>
+      <input type="text" id="placa" placeholder="Ex: ABC-1D23" style="text-transform:uppercase"/>
+    </div>
+  </div>
+  <div class="form-grid" style="margin-bottom:1.5rem">
+    <div class="field">
+      <label>Nome do cliente (opcional)</label>
+      <input type="text" id="cliente" placeholder="Ex: João Silva"/>
+    </div>
+    <div class="field">
+      <label>Mecânico / Responsável (opcional)</label>
+      <input type="text" id="mecanico" placeholder="Ex: Pedro — Oficina XYZ"/>
+    </div>
+  </div>
+
+  <!-- REF BOX -->
+
+  <div class="ref-box" id="refBox">
+    <div class="ref-top">
+      <div class="ref-title-wrap">
+        <div class="ref-veiculo" id="refVeiculo">—</div>
+        <div class="ref-injetor" id="refInjetor">—</div>
+      </div>
+      <div class="ref-alerta" id="refAlerta">Atenção especial</div>
+    </div>
+    <div class="ref-limits" id="refLimits"></div>
+    <div class="ref-nota" id="refNota"></div>
+    <div class="ref-falhas" id="refFalhas"></div>
+  </div>
+
+  <!-- Injetores -->
+
+  <div class="inj-section" id="injSection" style="display:none">
+    <div class="inj-header">
+      <div class="inj-title">● Retorno por Injetor (ml / 60s)</div>
+      <div class="inj-tip" style="color:#ffa500">⚠ Motor quente 70–90°C</div>
+    </div>
+    <div class="inj-grid" id="injGrid"></div>
+  </div>
+
+  <button class="btn-calc" id="btnCalc" onclick="calcular()" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Gerar Laudo Técnico
+  </button>
+</div>
+
+<!-- RESULTADO -->
+
+<div class="result-section" id="resultSection">
+  <div class="print-header">
+    <h2>SNX DIESEL LAB</h2>
+    <p>Laudo Técnico de Retorno de Injetores · snx-diesel-lab.vercel.app/retorno.html</p>
+  </div>
+
+  <div class="rs-header">
+    <div class="rsh-top">
+      <div class="rsh-title" id="rsTitle">LAUDO TÉCNICO</div>
+      <div class="rsh-badge" id="rsBadge">—</div>
+    </div>
+    <div class="rsh-meta" id="rsMeta"></div>
+  </div>
+
+  <div class="action-row">
+    <button class="btn-pdf" onclick="window.print()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir / PDF
+    </button>
+    <a class="btn-wa" id="btnWa" href="#" target="_blank">
+      <svg viewBox="0 0 32 32" fill="white" width="15" height="15"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm7.27 21.363c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1a7 7 0 0 1-2.06-1.27 7.7 7.7 0 0 1-1.42-1.77c-.15-.26 0-.4.11-.53s.26-.3.39-.46a1.8 1.8 0 0 0 .26-.43.48.48 0 0 0 0-.46c-.07-.13-.58-1.4-.8-1.92s-.42-.44-.58-.45h-.49a.94.94 0 0 0-.68.32A2.87 2.87 0 0 0 12 17a5 5 0 0 0 1.05 2.65 11.45 11.45 0 0 0 4.38 3.87c.49.21.96.37 1.46.54a3.52 3.52 0 0 0 1.61.1 2.64 2.64 0 0 0 1.73-1.22 2.14 2.14 0 0 0 .15-1.22c-.07-.1-.24-.18-.5-.3z"/></svg>
+      Enviar por WhatsApp
+    </a>
+    <button class="btn-reset" onclick="resetar()">↺ Novo Laudo</button>
+  </div>
+
+  <div class="inj-results" id="injResults"></div>
+  <div class="cards-row">
+    <div class="stat-card" id="statsCard"></div>
+    <div class="stat-card" id="perdaCard"></div>
+  </div>
+  <div class="conclusao-card" id="conclusaoCard"></div>
+</div>
+
+<hr class="divider">
+
+<!-- HISTORICO -->
+
+<div class="hist-section" id="histSection">
+  <div class="hist-header">
+    <div>
+      <div class="hist-title">📂 Histórico de Laudos</div>
+      <div class="hist-count" id="histCount">0 laudos salvos</div>
+    </div>
+    <button class="btn-clear-hist" onclick="limparHist()">Limpar histórico</button>
+  </div>
+  <div id="histList"></div>
+</div>
+
+<footer>© 2026 SNX Diesel Lab · Ferramenta Técnica Profissional · snx-diesel-lab.vercel.app</footer>
+
+<a href="https://wa.me/5567996342998?text=Olá!%20Gostaria%20de%20uma%20consultoria%20em%20injeção%20eletrônica%20diesel." class="wf" target="_blank" rel="noopener">
+  <div class="wb"><svg viewBox="0 0 32 32" fill="white" width="28" height="28"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.27 13.27 0 0 1-6.784-1.858l-.486-.29-5.002 1.193 1.224-4.874-.317-.5A13.267 13.267 0 0 1 2.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.27-9.97c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1-.398-.2-1.682-.62-3.204-1.977-1.184-1.057-1.983-2.363-2.215-2.76-.232-.398-.025-.613.174-.811.179-.178.398-.465.597-.697.2-.232.265-.398.398-.664.133-.265.066-.497-.033-.697-.1-.2-.896-2.16-1.228-2.957-.323-.776-.651-.67-.896-.683-.232-.012-.497-.015-.763-.015s-.697.1-1.062.497c-.365.398-1.394 1.362-1.394 3.322s1.427 3.854 1.626 4.12c.2.265 2.808 4.287 6.803 6.014.95.41 1.692.655 2.27.838.953.303 1.821.26 2.507.158.765-.114 2.355-.963 2.687-1.893.332-.93.332-1.727.232-1.893-.1-.166-.365-.265-.763-.465z"/></svg></div>
+</a>
+<script>
+// ===================== DADOS TÉCNICOS =====================
+// Fonte: manuais técnicos Denso, Bosch, dados de bancada Common Rail
+// Valores em ml/60s (marcha lenta, temperatura de operação normal)
+const VEICULOS={
+  Toyota:[
+    {id:'hilux_05_11',label:'Hilux 3.0 1KD-FTV (2005–2011)',cil:4,
+     injetor:'Denso solenoide 23670-0L090',bomba:'Denso HP3',pressao:'1600 bar',
+     limitOk:20,limitAtencao:30,limitMax:55,
+     alerta:'Injetor solenoide — tolerância moderada',
+     nota:'Injetores solenoide Denso de primeira geração. Robustos e com boa vida útil. Retorno até 20ml/60s considerado normal em marcha lenta. Acima de 30ml indica desgaste significativo com impacto na pressão do rail. Verifique também a válvula SCV da bomba HP3.',
+     falhas:['Retorno excessivo por desgaste interno','Dificuldade de partida a quente','Baixa pressão no rail (P0087)','Desgaste da bomba HP3 acima de 200.000 km','Contaminação do filtro de combustível']},
+    {id:'hilux_12_15',label:'Hilux 3.0 1KD-FTV Piezo (2012–2015)',cil:4,
+     injetor:'Denso piezo 23670-3270',bomba:'Denso HP3',pressao:'1800 bar',
+     limitOk:12,limitAtencao:20,limitMax:40,
+     alerta:'Injetor PIEZO — distinguir falha elétrica de mecânica',
+     nota:'Injetores piezo Denso com sensor interno de pressão/temperatura. DOIS tipos de falha: 1) Falha elétrica — retorno normal mas código de injetor ativo (P0201-P0204), falha de cilindro ou resistência fora do padrão: indica curto interno ou problema elétrico, NÃO é desgaste mecânico. 2) Falha mecânica — retorno acima de 12ml: indica desgaste interno. Sensíveis a combustível contaminado ou com água.',
+     falhas:['Falha elétrica: curto interno ou resistência fora do padrão','Falha mecânica: retorno alto por desgaste interno','Sensibilidade extrema a água no combustível','Falhas intermitentes (P0201-P0204)','Retorno desigual entre cilindros']},
+    {id:'hilux_16_24',label:'Hilux 2.8 1GD-FTV (2016–2024)',cil:4,
+     injetor:'Denso solenoide G4',bomba:'Denso HP5',pressao:'2500 bar',
+     limitOk:8,limitAtencao:15,limitMax:30,
+     alerta:'Sistema 2500 bar — limite muito restrito',
+     nota:'Sistema de alta pressão com bomba HP5 e pressão de 2500 bar. Tolerância mínima de retorno. Acima de 8ml já merece atenção. Falhas frequentes na válvula SCV. DPF presente nos modelos Euro 5/6. Injetores G4 com código IMA/QR obrigatório após substituição.',
+     falhas:['Falha na válvula SCV (P0088/P0090)','DPF saturado em uso urbano (P2002)','Sensor de pressão do rail (P0191-P0193)','Código IMA não programado após troca de injetor','Retorno acima do limite por desgaste precoce']},
+    {id:'sw4',label:'SW4 / Land Cruiser 2.8 (2016–2024)',cil:4,
+     injetor:'Denso solenoide G4',bomba:'Denso HP5',pressao:'2500 bar',
+     limitOk:8,limitAtencao:15,limitMax:30,
+     alerta:'Sistema 2500 bar — mesmo motor do Hilux 2.8',
+     nota:'Mesmo sistema do Hilux 2.8 1GD-FTV com bomba HP5. Limites idênticos. Veículo mais pesado pode apresentar desgaste mais precoce em uso severo.',
+     falhas:['Falha na válvula SCV','DPF saturado','Sensor de pressão do rail','Retorno excessivo em alta quilometragem']},
+  ],
+  Volkswagen:[
+    {id:'amarok_20_ea189',label:'Amarok 2.0 TDI EA189 (2010–2016)',cil:4,
+     injetor:'Bosch solenoide CRI2.2 / CRI2.16',bomba:'Bosch CP4.1',pressao:'1800 bar',
+     limitOk:18,limitAtencao:28,limitMax:50,
+     alerta:'CP4 sensível a diesel de baixa qualidade',
+     nota:'Bomba Bosch CP4.1 com histórico de desgaste prematuro em diesel brasileiro de baixa qualidade. Quando falha, lança fragmentos metálicos por todo o sistema. Verificar sempre limalha metálica no filtro. Injetores CRI2.2/CRI2.16 robustos quando sistema limpo.',
+     falhas:['Desgaste e travamento da bomba CP4 (P0087)','Contaminação do sistema por limalha metálica','Baixa pressão no rail em aceleração','Entupimento dos injetores','Falha após posto com diesel adulterado']},
+    {id:'amarok_20_ea288',label:'Amarok 2.0 TDI EA288 (2017–2024)',cil:4,
+     injetor:'Bosch solenoide',bomba:'Bosch CP4.2',pressao:'2000 bar',
+     limitOk:16,limitAtencao:25,limitMax:45,
+     alerta:'EGR e DPF presentes — verificar regeneração',
+     nota:'Motor EA288 com Euro 6. Válvula EGR com tendência a acúmulo de carbono. DPF presente — uso urbano causa saturação frequente. Bomba CP4.2 levemente mais robusta mas ainda sensível a diesel ruim.',
+     falhas:['EGR entupida por carbono (P0401)','DPF saturado em uso urbano (P2002)','Falha em sensores de pressão','Pressão irregular no rail','Contaminação CP4']},
+    {id:'amarok_v6',label:'Amarok 3.0 V6 TDI (2018–2024)',cil:6,
+     injetor:'Bosch piezoelétrico',bomba:'Bosch CP4',pressao:'2200 bar',
+     limitOk:12,limitAtencao:20,limitMax:35,
+     alerta:'6 cilindros — verificar equilíbrio entre todos',
+     nota:'Motor V6 com injetores piezoelétricos Bosch. Com 6 cilindros, o equilíbrio é crítico — desequilíbrio acima de 5ml entre cilindros já é preocupante. Pressão de 2200 bar. Custo de manutenção elevado.',
+     falhas:['Desequilíbrio entre injetores (verificar todos os 6)','DPF com saturação (P2002/P2003)','Alto custo de reparo dos piezo','Falha na bomba CP4','Problemas de regeneração DPF']},
+  ],
+  Chevrolet:[
+    {id:'s10_mwm',label:'S10 2.8 MWM Common Rail (2005–2011)',cil:4,
+     injetor:'Bosch solenoide 0445110231',bomba:'Bosch CP3',pressao:'1600 bar',
+     limitOk:22,limitAtencao:35,limitMax:60,
+     alerta:'Sistema CP3 — mais robusto que o CP4',
+     nota:'Motor MWM com sistema Bosch CP3, mais robusto que o CP4 posterior. Problemas mais comuns por desgaste natural e entupimento dos injetores por uso de combustível de baixa qualidade.',
+     falhas:['Entupimento dos injetores (0445110231)','Filtro de combustível saturado','Desgaste da bomba CP3 em alta km','Sensor de pressão do rail','Baixa pressão moderada']},
+    {id:'s10_12_13',label:'S10 2.8 Duramax CTDi (2012–2013)',cil:4,
+     injetor:'Bosch solenoide 0445110424',bomba:'Bosch CP4.1',pressao:'1800 bar',
+     limitOk:18,limitAtencao:28,limitMax:45,
+     alerta:'CP4.1 — histórico de falha no Brasil',
+     nota:'Versão com bomba Bosch CP4.1 e injetor 0445110424. Mesma vulnerabilidade do Amarok EA189. Ao detectar retorno alto, verificar primeiro se há limalha no filtro — indica comprometimento da CP4.',
+     falhas:['Falha da bomba CP4.1 (P0087/P0628)','Contaminação por limalha metálica','Dificuldade de partida após falha','Perda de pressão no rail','Alto custo de reparo']},
+    {id:'s10_14_24',label:'S10 2.8 Duramax CTDi (2014–2024)',cil:4,
+     injetor:'Denso solenoide 12640381',bomba:'Denso HP3',pressao:'2000 bar',
+     limitOk:15,limitAtencao:25,limitMax:40,
+     alerta:'Sistema Denso — diagnóstico diferente da versão CP4',
+     nota:'Versão com sistema Denso HP3 e injetor 12640381. NÃO usa bomba CP4 — sem risco de limalha metálica. Diagnóstico segue lógica Denso: verificar válvula SCV, retorno dos injetores e pressão do rail. Mais confiável que a versão CP4.',
+     falhas:['Retorno excessivo por desgaste','Válvula SCV com defeito','Sensor de pressão do rail','Filtro de combustível saturado','Dificuldade de partida a frio']},
+  ],
+  Ford:[
+    {id:'ranger_32',label:'Ranger 3.2 TDCi (2013–2024)',cil:5,
+     injetor:'Siemens/Continental VDO solenoide',bomba:'Continental A2C59517043',pressao:'1800 bar',
+     limitOk:15,limitAtencao:25,limitMax:40,
+     alerta:'5 cilindros — verificar equilíbrio e cilindro 5',
+     nota:'Motor 5 cilindros com sistema Continental/Siemens VDO — NÃO usa bomba CP4. Comportamento diferente do CP4: falhas são progressivas, sem limalha metálica, sem travamento brusco. Verificar equilíbrio entre todos os 5 injetores. Falhas comuns: retorno elevado progressivo, pressão instável e falhas intermitentes.',
+     falhas:['Retorno elevado progressivo nos injetores','Pressão instável no rail','Falha intermitente sem causa aparente','Desequilíbrio entre injetores (cilindro 5 frequente)','Filtro de combustível entupido']},
+    {id:'ranger_22',label:'Ranger 2.2 TDCi (2013–2024)',cil:4,
+     injetor:'Siemens/Continental VDO solenoide',bomba:'Continental',pressao:'1800 bar',
+     limitOk:18,limitAtencao:25,limitMax:40,
+     alerta:'Sistema Continental — não usa CP4',
+     nota:'Motor 2.2 com sistema Continental/Siemens VDO. Não usa bomba CP4. Sistema mais simples e robusto que o 3.2. Problemas mais comuns por desgaste natural.',
+     falhas:['Desgaste natural dos injetores','Filtro de combustível entupido','Baixa pressão moderada no rail','Falha em sensor de pressão','Dificuldade de partida a frio']},
+  ],
+  Mitsubishi:[
+    {id:'l200_32',label:'L200 Triton 3.2 DID 4M41 (2008–2021)',cil:4,
+     injetor:'Denso solenoide',bomba:'Denso HP3',pressao:'1600 bar',
+     limitOk:20,limitAtencao:32,limitMax:55,
+     alerta:'Motor robusto — desgaste gradual',
+     nota:'Motor 4M41 com sistema Denso HP3 robusto. Problemas mais comuns por desgaste natural em alta quilometragem. Marcha lenta instável frequentemente relacionada a retorno desigual entre injetores.',
+     falhas:['Retorno alto por desgaste natural','Marcha lenta instável','Dificuldade de partida','Baixa pressão no rail em alta km','Desgaste da bomba HP3 acima de 250.000 km']},
+    {id:'pajero_32',label:'Pajero Full / Dakar 3.2 DID (2008–2021)',cil:4,
+     injetor:'Denso solenoide',bomba:'Denso HP3',pressao:'1600 bar',
+     limitOk:20,limitAtencao:32,limitMax:55,
+     alerta:'Mesmo sistema do L200 Triton 4M41',
+     nota:'Sistema idêntico ao L200 Triton 4M41. Limites iguais. Veículo mais pesado pode demandar manutenção mais frequente.',
+     falhas:['Retorno excessivo por desgaste','Falha em marcha lenta','Baixa pressão no rail','Dificuldade de partida']},
+  ],
+  Fiat:[
+    {id:'ducato_23',label:'Ducato 2.3 Multijet II (2006–2024)',cil:4,
+     injetor:'Bosch solenoide',bomba:'Bosch CP1H/CP3',pressao:'1800 bar',
+     limitOk:22,limitAtencao:35,limitMax:60,
+     alerta:'Tendência a entupimento — verificar bicos',
+     nota:'Injetores com tendência a entupimento por depósito de carbono em uso urbano. Sistema CP1H/CP3 robusto. Verificar se o problema é retorno excessivo ou injetor entupido — sintomas semelhantes mas causas opostas.',
+     falhas:['Entupimento de bicos por depósito de carbono','Sensor de pressão do rail (P0191)','Problemas de partida','EGR entupida em modelos mais novos']},
+  ],
+  'Mercedes-Benz':[
+    {id:'sprinter_bosch',label:'Sprinter 2.2 CDI Bosch (2013–2024)',cil:4,
+     injetor:'Bosch 0445110189',bomba:'Bosch 0445010024',pressao:'1800 bar',
+     limitOk:18,limitAtencao:25,limitMax:40,
+     alerta:'Identificar versão Bosch ou Delphi antes do teste',
+     nota:'Versão com injetor Bosch 0445110189 e bomba 0445010024. DPF presente nos modelos Euro 5/6. Falhas elétricas frequentes nos conectores dos injetores por vibração.',
+     falhas:['DPF saturado (P2002/P2003)','Falhas elétricas nos conectores','Sensor de pressão do rail','Entupimento de injetores','Problemas de regeneração DPF']},
+    {id:'sprinter_delphi',label:'Sprinter 2.2 CDI Delphi (2013–2024)',cil:4,
+     injetor:'Delphi 28342997',bomba:'A6510700601',pressao:'2000 bar',
+     limitOk:12,limitAtencao:18,limitMax:30,
+     alerta:'Delphi — limite mais restrito, 2000 bar',
+     nota:'Versão com injetor Delphi 28342997 e bomba A6510700601. Pressão mais alta (2000 bar) e limite de retorno mais restrito que a versão Bosch. Diagnosticar corretamente a versão antes de comparar com os limites.',
+     falhas:['DPF saturado','Alto custo dos injetores Delphi','Sensor de pressão do rail','Falhas elétricas nos conectores','Problemas de regeneração']},
+  ],
+  Renault:[
+    {id:'master_23',label:'Master 2.3 dCi (2010–2024)',cil:4,
+     injetor:'Bosch/Delphi solenoide',bomba:'Bosch/Delphi',pressao:'1600 bar',
+     limitOk:20,limitAtencao:32,limitMax:55,
+     alerta:'Verificar fabricante do injetor (Bosch ou Delphi)',
+     nota:'Sistema misto — dependendo do ano pode ter injetores Bosch ou Delphi. Identificar o fabricante antes de comparar os limites. EGR com tendência a acúmulo de carbono.',
+     falhas:['Identificar fabricante antes do diagnóstico','EGR entupida','Retorno excessivo por desgaste','Sensor de pressão rail']},
+  ],
+  Nissan:[
+    {id:'frontier_25',label:'Frontier 2.5 YD25 (2008–2021)',cil:4,
+     injetor:'Denso solenoide',bomba:'Denso HP3',pressao:'1600 bar',
+     limitOk:20,limitAtencao:32,limitMax:55,
+     alerta:'Sistema Denso HP3 — semelhante ao L200',
+     nota:'Motor YD25 com sistema Denso HP3. Robusto e confiável. Problemas mais comuns por desgaste natural em alta quilometragem. Retorno desigual entre injetores causa marcha lenta instável.',
+     falhas:['Retorno excessivo em alta km','Marcha lenta instável','Dificuldade de partida a frio','Desgaste da bomba HP3','Sensor de pressão rail (P0191)']},
+  ],
+  Outro:[
+    {id:'outro_cr4',label:'Outro diesel 4 cil. Common Rail',cil:4,
+     injetor:'Variável (Bosch/Denso/Delphi/Continental)',bomba:'Variável',pressao:'1600–2000 bar',
+     limitOk:20,limitAtencao:30,limitMax:55,
+     alerta:'Confirme os limites do fabricante',
+     nota:'Valores de referência genéricos. Confirme sempre os limites específicos do fabricante e modelo antes de emitir conclusão definitiva.',
+     falhas:['Verificar manual técnico específico do modelo','Identificar tipo de injetor e bomba','Confirmar limites com o fabricante']},
+    {id:'outro_cr6',label:'Outro diesel 6 cil. Common Rail',cil:6,
+     injetor:'Variável (Bosch/Denso/Delphi)',bomba:'Variável',pressao:'1800–2200 bar',
+     limitOk:18,limitAtencao:28,limitMax:50,
+     alerta:'6 cilindros — verificar equilíbrio de todos',
+     nota:'Valores genéricos para 6 cilindros. O equilíbrio entre todos os injetores é especialmente crítico.',
+     falhas:['Verificar equilíbrio entre todos os 6 cilindros','Confirmar limites do fabricante']},
+  ]
+};
+
+// ===================== TIMER =====================
+let timerInterval=null;
+let timerRunning=false;
+let timerTotal=60;
+let timerLeft=60;
+
+function toggleTimer(){
+  initAudio();
+  if(timerRunning){
+    clearInterval(timerInterval);
+    timerRunning=false;
+    document.getElementById('btnTimer').textContent='▶ Retomar';
+    document.getElementById('timerStatus').textContent='Timer pausado';
+    document.getElementById('timerStatus').className='timer-status';
+  } else {
+    if(timerLeft<=0) resetTimer();
+    timerRunning=true;
+    document.getElementById('btnTimer').textContent='⏸ Pausar';
+    document.getElementById('timerStatus').textContent='Teste em andamento — colete o combustível de retorno...';
+    document.getElementById('timerStatus').className='timer-status running';
+    timerInterval=setInterval(tickTimer,1000);
+  }
+}
+
+function tickTimer(){
+  timerLeft--;
+  const pct=((timerTotal-timerLeft)/timerTotal)*100;
+  document.getElementById('timerBar').style.width=pct+'%';
+  const num=document.getElementById('timerNum');
+  num.textContent=timerLeft;
+  if(timerLeft<=10&&timerLeft>0){num.className='td-num warning'}
+  if(timerLeft<=0){
+    clearInterval(timerInterval);
+    timerRunning=false;
+    num.textContent='PRONTO';
+    num.className='td-num done';
+    document.getElementById('timerBar').className='tp-bar-fill done';
+    document.getElementById('timerBar').style.width='100%';
+    document.getElementById('btnTimer').textContent='▶ Novo teste';
+    document.getElementById('timerStatus').textContent='Teste concluído! Anote os volumes e insira abaixo.';
+    document.getElementById('timerStatus').className='timer-status done';
+    playBeep();
+  }
+}
+
+function resetTimer(){
+  clearInterval(timerInterval);
+  timerRunning=false;
+  timerTotal=parseInt(document.getElementById('timerDur').value);
+  timerLeft=timerTotal;
+  document.getElementById('timerNum').textContent=timerTotal;
+  document.getElementById('timerNum').className='td-num';
+  document.getElementById('timerBar').style.width='0%';
+  document.getElementById('timerBar').className='tp-bar-fill';
+  document.getElementById('btnTimer').textContent='▶ Iniciar';
+  document.getElementById('timerStatus').textContent='Pronto para iniciar o teste';
+  document.getElementById('timerStatus').className='timer-status';
+}
+
+let audioCtx=null;
+
+function initAudio(){
+  if(!audioCtx){
+    try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+  }
+  if(audioCtx&&audioCtx.state==='suspended'){audioCtx.resume();}
+}
+
+function playBeep(){
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    
+    const beepAt=(delay)=>{
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type='square';
+      osc.frequency.value=880;
+      gain.gain.setValueAtTime(0.5,audioCtx.currentTime+delay);
+      gain.gain.setValueAtTime(0,audioCtx.currentTime+delay+0.2);
+      osc.start(audioCtx.currentTime+delay);
+      osc.stop(audioCtx.currentTime+delay+0.3);
+    };
+    beepAt(0);
+    beepAt(0.35);
+    beepAt(0.7);
+  }catch(e){
+    // Fallback: vibração no celular
+    if(navigator.vibrate){navigator.vibrate([200,100,200,100,400]);}
+  }
+}
+
+// ===================== FORM =====================
+let specAtual=null;
+
+function updateModelos(){
+  const marca=document.getElementById('marca').value;
+  const sel=document.getElementById('modelo');
+  sel.innerHTML='<option value="">Selecione o modelo...</option>';
+  if(VEICULOS[marca]){
+    VEICULOS[marca].forEach(v=>{
+      const o=document.createElement('option');
+      o.value=v.id;o.textContent=v.label;
+      sel.appendChild(o);
+    });
+  }
+  specAtual=null;
+  document.getElementById('refBox').style.display='none';
+  document.getElementById('injSection').style.display='none';
+  document.getElementById('btnCalc').disabled=true;
+}
+
+function updateSpecs(){
+  const marca=document.getElementById('marca').value;
+  const modeloId=document.getElementById('modelo').value;
+  if(!marca||!modeloId)return;
+  const spec=(VEICULOS[marca]||[]).find(v=>v.id===modeloId);
+  if(!spec)return;
+  specAtual=spec;
+
+  // Ref box
+  document.getElementById('refBox').style.display='block';
+  document.getElementById('refVeiculo').textContent=spec.label;
+  document.getElementById('refInjetor').textContent=spec.injetor+' · '+spec.bomba+' · '+spec.pressao;
+  document.getElementById('refAlerta').textContent=spec.alerta;
+  document.getElementById('refLimits').innerHTML=
+    '<div class="rl"><div class="rl-num ok">'+spec.limitOk+'</div><div class="rl-label">OK (ml/60s)</div></div>'+
+    '<div class="rl"><div class="rl-num warn">'+spec.limitAtencao+'</div><div class="rl-label">Atenção (ml/60s)</div></div>'+
+    '<div class="rl"><div class="rl-num bad">'+spec.limitMax+'</div><div class="rl-label">Crítico (ml/60s)</div></div>';
+  document.getElementById('refNota').innerHTML='<strong>Nota técnica:</strong> '+spec.nota;
+  document.getElementById('refFalhas').innerHTML=
+    '<div class="rf-title">● Falhas mais frequentes neste modelo</div>'+
+    '<div class="rf-list">'+spec.falhas.map(f=>'<span class="rf-tag">'+f+'</span>').join('')+'</div>';
+
+  // Injetores
+  document.getElementById('injSection').style.display='block';
+  let html='';
+  for(let i=1;i<=spec.cil;i++){
+    html+='<div class="inj-row" id="ir'+i+'">'+
+      '<div class="inj-num">'+i+'</div>'+
+      '<div class="inj-label">Injetor '+i+' — Cil. '+i+'</div>'+
+      '<input type="number" class="inj-input" id="inj'+i+'" placeholder="0.0" min="0" max="999" step="0.5" oninput="onInjChange('+i+')"/>'+
+      '<div class="inj-unit">ml/60s</div>'+
+    '</div>';
+  }
+  document.getElementById('injGrid').innerHTML=html;
+  document.getElementById('btnCalc').disabled=true;
+  document.getElementById('injSection').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function onInjChange(n){
+  if(!specAtual)return;
+  const v=parseFloat(document.getElementById('inj'+n).value)||0;
+  const row=document.getElementById('ir'+n);
+  row.classList.remove('ok-row','warn-row','bad-row');
+  if(v>0){
+    if(v<=specAtual.limitOk)row.classList.add('ok-row');
+    else if(v<=specAtual.limitAtencao)row.classList.add('warn-row');
+    else row.classList.add('bad-row');
+  }
+  // Check all filled
+  let ok=true;
+  for(let i=1;i<=specAtual.cil;i++){
+    const inp=document.getElementById('inj'+i);
+    if(!inp||inp.value==='')ok=false;
+  }
+  document.getElementById('btnCalc').disabled=!ok;
+}
+
+function getStatus(v,spec){
+  if(v<=spec.limitOk)return'ok';
+  if(v<=spec.limitAtencao)return'atencao';
+  return'reprovado';
+}
+
+// ===================== CALCULAR =====================
+function calcular(){
+  if(!specAtual)return;
+  const spec=specAtual;
+  const marca=document.getElementById('marca').value;
+  const ano=document.getElementById('ano').value||'—';
+  const km=document.getElementById('km').value?parseInt(document.getElementById('km').value).toLocaleString('pt-BR')+' km':'—';
+  const placa=(document.getElementById('placa').value||'—').toUpperCase();
+  const cliente=document.getElementById('cliente').value||'—';
+  const mecanico=document.getElementById('mecanico').value||'—';
+  const data=new Date().toLocaleDateString('pt-BR');
+  const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+  const injs=[];
+  let total=0,maxV=0,reprov=0,atenc=0,aprov=0;
+  for(let i=1;i<=spec.cil;i++){
+    const v=parseFloat(document.getElementById('inj'+i).value)||0;
+    const st=getStatus(v,spec);
+    injs.push({num:i,val:v,status:st});
+    total+=v;if(v>maxV)maxV=v;
+    if(st==='reprovado')reprov++;
+    else if(st==='atencao')atenc++;
+    else aprov++;
+  }
+
+  const media=(total/spec.cil).toFixed(1);
+  const diff=Math.max(...injs.map(x=>x.val))-Math.min(...injs.map(x=>x.val));
+  const perdaHora=(total/1000*2*60).toFixed(2);
+  const perdaDia=(parseFloat(perdaHora)*8).toFixed(1);
+  const perdaMes=(parseFloat(perdaDia)*22).toFixed(0);
+
+  let statusGeral,statusLabel;
+  if(reprov>0){statusGeral='reprovado';statusLabel='REPROVADO'}
+  else if(atenc>0){statusGeral='atencao';statusLabel='ATENÇÃO'}
+  else{statusGeral='aprovado';statusLabel='APROVADO'}
+
+  // Mostrar resultado
+  document.getElementById('formSection').style.display='none';
+  document.getElementById('resultSection').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // Header
+  document.getElementById('rsTitle').textContent=marca+' '+spec.label.split('(')[0].trim();
+  const badge=document.getElementById('rsBadge');
+  badge.textContent=statusLabel;badge.className='rsh-badge '+statusGeral;
+  document.getElementById('rsMeta').innerHTML=
+    '<div class="rm-item"><div class="rm-lbl">Cliente</div><div class="rm-val">'+cliente+'</div></div>'+
+    '<div class="rm-item"><div class="rm-lbl">Placa / Ano</div><div class="rm-val">'+placa+' · '+ano+'</div></div>'+
+    '<div class="rm-item"><div class="rm-lbl">Quilometragem</div><div class="rm-val">'+km+'</div></div>'+
+    '<div class="rm-item"><div class="rm-lbl">Injetor</div><div class="rm-val">'+spec.injetor+'</div></div>'+
+    '<div class="rm-item"><div class="rm-lbl">Bomba / Pressão</div><div class="rm-val">'+spec.bomba+' · '+spec.pressao+'</div></div>'+
+    '<div class="rm-item"><div class="rm-lbl">Data / Técnico</div><div class="rm-val">'+data+' '+hora+' · '+mecanico+'</div></div>';
+
+  // Injetores
+  let injHTML='';
+  injs.forEach(inj=>{
+    const pct=Math.min(100,Math.round((inj.val/spec.limitMax)*100));
+    const limitPct=Math.round((spec.limitOk/spec.limitMax)*100);
+    const atencPct=Math.round((spec.limitAtencao/spec.limitMax)*100);
+    const stLabel=inj.status==='ok'?'Aprovado':inj.status==='atencao'?'Atenção':'Reprovado';
+    const rec=inj.status==='ok'?'Dentro do limite de referência. Nenhuma ação necessária.':
+      inj.status==='atencao'?'Acima do limite aceitável. Recomenda-se calibração preventiva na bancada.':
+      'Reprovado — retorno crítico. Necessita calibração ou substituição imediata.';
+    injHTML+='<div class="ir '+inj.status+'">'+
+      '<div class="ir-num">0'+inj.num+'</div>'+
+      '<div class="ir-center">'+
+        '<div class="ir-name">Injetor '+inj.num+' — Cilindro '+inj.num+'</div>'+
+        '<div class="ir-bar-wrap">'+
+          '<div class="ir-bar '+inj.status+'" style="width:'+pct+'%"></div>'+
+          '<div class="ir-bar-line" style="left:'+limitPct+'%" title="Limite OK"></div>'+
+          '<div class="ir-bar-line" style="left:'+atencPct+'%;background:rgba(255,165,0,0.4)" title="Limite Atenção"></div>'+
+        '</div>'+
+        '<div class="ir-rec">'+rec+'</div>'+
+      '</div>'+
+      '<div class="ir-right">'+
+        '<div class="ir-val '+inj.status+'">'+inj.val.toFixed(1)+'</div>'+
+        '<div class="ir-status">'+stLabel+' · ml/60s</div>'+
+      '</div>'+
+    '</div>';
+  });
+  document.getElementById('injResults').innerHTML=injHTML;
+
+  // Stats
+  document.getElementById('statsCard').innerHTML=
+    '<div class="sc-lbl">● Resumo do Conjunto</div>'+
+    '<div class="sc-grid">'+
+      '<div><div class="sci-lbl">Retorno total</div><div class="sci-val">'+total.toFixed(1)+' ml/60s</div></div>'+
+      '<div><div class="sci-lbl">Média por injetor</div><div class="sci-val '+(statusGeral)+'">'+media+' ml/60s</div></div>'+
+      '<div><div class="sci-lbl">Aprovados</div><div class="sci-val good">'+aprov+'/'+spec.cil+'</div></div>'+
+      '<div><div class="sci-lbl">Reprovados</div><div class="sci-val '+(reprov>0?'bad':atenc>0?'warn':'good')+'">'+reprov+' reprov · '+atenc+' atenção</div></div>'+
+      '<div><div class="sci-lbl">Variação entre injetores</div><div class="sci-val '+(diff>10?'warn':'')+'">'+diff.toFixed(1)+' ml</div></div>'+
+      '<div><div class="sci-lbl">Limite de referência (OK)</div><div class="sci-val">até '+spec.limitOk+' ml/60s</div></div>'+
+    '</div>';
+
+  document.getElementById('perdaCard').innerHTML=
+    '<div class="sc-lbl">● Estimativa de Perda de Combustível</div>'+
+    '<div class="sc-grid">'+
+      '<div><div class="sci-lbl">Perda por hora</div><div class="sci-val '+(parseFloat(perdaHora)>1?'warn':'')+'">~'+perdaHora+' litros/h</div></div>'+
+      '<div><div class="sci-lbl">Perda por dia (8h)</div><div class="sci-val '+(parseFloat(perdaDia)>5?'warn':'')+'">~'+perdaDia+' litros</div></div>'+
+      '<div><div class="sci-lbl">Perda mensal est.</div><div class="sci-val '+(parseInt(perdaMes)>80?'bad':parseInt(perdaMes)>40?'warn':'')+'">~'+perdaMes+' litros/mês</div></div>'+
+      '<div><div class="sci-lbl">Impacto no motor</div><div class="sci-val '+(statusGeral)+'">'+
+        (statusGeral==='aprovado'?'Mínimo':'statusGeral'==='atencao'?'Moderado':'Alto — bomba sobrecarregada')+
+      '</div></div>'+
+    '</div>';
+
+  // Conclusão
+  let conc='';
+  if(statusGeral==='aprovado'){
+    conc='Todos os '+spec.cil+' injetores estão dentro dos limites de retorno de referência para o '+spec.label.split('(')[0].trim()+' ('+spec.injetor+'). O sistema de injeção está operando dentro da normalidade. Recomenda-se nova verificação a cada 30.000 km ou na troca do filtro de combustível.';
+  } else if(statusGeral==='atencao'){
+    conc=atenc+' injetor(es) apresentando retorno acima do limite aceitável ('+spec.limitOk+' ml/60s) para este modelo. Recomenda-se calibração preventiva na bancada para restabelecer a eficiência de injeção e evitar sobrecarga na bomba '+spec.bomba+'. A variação de '+diff.toFixed(1)+'ml entre injetores '+(diff>10?'indica desequilíbrio significativo que afeta a marcha lenta e consumo.':'está dentro do aceitável.');
+  } else {
+    conc=reprov+' injetor(es) reprovado(s) com retorno acima do limite crítico de '+spec.limitAtencao+' ml/60s. Ação imediata necessária: calibração ou substituição. O retorno excessivo sobrecarrega diretamente a '+spec.bomba+', podendo causar falha prematura. A variação entre injetores é de '+diff.toFixed(1)+'ml. '+spec.nota.split('.')[0]+'.';
+  }
+  document.getElementById('conclusaoCard').innerHTML=
+    '<div class="cc-lbl">● Conclusão Técnica</div>'+
+    '<div class="cc-text">'+conc+'</div>'+
+    '<div class="cc-fonte">Referências técnicas: manuais Denso Common Rail, Bosch CRI System Technical Training, dados de bancada SNX Diesel Lab · Laudo emitido em '+data+' às '+hora+'</div>';
+
+  // WA
+  const repStr=reprov>0?reprov+' reprovado(s)':atenc>0?atenc+' em atenção':'todos aprovados';
+  const waMsg=encodeURIComponent('Olá! Usei a calculadora de retorno da SNX.\n\nVeículo: '+marca+' '+spec.label.split('(')[0].trim()+'\nPlaca: '+placa+' · Ano: '+ano+' · KM: '+km+'\nStatus: '+statusLabel+' ('+repStr+')\nRetorno médio: '+media+' ml/60s\nVariação: '+diff.toFixed(1)+'ml\n\nGostaria de orçamento para calibração/substituição dos injetores.');
+  document.getElementById('btnWa').href='https://wa.me/5567996342998?text='+waMsg;
+
+  // Salvar histórico
+  salvarHist({data,hora,marca,modelo:spec.label,placa,cliente,status:statusGeral,statusLabel,media,reprov,atenc,aprov,cil:spec.cil});
+  renderHist();
+}
+
+// ===================== HISTÓRICO =====================
+function getHist(){
+  try{return JSON.parse(localStorage.getItem('snx_hist')||'[]')}catch(e){return[]}
+}
+function salvarHist(item){
+  const hist=getHist();
+  hist.unshift(item);
+  if(hist.length>30)hist.splice(30);
+  try{localStorage.setItem('snx_hist',JSON.stringify(hist))}catch(e){}
+}
+function renderHist(){
+  const hist=getHist();
+  document.getElementById('histCount').textContent=hist.length+' laudo(s) salvo(s)';
+  if(!hist.length){
+    document.getElementById('histList').innerHTML='<div class="hist-empty">Nenhum laudo gerado ainda. Os laudos aparecem aqui automaticamente após o cálculo.</div>';
+    return;
+  }
+  document.getElementById('histList').innerHTML='<div class="hist-grid">'+hist.map((h,i)=>
+    '<div class="hist-item '+h.status+'" onclick="verHist('+i+')">'+
+      '<div><div class="hi-main">'+h.marca+' — '+h.modelo.split('(')[0].trim()+'</div>'+
+      '<div class="hi-sub">'+h.placa+(h.cliente!=='—'?' · '+h.cliente:'')+(h.data?' · '+h.data:'')+' '+h.hora+'</div></div>'+
+      '<div class="hi-status '+h.status+'">'+h.statusLabel+'</div>'+
+      '<div class="hi-date">'+h.aprov+'/'+h.cil+' aprovados</div>'+
+    '</div>'
+  ).join('')+'</div>';
+}
+function verHist(i){
+  const h=getHist()[i];
+  alert('Laudo: '+h.marca+' '+h.modelo+'\nStatus: '+h.statusLabel+'\nMédia: '+h.media+' ml/60s\nAprovados: '+h.aprov+'/'+h.cil+'\nData: '+h.data+' '+h.hora+'\n\nPara ver o laudo completo, refaça o teste com os mesmos dados.');
+}
+function limparHist(){
+  if(confirm('Apagar todo o histórico de laudos?')){
+    try{localStorage.removeItem('snx_hist')}catch(e){}
+    renderHist();
+  }
+}
+
+function resetar(){
+  document.getElementById('formSection').style.display='block';
+  document.getElementById('resultSection').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+renderHist();
+</script>
+
+</body>
+</html>
