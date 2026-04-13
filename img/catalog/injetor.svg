@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" width="320" height="220">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#0d0d0d"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#555"/>
+      <stop offset="30%" stop-color="#ccc"/>
+      <stop offset="50%" stop-color="#eee"/>
+      <stop offset="70%" stop-color="#bbb"/>
+      <stop offset="100%" stop-color="#555"/>
+    </linearGradient>
+    <linearGradient id="metal2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#444"/>
+      <stop offset="40%" stop-color="#aaa"/>
+      <stop offset="60%" stop-color="#ccc"/>
+      <stop offset="100%" stop-color="#444"/>
+    </linearGradient>
+    <linearGradient id="dark_metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#222"/>
+      <stop offset="30%" stop-color="#666"/>
+      <stop offset="50%" stop-color="#888"/>
+      <stop offset="70%" stop-color="#555"/>
+      <stop offset="100%" stop-color="#222"/>
+    </linearGradient>
+    <linearGradient id="conn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#333"/>
+      <stop offset="100%" stop-color="#1a1a1a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#CC2200" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#CC2200" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="320" height="220" fill="url(#bg)"/>
+  <rect width="320" height="220" fill="url(#glow)"/>
+  <!-- Grid lines subtle -->
+  <line x1="0" y1="110" x2="320" y2="110" stroke="#ffffff" stroke-opacity="0.03"/>
+  <line x1="160" y1="0" x2="160" y2="220" stroke="#ffffff" stroke-opacity="0.03"/>
+
+  <!-- INJECTOR BODY (vertical, centered) -->
+  <!-- Electrical connector housing -->
+  <rect x="125" y="12" width="70" height="44" rx="5" fill="url(#conn)" stroke="#444" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="129" y="16" width="62" height="8" rx="2" fill="#3a3a3a"/>
+  <!-- Connector pins -->
+  <rect x="135" y="28" width="12" height="18" rx="2" fill="#222" stroke="#555" stroke-width="1"/>
+  <rect x="151" y="28" width="12" height="18" rx="2" fill="#222" stroke="#555" stroke-width="1"/>
+  <rect x="167" y="28" width="12" height="18" rx="2" fill="#222" stroke="#555" stroke-width="1"/>
+  <!-- Pin contacts -->
+  <rect x="138" y="34" width="6" height="8" rx="1" fill="#b8860b"/>
+  <rect x="154" y="34" width="6" height="8" rx="1" fill="#b8860b"/>
+  <rect x="170" y="34" width="6" height="8" rx="1" fill="#b8860b"/>
+  <!-- Solenoid body -->
+  <rect x="132" y="56" width="56" height="34" rx="3" fill="url(#dark_metal)" stroke="#555" stroke-width="0.5" filter="url(#shadow)"/>
+  <line x1="140" y1="60" x2="140" y2="86" stroke="#888" stroke-width="0.5" opacity="0.4"/>
+  <line x1="148" y1="60" x2="148" y2="86" stroke="#888" stroke-width="0.5" opacity="0.4"/>
+  <line x1="172" y1="60" x2="172" y2="86" stroke="#888" stroke-width="0.5" opacity="0.4"/>
+  <line x1="180" y1="60" x2="180" y2="86" stroke="#888" stroke-width="0.5" opacity="0.4"/>
+  <!-- Hex flange -->
+  <polygon points="128,90 136,84 184,84 192,90 184,96 136,96" fill="url(#metal)" stroke="#666" stroke-width="0.5" filter="url(#shadow)"/>
+  <!-- Body upper section -->
+  <rect x="138" y="96" width="44" height="50" fill="url(#metal)" stroke="#666" stroke-width="0.5"/>
+  <!-- O-ring groove -->
+  <rect x="136" y="118" width="48" height="4" fill="#333" stroke="#555" stroke-width="0.5"/>
+  <!-- Body mid section -->
+  <rect x="140" y="146" width="40" height="38" fill="url(#metal2)" stroke="#666" stroke-width="0.5"/>
+  <!-- Second hex section -->
+  <polygon points="135,184 142,179 178,179 185,184 178,190 142,190" fill="url(#metal)" stroke="#666" stroke-width="0.5"/>
+  <!-- Nozzle holder -->
+  <rect x="143" y="190" width="34" height="16" fill="url(#dark_metal)" stroke="#555" stroke-width="0.5"/>
+  <!-- Nozzle tip -->
+  <polygon points="143,206 177,206 174,215 146,215" fill="url(#dark_metal)" stroke="#555" stroke-width="0.5"/>
+  <polygon points="148,215 172,215 165,220 155,220" fill="#444" stroke="#333" stroke-width="0.5"/>
+
+  <!-- Highlight stripe on body -->
+  <line x1="158" y1="96" x2="158" y2="184" stroke="#fff" stroke-width="1" opacity="0.15"/>
+
+  <!-- Red accent line -->
+  <line x1="0" y1="218" x2="320" y2="218" stroke="#CC2200" stroke-width="2"/>
+
+  <!-- Label -->
+  <text x="52" y="110" font-family="'Arial Narrow',sans-serif" font-size="11" font-weight="bold" fill="#CC2200" letter-spacing="2" opacity="0.8">INJETOR</text>
+  <text x="52" y="126" font-family="'Arial Narrow',sans-serif" font-size="9" fill="#666" letter-spacing="1">COMMON RAIL</text>
+  <text x="52" y="158" font-family="'Arial Narrow',sans-serif" font-size="8" fill="#444">Bosch · Denso</text>
+  <text x="52" y="172" font-family="'Arial Narrow',sans-serif" font-size="8" fill="#444">Delphi · Siemens</text>
+</svg>
