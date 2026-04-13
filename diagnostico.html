@@ -36,9 +36,13 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-i
 .hero h1 span { color:#CC2200; }
 .hero p { font-size:1rem; opacity:0.7; line-height:1.6; }
 .progress-wrap { max-width:600px; margin:0 auto 3rem; padding:0 1rem; }
-.progress-bar-bg { height:3px; background:rgba(240,237,232,0.1); margin-bottom:0.8rem; }
-.progress-bar-fill { height:100%; background:#CC2200; transition:width 0.5s ease; }
-.progress-text { display:flex; justify-content:space-between; font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:0.1em; opacity:0.4; }
+.step-dots { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:0.8rem; }
+.step-dot { width:32px; height:32px; border-radius:50%; border:1px solid rgba(240,237,232,0.15); display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.75rem; color:rgba(240,237,232,0.3); transition:all 0.3s; flex-shrink:0; position:relative; z-index:1; background:#252525; }
+.step-dot.done { border-color:rgba(204,34,0,0.5); color:#CC2200; background:rgba(204,34,0,0.08); }
+.step-dot.current { border-color:#CC2200; color:#CC2200; background:rgba(204,34,0,0.15); box-shadow:0 0 0 3px rgba(204,34,0,0.15); }
+.step-line { flex:1; height:1px; background:rgba(240,237,232,0.08); transition:background 0.3s; }
+.step-line.done { background:rgba(204,34,0,0.3); }
+.progress-text { display:flex; justify-content:space-between; font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:0.1em; opacity:0.4; margin-top:0.5rem; }
 .wizard { max-width:620px; margin:0 auto 5rem; padding:0 1rem; }
 .step { display:none; animation:fadeUp 0.35s ease; }
 .step.active { display:block; }
@@ -47,10 +51,10 @@ nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-i
 .step-sub { font-size:0.85rem; opacity:0.5; margin-bottom:1.2rem; }
 .multi-hint { font-size:0.78rem; opacity:0.4; margin-bottom:1rem; font-style:italic; }
 .options { display:grid; gap:0.45rem; }
-.opt { background:#1A1A1A; border:1px solid rgba(240,237,232,0.12); padding:0.85rem 1.1rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.8rem; text-align:left; position:relative; }
-.opt:hover { border-color:#CC2200; background:rgba(204,34,0,0.05); }
-.opt.selected { border-color:#CC2200; background:rgba(204,34,0,0.1); }
-.opt.multi.selected::after { content:'✓'; position:absolute; right:1rem; font-family:'Barlow Condensed',sans-serif; font-weight:900; color:#CC2200; font-size:1rem; }
+.opt { background:#1A1A1A; border:1px solid rgba(240,237,232,0.1); padding:0.9rem 1.1rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.9rem; text-align:left; position:relative; border-left:2px solid transparent; }
+.opt:hover { border-color:rgba(204,34,0,0.4); border-left-color:#CC2200; background:rgba(204,34,0,0.04); transform:translateX(2px); }
+.opt.selected { border-color:rgba(204,34,0,0.5); border-left-color:#CC2200; background:rgba(204,34,0,0.09); }
+.opt.multi.selected::after { content:'✓'; position:absolute; right:1rem; font-family:'Barlow Condensed',sans-serif; font-weight:900; color:#CC2200; font-size:1.1rem; }
 .opt-icon { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
 .opt-label { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.92rem; text-transform:uppercase; letter-spacing:0.05em; }
 .opt-desc { font-size:0.76rem; opacity:0.5; margin-top:0.12rem; }
@@ -127,8 +131,24 @@ footer { border-top:1px solid rgba(204,34,0,0.15); padding:2rem; text-align:cent
 </div>
 
 <div class="progress-wrap">
-  <div class="progress-bar-bg"><div class="progress-bar-fill" id="pFill" style="width:0%"></div></div>
-  <div class="progress-text"><span id="pLabel">Etapa 1 de 8</span><span id="pPct">0%</span></div>
+  <div class="step-dots" id="stepDots">
+    <div class="step-dot current" id="sd1">1</div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">2</div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step-dot" id="sd3">3</div>
+    <div class="step-line" id="sl3"></div>
+    <div class="step-dot" id="sd4">4</div>
+    <div class="step-line" id="sl4"></div>
+    <div class="step-dot" id="sd5">5</div>
+    <div class="step-line" id="sl5"></div>
+    <div class="step-dot" id="sd6">6</div>
+    <div class="step-line" id="sl6"></div>
+    <div class="step-dot" id="sd7">7</div>
+    <div class="step-line" id="sl7"></div>
+    <div class="step-dot" id="sd8">8</div>
+  </div>
+  <div class="progress-text"><span id="pLabel">Etapa 1 de 8</span><span id="pPct"></span></div>
 </div>
 
 <div class="wizard" id="wizard">
@@ -643,10 +663,17 @@ function go(n){
 }
 
 function updateBar(){
-  const pct=Math.round(((cur-1)/TOTAL)*100);
-  document.getElementById('pFill').style.width=pct+'%';
   document.getElementById('pLabel').textContent='Etapa '+cur+' de '+TOTAL;
-  document.getElementById('pPct').textContent=pct+'%';
+  for(let i=1;i<=TOTAL;i++){
+    const dot=document.getElementById('sd'+i);
+    if(!dot)continue;
+    dot.className='step-dot'+(i<cur?' done':i===cur?' current':'');
+    dot.textContent=i<cur?'✓':i;
+    if(i<TOTAL){
+      const line=document.getElementById('sl'+i);
+      if(line)line.className='step-line'+(i<cur?' done':'');
+    }
+  }
 }
 
 const WASVG='<svg viewBox="0 0 32 32" fill="white" width="18" height="18"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm7.27 21.363c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1a7 7 0 0 1-2.06-1.27 7.7 7.7 0 0 1-1.42-1.77c-.15-.26 0-.4.11-.53s.26-.3.39-.46a1.8 1.8 0 0 0 .26-.43.48.48 0 0 0 0-.46c-.07-.13-.58-1.4-.8-1.92s-.42-.44-.58-.45h-.49a.94.94 0 0 0-.68.32A2.87 2.87 0 0 0 12 17a5 5 0 0 0 1.05 2.65 11.45 11.45 0 0 0 4.38 3.87c.49.21.96.37 1.46.54a3.52 3.52 0 0 0 1.61.1 2.64 2.64 0 0 0 1.73-1.22 2.14 2.14 0 0 0 .15-1.22c-.07-.1-.24-.18-.5-.3z"/></svg>';
