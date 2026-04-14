@@ -403,50 +403,68 @@ let cur=1;
 
 const MODELOS={
   Toyota:[
-    {id:'hilux_05_11',label:'Hilux 3.0 1KD-FTV',sub:'2005 a 2011 — Denso HP3, solenoide',injetor:'Denso solenoide 23670-0L090 / 095000-8290',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','bomba_desgaste','filtro']},
-    {id:'hilux_12_15',label:'Hilux 3.0 1KD-FTV Piezo',sub:'2012 a 2015 — Denso HP3, piezo',injetor:'Denso piezo 23670-3270',bomba:'Denso HP3',pmax:1800,falhasComuns:['retorno_injetor','sensor_rail','agua_combustivel']},
-    {id:'hilux_16_24',label:'Hilux 2.8 1GD-FTV',sub:'2016 em diante — Denso HP5, 2500 bar',injetor:'Denso solenoide G4 / 23670-0E010',bomba:'Denso HP5',pmax:2500,falhasComuns:['sensor_rail','dpf','scv']},
-    {id:'sw4',label:'SW4 / Land Cruiser 2.8',sub:'2016 em diante — Denso HP5, 2500 bar',injetor:'Denso solenoide G4 / 23670-0E010',bomba:'Denso HP5',pmax:2500,falhasComuns:['sensor_rail','dpf','scv']},
+    // Fontes: dieselcare.com.au, dencodiesel.com, amazon.com
+    {id:'hilux_05_11',label:'Hilux 3.0 1KD-FTV',sub:'2005 a 2011 — Denso HP3, solenoide',injetor:'Denso 23670-0L050 / 095000-8290',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','bomba_desgaste','filtro']},
+    // Fonte: dencodiesel.com — 1KD Euro 4 piezo G3
+    {id:'hilux_12_15',label:'Hilux 3.0 1KD-FTV Piezo',sub:'2012 a 2015 — Denso HP3, piezo G3',injetor:'Denso piezo G3 / 295050-0460 / 23670-39365',bomba:'Denso HP3',pmax:1800,falhasComuns:['retorno_injetor','sensor_rail','agua_combustivel']},
+    // Fontes: vepdiesel.com, raymargenuine.com — 1GD usa piezo G4
+    {id:'hilux_16_24',label:'Hilux 2.8 1GD-FTV',sub:'2016 em diante — Denso HP5, 2500 bar',injetor:'Denso piezo G4 / 23670-0E010 / 295700-0550',bomba:'Denso HP5',pmax:2500,falhasComuns:['sensor_rail','dpf','scv']},
+    {id:'sw4',label:'SW4 / Land Cruiser 2.8',sub:'2016 em diante — Denso HP5, 2500 bar',injetor:'Denso piezo G4 / 23670-0E010 / 295700-0550',bomba:'Denso HP5',pmax:2500,falhasComuns:['sensor_rail','dpf','scv']},
   ],
   Volkswagen:[
-    {id:'amarok_10_16',label:'Amarok 2.0 TDI EA189',sub:'2010 a 2016 — Bosch CP4.1, CRI2.2/CRI2.16',injetor:'Bosch CRI2.2 / 0445116030',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','contaminacao','baixa_pressao']},
-    {id:'amarok_17_24',label:'Amarok 2.0 TDI EA288',sub:'2017 a 2024 — Bosch CP4.2, Euro 6',injetor:'Bosch solenoide / 0445110646',bomba:'Bosch CP4.2',pmax:2000,falhasComuns:['egr','dpf','sensor_pressao']},
-    {id:'amarok_v6',label:'Amarok 3.0 V6 TDI',sub:'2018 a 2024 — Bosch CP4, piezo, 2200 bar',injetor:'Bosch piezo / 0445116035',bomba:'Bosch CP4',pmax:2200,falhasComuns:['dpf','sensor_pressao','egr']},
+    // Fonte: wtdiesel.com, darksidedevelopments.co.uk — EA189 usa CRI2.16
+    {id:'amarok_10_16',label:'Amarok 2.0 TDI EA189',sub:'2010 a 2016 — Bosch CP4.1, CRI2.16',injetor:'Bosch CRI2.16 / 0445116035 / 03L130277C',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','contaminacao','baixa_pressao']},
+    // Fonte: mackaydieselcentre.com.au — EA288
+    {id:'amarok_17_24',label:'Amarok 2.0 TDI EA288',sub:'2017 a 2024 — Bosch CP4.2, Euro 6',injetor:'Bosch / 0445110646 / 03L130277Q',bomba:'Bosch CP4.2',pmax:2000,falhasComuns:['egr','dpf','sensor_pressao']},
+    // Fonte: wtdiesel.com — Amarok 3.0 V6 TDI
+    {id:'amarok_v6',label:'Amarok 3.0 V6 TDI',sub:'2018 a 2024 — Bosch CP4, piezo, 2200 bar',injetor:'Bosch piezo / 0445117067 / 059130277CR',bomba:'Bosch CP4',pmax:2200,falhasComuns:['dpf','sensor_pressao','egr']},
   ],
   Chevrolet:[
-    {id:'s10_05_11',label:'S10 2.8 MWM Common Rail',sub:'2005 a 2011 — Bosch CP3, 0445110231',injetor:'Bosch solenoide 0445110231',bomba:'Bosch CP3',pmax:1600,falhasComuns:['injetor_entupido','filtro','sensor_rail']},
-    {id:'s10_12_13',label:'S10 2.8 Duramax (2012–2013)',sub:'2012 a 2013 — Bosch CP4.1, 0445110424',injetor:'Bosch solenoide 0445110424',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','contaminacao','partida']},
-    {id:'s10_14_24',label:'S10 2.8 Duramax (2014–2024)',sub:'2014 a 2024 — Denso HP3, 12640381',injetor:'Denso solenoide 12640381 / 095000-6310',bomba:'Denso HP3',pmax:2000,falhasComuns:['retorno_injetor','sensor_rail','filtro']},
+    // Fonte: jcimportsdiesel.com, caminhoneteecia.com.br — MWM confirmado
+    {id:'s10_05_11',label:'S10 2.8 MWM Common Rail',sub:'2005 a 2011 — Bosch CP3',injetor:'Bosch 0445110231',bomba:'Bosch CP3',pmax:1600,falhasComuns:['injetor_entupido','filtro','sensor_rail']},
+    // Fonte: ebay.com (BOSCH FITS OPEL CHEVROLET S10 2.8 12625220 0445110424) — CP4 confirmado
+    {id:'s10_12_13',label:'S10 2.8 Duramax (2012–2013)',sub:'2012 a 2013 — Bosch CP4.1',injetor:'Bosch 0445110424 / GM 12625220',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','contaminacao','partida']},
+    // Fonte: fabheavyparts.com, ebay.com — número Denso corrigido
+    {id:'s10_14_24',label:'S10 2.8 Duramax (2014–2024)',sub:'2014 a 2024 — Denso HP3',injetor:'Denso 12640381 / 295050-0960',bomba:'Denso HP3',pmax:2000,falhasComuns:['retorno_injetor','sensor_rail','filtro']},
   ],
   Ford:[
-    {id:'ranger_32',label:'Ranger 3.2 TDCi',sub:'2013 a 2024 — Continental/Siemens VDO, 5 cil.',injetor:'Siemens/Continental VDO piezo / A2C59513554',bomba:'Continental A2C59517043',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
-    {id:'ranger_22',label:'Ranger 2.2 TDCi',sub:'2013 a 2024 — Continental/Siemens VDO, 4 cil.',injetor:'Siemens/Continental VDO solenoide / A2C59513484',bomba:'Continental',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
+    // Fonte: pfjones.co.uk, dencodiesel.com — A2C8139490080 para PX2 2011+
+    {id:'ranger_32',label:'Ranger 3.2 TDCi',sub:'2013 a 2024 — Siemens/Continental VDO, 5 cil.',injetor:'Siemens/Continental VDO / A2C8139490080 / CK4Q-9K546-AA',bomba:'Continental',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
+    {id:'ranger_22',label:'Ranger 2.2 TDCi',sub:'2013 a 2024 — Siemens/Continental VDO, 4 cil.',injetor:'Siemens/Continental VDO / A2C8139490080 / CK4Q-9K546-AA',bomba:'Continental',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
     {id:'ranger_v6',label:'Ranger 3.0 V6 TDCi',sub:'2023 a 2024 — Bosch CP4.2, piezo CRI3',injetor:'Bosch piezo CRI3 / 0445117092',bomba:'Bosch CP4.2',pmax:2000,falhasComuns:['bomba_cp4','dpf','sensor_pressao']},
   ],
   Mitsubishi:[
-    {id:'l200_08_21',label:'L200 Triton 3.2 DID 4M41',sub:'2008 a 2021 — Denso HP3',injetor:'Denso solenoide 1465A041 / 095000-5600',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','marcha_lenta','partida']},
-    {id:'pajero_dakar',label:'Pajero Full/Dakar 3.2 DID',sub:'2008 a 2021 — Denso HP3',injetor:'Denso solenoide 1465A041 / 095000-5600',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','filtro','bomba_desgaste']},
+    // Fonte: dencodiesel.com, amazon.com — 4M41 3.2L usa 1465A054/095000-5760 (não 1465A041 que é 4D56 2.5L)
+    {id:'l200_08_21',label:'L200 Triton 3.2 DID 4M41',sub:'2008 a 2021 — Denso HP3',injetor:'Denso 1465A054 / 095000-5760',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','marcha_lenta','partida']},
+    {id:'pajero_dakar',label:'Pajero Full/Dakar 3.2 DID',sub:'2008 a 2021 — Denso HP3',injetor:'Denso 1465A054 / 095000-5760',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','filtro','bomba_desgaste']},
   ],
   Fiat:[
-    {id:'ducato_06_24',label:'Ducato 2.3 Multijet II',sub:'2006 a 2024 — Bosch CP1H/CP3, 1800 bar',injetor:'Bosch solenoide 0445110351',bomba:'Bosch CP1H/CP3',pmax:1800,falhasComuns:['injetor_entupido','sensor_rail','partida']},
+    // Fonte: pfjones.co.uk — Ducato 2.3 Multijet II usa 0445110520 (0445110351 é do 1.3 CDTI)
+    {id:'ducato_06_24',label:'Ducato 2.3 Multijet II',sub:'2012 a 2024 — Bosch CP1H/CP3, 1800 bar',injetor:'Bosch 0445110520',bomba:'Bosch CP1H/CP3',pmax:1800,falhasComuns:['injetor_entupido','sensor_rail','partida']},
   ],
   'Mercedes-Benz':[
-    {id:'sprinter_bosch',label:'Sprinter 2.2 CDI (Bosch)',sub:'2013 a 2024 — Bosch, injetor 0445110189',injetor:'Bosch solenoide 0445110189',bomba:'Bosch 0445010024',pmax:1800,falhasComuns:['dpf','sensor_pressao','falha_eletrica']},
-    {id:'sprinter_delphi',label:'Sprinter 2.2 CDI (Delphi)',sub:'2013 a 2024 — Delphi, injetor 28342997',injetor:'Delphi solenoide 28342997',bomba:'A6510700601',pmax:2000,falhasComuns:['dpf','sensor_pressao','falha_eletrica']},
+    // Fonte: idparts.com, sprinterandmore.com — OM651 usa 0445117034 (0445110189 é do OM646)
+    {id:'sprinter_bosch',label:'Sprinter 2.2 CDI OM651 (Bosch)',sub:'2013 a 2024 — Bosch CRI3, OM651',injetor:'Bosch CRI3 / 0445117034 / A6510702987',bomba:'Bosch A6510700001',pmax:1800,falhasComuns:['dpf','sensor_pressao','falha_eletrica']},
+    // Fonte: wtdiesel.com, ebay.com — OM651 Delphi confirmado
+    {id:'sprinter_delphi',label:'Sprinter 2.2 CDI OM651 (Delphi)',sub:'2013 a 2024 — Delphi, OM651',injetor:'Delphi EMBR00002D / 28342997 / A6510700587',bomba:'A6510700601',pmax:1800,falhasComuns:['dpf','sensor_pressao','falha_eletrica']},
   ],
   Renault:[
-    {id:'master_10_24',label:'Master 2.3 dCi',sub:'2010 a 2024 — Bosch/Delphi, 1600 bar',injetor:'Bosch 0445110230 / Delphi 28232251',bomba:'Bosch/Delphi',pmax:1600,falhasComuns:['injetor','egr','sensor_rail']},
+    // Fonte: ribblevalleydiesels.co.uk, dencodiesel.com — Master 2.3 dCi M9T (0445110230 e 28232251 são de motores 1.5 dCi)
+    {id:'master_10_24',label:'Master 2.3 dCi',sub:'2010 a 2024 — Bosch CRI2, M9T',injetor:'Bosch 0445110634 / 0445110375',bomba:'Bosch',pmax:1600,falhasComuns:['injetor','egr','sensor_rail']},
   ],
   Nissan:[
-    {id:'frontier_25',label:'Frontier 2.5 YD25',sub:'2008 a 2021 — Denso HP3',injetor:'Denso solenoide 16600-VM00A / 095000-6240',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','marcha_lenta','partida']},
+    // Fonte: dencodiesel.com, cairnsdiesel.com.au — YD25 confirmado
+    {id:'frontier_25',label:'Frontier 2.5 YD25',sub:'2008 a 2021 — Denso HP3',injetor:'Denso 16600-VM00A / 095000-6240',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','marcha_lenta','partida']},
   ],
   Peugeot:[
-    {id:'boxer_22',label:'Boxer 2.2 HDi',sub:'2018 a 2024 — Bosch CP4.1, CRI3',injetor:'Bosch CRI3 / 0445117018',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','dpf','sensor_pressao']},
-    {id:'boxer_23',label:'Boxer 2.3 HDi',sub:'2010 a 2017 — Bosch CP1H/CP3, solenoide',injetor:'Bosch solenoide 0445110252',bomba:'Bosch CP1H/CP3',pmax:1600,falhasComuns:['injetor_entupido','sensor_rail','egr']},
+    // Fonte: pfjones.co.uk, wtdiesel.com — Boxer 2.2 HDi usa VDO (motor PUMA compartilhado com Ford)
+    {id:'boxer_22',label:'Boxer 2.2 HDi',sub:'2011 a 2024 — Siemens/Continental VDO',injetor:'Siemens/Continental VDO / A2C59517051 / BK2Q-9K546-AG',bomba:'Continental',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
+    // Fonte: a confirmar — manter com ressalva
+    {id:'boxer_23',label:'Boxer 2.2 HDi (anterior)',sub:'2006 a 2010 — Bosch CP1H/CP3, solenoide',injetor:'Bosch solenoide 0445110252 ⚠ a confirmar',bomba:'Bosch CP1H/CP3',pmax:1600,falhasComuns:['injetor_entupido','sensor_rail','egr']},
   ],
   Citroen:[
-    {id:'jumper_22',label:'Jumper 2.2 HDi',sub:'2018 a 2024 — Bosch CP4.1, CRI3',injetor:'Bosch CRI3 / 0445117018',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','dpf','sensor_pressao']},
-    {id:'jumper_23',label:'Jumper 2.3 HDi',sub:'2010 a 2017 — Bosch CP1H/CP3, solenoide',injetor:'Bosch solenoide 0445110252',bomba:'Bosch CP1H/CP3',pmax:1600,falhasComuns:['injetor_entupido','sensor_rail','egr']},
+    {id:'jumper_22',label:'Jumper 2.2 HDi',sub:'2011 a 2024 — Siemens/Continental VDO',injetor:'Siemens/Continental VDO / A2C59517051 / BK2Q-9K546-AG',bomba:'Continental',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
+    {id:'jumper_23',label:'Jumper 2.2 HDi (anterior)',sub:'2006 a 2010 — Bosch CP1H/CP3, solenoide',injetor:'Bosch solenoide 0445110252 ⚠ a confirmar',bomba:'Bosch CP1H/CP3',pmax:1600,falhasComuns:['injetor_entupido','sensor_rail','egr']},
   ],
   Outro:[
     {id:'outro_diesel',label:'Outro veículo diesel',sub:'Transit, Duster Oroch, Toro, etc.',injetor:'Variável',bomba:'Variável',pmax:1800,falhasComuns:[]},
