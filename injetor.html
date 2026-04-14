@@ -728,6 +728,7 @@ function showInjetor(id){
     +'</div>'
   +'</div>';
   window.scrollTo({top:ra.offsetTop-80,behavior:'smooth'});
+  showLeadModal();
 }
 
 function closeCard(){
@@ -769,5 +770,52 @@ document.getElementById('sI').addEventListener('keydown',e=>{if(e.key==='Enter')
 
 renderGrid();
 </script>
+<!-- MODAL CAPTURA DE LEAD -->
+<div id="leadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:8000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);" onclick="if(event.target===this)closeLead()">
+  <div style="background:#141414;border:1px solid rgba(204,34,0,0.3);max-width:420px;width:100%;padding:2rem;position:relative;animation:fadeUp 0.3s ease;">
+    <button onclick="closeLead()" style="position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:rgba(240,237,232,0.4);font-size:1.4rem;cursor:pointer;line-height:1;">&times;</button>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:#CC2200;margin-bottom:0.6rem;">● SNX Diesel Lab</div>
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;line-height:1;margin-bottom:0.5rem;">Salvar seu<br><span style="color:#CC2200">resultado</span></h3>
+    <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;margin-bottom:1.5rem;">Receba o laudo completo direto no seu WhatsApp com análise de um técnico especializado.</p>
+    <div style="margin-bottom:1rem;">
+      <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;opacity:0.5;display:block;margin-bottom:0.5rem;">Seu WhatsApp</label>
+      <input type="tel" id="leadWa" placeholder="(67) 9 9999-9999" style="width:100%;background:#1A1A1A;border:1px solid rgba(240,237,232,0.15);outline:none;padding:0.75rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:0.08em;color:#F0EDE8;caret-color:#CC2200;transition:border-color 0.2s;" onfocus="this.style.borderColor='#CC2200'" onblur="this.style.borderColor='rgba(240,237,232,0.15)'"/>
+    </div>
+    <button onclick="submitLead()" style="width:100%;background:#CC2200;border:none;color:white;padding:0.9rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;margin-bottom:0.7rem;transition:background 0.2s;" onmouseover="this.style.background='#E53010'" onmouseout="this.style.background='#CC2200'">
+      Receber resultado →
+    </button>
+    <button onclick="closeLead()" style="width:100%;background:transparent;border:none;color:rgba(240,237,232,0.3);font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:0.4rem;">Continuar sem salvar</button>
+  </div>
+</div>
+
+<script>
+function showLeadModal(){
+  if(sessionStorage.getItem('snx_lead_shown'))return;
+  sessionStorage.setItem('snx_lead_shown','1');
+  setTimeout(function(){
+    document.getElementById('leadOverlay').style.display='flex';
+    document.body.style.overflow='hidden';
+  },800);
+}
+function closeLead(){
+  document.getElementById('leadOverlay').style.display='none';
+  document.body.style.overflow='';
+}
+function submitLead(){
+  var wa=document.getElementById('leadWa').value.trim();
+  if(!wa){document.getElementById('leadWa').focus();return;}
+  var ferramenta=document.title.split('–')[0].trim();
+  // Supabase save (configure URL e KEY)
+  var SB_URL='SEU_SUPABASE_URL';
+  var SB_KEY='SUA_SUPABASE_ANON_KEY';
+  if(SB_URL!=='SEU_SUPABASE_URL'){
+    fetch(SB_URL+'/rest/v1/leads',{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},body:JSON.stringify({whatsapp:wa,ferramenta_usada:ferramenta,data:new Date().toISOString()})}).catch(function(){});
+  }
+  var msg='Olá! Usei a '+ferramenta+' do SNX Diesel Lab e gostaria de receber meu resultado completo.';
+  closeLead();
+  window.open('https://wa.me/5567996342998?text='+encodeURIComponent(msg),'_blank');
+}
+</script>
+
 </body>
 </html>
