@@ -202,6 +202,7 @@ footer { border-top:1px solid rgba(204,34,0,0.15); padding:2rem; text-align:cent
       <div class="opt multi" onclick="toggleSint(this,'marcha')"><span class="opt-icon">🔄</span><div><div class="opt-label">Marcha lenta irregular</div><div class="opt-desc">RPM instável parado</div></div></div>
       <div class="opt multi" onclick="toggleSint(this,'ruido')"><span class="opt-icon">🔊</span><div><div class="opt-label">Ruído anormal no motor</div><div class="opt-desc">Barulho diferente, batida metálica</div></div></div>
       <div class="opt multi" onclick="toggleSint(this,'superaq')"><span class="opt-icon">🌡️</span><div><div class="opt-label">Superaquecimento</div><div class="opt-desc">Temperatura subindo acima do normal</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'oleo')"><span class="opt-icon">🛢️</span><div><div class="opt-label">Consumo excessivo de óleo</div><div class="opt-desc">Dipstick caindo, completando óleo com frequência</div></div></div>
     </div>
     <div class="step-nav">
       <button class="btn-prev" onclick="go(2)">← Voltar</button>
@@ -587,7 +588,181 @@ const DB=[
    codigos:['P20EE','P204F','P2BAD'],
    custo:'R$ 500 – R$ 3.500',
    fn:(r,s,f)=>{let sc=0;if(s.includes('luz'))sc+=20;if(r.luz==='dpf')sc+=15;const v=r.modelo||'';if(['hilux_16_24','amarok_v6','amarok_17_24','s10_14_24'].includes(v))sc+=20;if(r.tipoFalha==='progressiva')sc+=15;return sc;}},
+
+  {id:'junta_cabecote',titulo:'Junta do Cabeçote Queimada / Vazamento',urg:'alta',
+   desc:'A junta do cabeçote veda a câmara de combustão do circuito de arrefecimento. Quando falha, água entra no cilindro causando fumaça branca densa, superaquecimento e perda severa de potência. Urgência máxima — pode destruir o motor em minutos.',
+   causas:['Superaquecimento anterior danificou a junta','Aperto incorreto do cabeçote após manutenção prévia','Deformação do cabeçote por temperatura excessiva','Parafusos do cabeçote frouxos','Corrosão interna por uso de água sem aditivo anticongelante'],
+   codigos:['P0115','P0116','P0117','P0118','P0128'],
+   custo:'R$ 2.500 – R$ 7.000',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('superaq'))sc+=40;if(f.includes('branca'))sc+=30;if(s.includes('superaq')&&f.includes('branca'))sc+=25;if(r.luz==='temp')sc+=35;if(s.includes('ligar')&&f.includes('branca'))sc+=10;if(s.includes('oleo'))sc+=10;if(r.tipoFalha==='repentina'&&s.includes('superaq'))sc+=15;return sc;}},
+
+  {id:'turbo_oleo',titulo:'Turbo Consumindo Óleo / Folga de Eixo',urg:'media',
+   desc:'Com o desgaste dos rolamentos internos, o eixo do turbo passa a ter folga e óleo lubrificante vaza para o circuito de ar. Resultado: fumaça azul contínua, chiado agudo em aceleração e queda gradual de pressão de boost.',
+   causas:['Rolamentos do eixo do turbo desgastados','Retentores internos do turbo com defeito','Óleo motor fora do prazo degradando as vedações','Pressão elevada no cárter (PCV entupido) empurrando óleo','Filtro de ar entupido gerando vácuo excessivo na admissão'],
+   codigos:['P0299','P0234','P2563'],
+   custo:'R$ 1.200 – R$ 4.500',
+   fn:(r,s,f)=>{let sc=0;if(f.includes('azul'))sc+=45;if(s.includes('ruido'))sc+=25;if(f.includes('acelerando')&&f.includes('azul'))sc+=20;if(['alto','muito'].includes(r.km))sc+=20;if(s.includes('potencia'))sc+=10;if(r.tipoFalha==='progressiva')sc+=15;if(s.includes('oleo'))sc+=35;return sc;}},
+
+  {id:'intercooler_vazamento',titulo:'Vazamento no Intercooler ou Dutos de Pressão',urg:'media',
+   desc:'O intercooler resfria o ar comprimido pelo turbo antes de entrar no motor. Trincas ou mangueiras soltas causam fuga de boost: o turbo trabalha normalmente, mas a pressão é perdida antes de chegar ao motor — potência cai sem ativar o modo de emergência.',
+   causas:['Trinca no radiador do intercooler por impacto ou vibração','Mangueiras de pressão ressecadas, rachadas ou desencaixadas','O-rings do intercooler endurecidos com o calor','Conexão de engate rápido aberta ou sem abraçadeira','Vedação entre intercooler e coletor de admissão deteriorada'],
+   codigos:['P0299','P0237','P0238'],
+   custo:'R$ 350 – R$ 2.500',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('potencia')&&r.limp==='nao')sc+=20;if(f.includes('acelerando'))sc+=25;if(r.limp==='parcial')sc+=15;if(r.tipoFalha==='progressiva')sc+=20;if(['novo','medio'].includes(r.km))sc+=10;if(!s.includes('luz'))sc+=10;return sc;}},
+
+  {id:'ect_sensor',titulo:'Sensor de Temperatura do Motor (ECT) com Defeito',urg:'media',
+   desc:'O sensor ECT informa à ECU a temperatura do motor. Com defeito, a ECU pode pensar que o motor está sempre frio — enriquecendo crônica e desnecessariamente a mistura, gerando fumaça preta, consumo alto e luz de temperatura falsa.',
+   causas:['Sensor ECT defeituoso (resistência fora do especificado)','Conector do sensor com oxidação ou folga','Nível baixo de arrefecimento ao redor do sensor','Fiação com dano parcial causando resistência variável'],
+   codigos:['P0115','P0116','P0117','P0118','P0119','P0125','P0128'],
+   custo:'R$ 150 – R$ 450',
+   fn:(r,s,f)=>{let sc=0;if(r.luz==='temp')sc+=30;if(s.includes('superaq')&&r.tipoFalha==='intermitente')sc+=25;if(r.tipoFalha==='intermitente')sc+=20;if(f.includes('preta')&&r.motorQuente==='frio')sc+=20;if(s.includes('consumo')&&r.motorQuente==='frio')sc+=15;return sc;}},
+
+  {id:'pcv_entupido',titulo:'PCV / Separador de Óleo Entupido',urg:'media',
+   desc:'O sistema PCV recircula os gases do blow-by de volta para a admissão. Entupido, a pressão no cárter aumenta e óleo é empurrado para o turbo e para o MAF — gerando fumaça azul, consumo de óleo elevado e MAF contaminado que produz fumaça preta.',
+   causas:['PCV entupido por borra de óleo (trocas atrasadas)','Mangueira do blow-by obstruída ou rígida','Óleo de motor vencido acelerando a formação de borra','Separador de óleo com filtro saturado'],
+   codigos:['P0101','P0102','P0171','P0172'],
+   custo:'R$ 200 – R$ 900',
+   fn:(r,s,f)=>{let sc=0;if(f.includes('azul'))sc+=30;if(s.includes('oleo'))sc+=40;if(['alto','muito'].includes(r.km))sc+=20;if(r.tipoFalha==='progressiva')sc+=20;if(f.includes('preta')&&f.includes('azul'))sc+=15;return sc;}},
+
+  {id:'injetor_nao_programado',titulo:'Código IMA/QR do Injetor Não Programado na ECU',urg:'alta',
+   desc:'Cada injetor Common Rail tem um código de calibração individual gravado no corpo (IMA na Bosch, QR Code na Denso). Após a troca, a ECU precisa receber esse código via scanner. Sem a programação, o motor opera com compensação errada: tranco e vibração surgem logo após a manutenção.',
+   causas:['Injetor trocado sem programação do código IMA/QR na ECU','Oficina sem scanner compatível com a programação','Código IMA errado digitado durante a programação','Injetor remanufaturado com código diferente do original'],
+   codigos:['P0201','P0202','P0203','P0204','P0261','P0263','P0266','P0269'],
+   custo:'R$ 200 – R$ 600 (apenas a programação)',
+   fn:(r,s,f)=>{let sc=0;if(r.manutencao==='injetor')sc+=70;if(s.includes('falha'))sc+=20;if(s.includes('marcha'))sc+=20;if(r.tipoFalha==='repentina'&&r.manutencao==='injetor')sc+=20;return sc;}},
+
+  {id:'valvula_pressao_rail',titulo:'Válvula Limitadora de Pressão do Rail com Defeito',urg:'media',
+   desc:'A válvula FPV (Fuel Pressure Valve) no rail atua como alívio de segurança. Quando falha na posição aberta, a pressão cai intermitentemente. Quando trava fechada, a pressão supera o limite — risco de danos graves. Geralmente começa como falha intermitente antes de piorar.',
+   causas:['Sede da válvula com desgaste interno','Contaminação por partículas metálicas travando a válvula','Mola interna da válvula fraturada','Alta quilometragem sem troca regular do filtro de combustível'],
+   codigos:['P0088','P0089','P1093','P1094','P0190'],
+   custo:'R$ 600 – R$ 2.200',
+   fn:(r,s,f)=>{let sc=0;if(r.tipoFalha==='intermitente')sc+=25;if(['alto','muito'].includes(r.km))sc+=15;if(s.includes('marcha')&&r.tipoFalha==='intermitente')sc+=20;if(s.includes('potencia')&&r.tipoFalha==='intermitente')sc+=20;if(s.includes('falha')&&r.tipoFalha==='intermitente')sc+=15;return sc;}},
+
+  {id:'atuador_vgt',titulo:'Atuador de Geometria Variável do Turbo (VGT) com Defeito',urg:'media',
+   desc:'Turbos VGT usam um atuador para mover as palhetas e controlar a pressão de boost em cada rotação. Quando o atuador elétrico ou eletropneumático falha — sem que as palhetas travem — o boost não segue o comando: potência cai em acelerações fortes sem ativar o modo de emergência.',
+   causas:['Atuador elétrico do VGT com defeito interno','Haste mecânica do atuador deformada ou quebrada','Sensor de posição do atuador com leitura incorreta','Solenoide eletropneumático do atuador com defeito','Fiação do atuador com resistência variável'],
+   codigos:['P2563','P2564','P2565','P0299'],
+   custo:'R$ 700 – R$ 2.800',
+   fn:(r,s,f)=>{let sc=0;if(r.luz==='turbo')sc+=25;if(s.includes('potencia')&&r.limp==='nao')sc+=20;if(f.includes('acelerando'))sc+=15;if(r.tipoFalha==='intermitente')sc+=20;if(['alto','muito'].includes(r.km))sc+=10;return sc;}},
 ];
+
+// Próximos passos recomendados por diagnóstico
+const STEPS={
+  rail_baixo:[
+    'Medir pressão real do rail com scanner em aceleração (plena carga) — comparar com o pmax do modelo',
+    'Verificar e trocar filtro de combustível antes de qualquer outra intervenção',
+    'Fazer teste de retorno individual nos injetores com proveta (Bosch/Denso: máx. ~50 ml/30s)',
+    'Se injetores OK e pressão ainda baixa → bomba de alta pressão CP4/HP3/HP5',
+  ],
+  injetor_defeito:[
+    'Ler balanço de contribuição de cilindros no scanner — identifica qual cilindro está fora',
+    'Fazer teste de retorno individual com proveta (injetor com retorno acima do limite = defeito)',
+    'Verificar código IMA/QR cadastrado na ECU — pode ser apenas reprogramação (R$ 200–600)',
+    'Calibrar o injetor antes de trocar — pode economizar R$ 800 por peça',
+  ],
+  turbo_vgt:[
+    'Verificar se as palhetas do VGT estão travadas (adicionar aditivo anti-carbono como primeiro teste)',
+    'Acionar atuação do VGT pelo scanner e observar se as palhetas respondem ao comando',
+    'Medir folga radial e axial do eixo do turbo — se excessiva, o turbo precisa de revisão completa',
+    'Limpeza química das palhetas pode resolver sem troca do turbo (custo ~R$ 300 vs R$ 4.000)',
+  ],
+  bomba_cp4:[
+    'NÃO ligue o motor se houver barulho metálico repentino ou falha brusca — risco de destruição total',
+    'Inspecionar o filtro de combustível: partículas metálicas no filtro confirmam ruptura da bomba',
+    'Em caso de ruptura: lavar todo o sistema (linhas de alta/baixa, rail, injetores) antes de instalar nova bomba',
+    'Usar somente diesel S-10 de postos de confiança — a CP4 é muito sensível à qualidade do combustível',
+  ],
+  bomba_denso:[
+    'Verificar a válvula SCV primeiro — componente de R$ 400–800 vs. R$ 3.000+ da bomba completa',
+    'Medir pressão de alimentação (baixa pressão) antes da entrada da bomba HP3/HP5',
+    'Trocar o filtro de combustível e refazer a medição de pressão',
+    'Teste a frio e a quente: se a pressão melhora quando o motor esquenta → SCV; se permanece baixa → bomba',
+  ],
+  egr_entupida:[
+    'Inspecionar a válvula com motor desligado — deve abrir e fechar livremente',
+    'Acionar a EGR pelo scanner e checar posição real vs. posição comandada',
+    'Limpeza química com spray específico antes de decidir pela troca (evita custo desnecessário)',
+    'Verificar se o resfriador de EGR também está saturado — solucionar os dois juntos',
+  ],
+  agua_combustivel:[
+    'DRENE o separador de água do filtro imediatamente — não ligue o motor antes',
+    'Trocar o filtro de combustível completo',
+    'Após a troca: verificar se bomba e injetores não foram danificados (pressão e retorno)',
+    'Inspecionar o tanque por corrosão interna se o problema se repetir',
+  ],
+  sensor_rail:[
+    'Medir tensão de saída do sensor com multímetro (variação deve ser linear com a pressão)',
+    'Verificar conector e fiação — oxidação é a causa mais comum e mais barata de resolver',
+    'Comparar leitura do sensor via scanner com a pressão real medida por manômetro externo',
+    'Se tensão correta mas ECU continua com código → possível problema de fiação entre sensor e ECU',
+  ],
+  junta_cabecote:[
+    'DESLIGUE o motor imediatamente — risco de hidrolocking e destruição dos pistões',
+    'Verifique o nível de arrefecimento: se cai sem vazamento visível externo, é sinal grave',
+    'Cheque a tampa da válvula — óleo leitoso/marrom indica contaminação com água',
+    'Solicite teste de CO2 no arrefecimento (kit específico confirma queima de junta sem desmontar)',
+  ],
+  turbo_oleo:[
+    'Verificar folga radial e axial do eixo do turbo manualmente (> 0,1 mm = troca necessária)',
+    'Inspecionar mangueira de retorno de óleo do turbo — obstrução aumenta pressão no eixo',
+    'Medir pressão do cárter — PCV entupido eleva a pressão e força óleo através dos retentores',
+    'Checar se há acúmulo de óleo no coletor de admissão ou intercooler',
+  ],
+  intercooler_vazamento:[
+    'Pressurizar o sistema de admissão com bomba manual (~1 bar) e localizar o vazamento com spray',
+    'Inspecionar visualmente todas as mangueiras, abraçadeiras e conexões com o motor frio',
+    'Medir pressão de boost com scanner em plena carga — deve atingir o valor de projeto do veículo',
+    'Óleo em excesso no intercooler indica turbo ou PCV com defeito junto ao vazamento',
+  ],
+  ect_sensor:[
+    'Medir resistência do sensor com multímetro e comparar com tabela do fabricante',
+    'Verificar conector e fiação — oxidação no conector é a causa mais frequente',
+    'Comparar leitura do scanner com termômetro externo no radiador para detectar desvio',
+    'Sensor correto: resistência deve diminuir linearmente conforme a temperatura sobe',
+  ],
+  pcv_entupido:[
+    'Inspecionar a mangueira do blow-by — obstrução total impede a respiração do motor',
+    'Substituir ou limpar o separador de óleo / válvula PCV',
+    'Após resolver o PCV: limpar o MAF com spray específico (óleo contamina o sensor)',
+    'Verificar acúmulo de óleo no coletor de admissão — drenagem pode ser necessária',
+  ],
+  injetor_nao_programado:[
+    'Conectar scanner compatível (IDS/INPA/Techstream) e ler os códigos IMA/QR cadastrados',
+    'Comparar o código físico impresso no injetor com o registrado na ECU para aquele cilindro',
+    'Bosch: código de 20 dígitos na lateral do injetor — Denso: código alfanumérico no corpo',
+    'Reprogramar o código correto na posição do cilindro correspondente',
+  ],
+  valvula_pressao_rail:[
+    'Monitorar pressão real do rail com scanner em diferentes rotações — comparar com pressão comandada',
+    'Desvio > 10% entre pressão comandada e real a frio/quente indica válvula ou bomba',
+    'Verificar filtro de combustível — contaminação acelera o desgaste da válvula FPV',
+    'Trocar a válvula antes de cotar bomba nova — custo muito menor (R$ 600 vs. R$ 3.000+)',
+  ],
+  atuador_vgt:[
+    'Ler posição real vs. posição comandada do VGT no scanner — deve seguir o comando sem atraso',
+    'Acionar o atuador manualmente pelo scanner e observar se as palhetas se movem fisicamente',
+    'Medir resistência e tensão de alimentação do atuador com multímetro',
+    'Se palhetas OK mas atuador não responde → trocar só o atuador, não o turbo inteiro',
+  ],
+  retorno_injetor:[
+    'Fazer teste de retorno com proveta em todos os injetores simultaneamente (30 segundos)',
+    'Limite típico: 50 ml em 30 s para injetores solenoides — piezo pode ser diferente',
+    'Injetor com retorno acima do limite: calibrar em bancada antes de trocar',
+    'Verificar pressão de rail depois — retorno excessivo sobrecarrega a bomba',
+  ],
+  maf_defeito:[
+    'Limpar o MAF com spray específico antes de considerar a troca (custo ~R$ 30)',
+    'Verificar filtro de ar — filtro saturado reduz o fluxo e altera a leitura do MAF',
+    'Inspecionar o duto de admissão após o MAF por trincas ou folgas (entrada de ar falso)',
+    'Comparar leitura do MAF em g/s com valores de referência para a rotação',
+  ],
+  dpf_saturado:[
+    'Verificar se a regeneração passiva não está sendo interrompida (viagens muito curtas)',
+    'Forçar regeneração ativa pelo scanner se o DPF ainda não estiver no limite crítico',
+    'Verificar sensor de pressão diferencial do DPF — leitura incorreta pode ser falso alarme',
+    'DPF saturado além do limite: regeneração forçada com equipamento especializado ou substituição',
+  ],
+};
 
 function selMarca(el,marca){
   el.closest('.options').querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
@@ -742,7 +917,7 @@ function gerar(){
   const marcaLabel=R.marca||'Veículo Diesel';
   const modeloObj=(MODELOS[R.marca]||[]).find(m=>m.id===R.modelo);
   const modeloLabel=modeloObj?modeloObj.label:'—';
-  const sintLabel=sintomas.map(s=>({potencia:'Perda de potência',fumaca:'Fumaça',falha:'Falha/tranco',consumo:'Consumo alto',ligar:'Dificuldade de ligar',luz:'Luz de injeção',marcha:'Marcha lenta irregular',ruido:'Ruído anormal',superaq:'Superaquecimento'}[s]||s)).join(', ');
+  const sintLabel=sintomas.map(s=>({potencia:'Perda de potência',fumaca:'Fumaça',falha:'Falha/tranco',consumo:'Consumo alto',ligar:'Dificuldade de ligar',luz:'Luz de injeção',marcha:'Marcha lenta irregular',ruido:'Ruído anormal',superaq:'Superaquecimento',oleo:'Consumo de óleo'}[s]||s)).join(', ');
 
   let msg='Olá! Fiz o simulador de diagnóstico da SNX.\n\n';
   msg+='Veículo: '+marcaLabel+' '+modeloLabel+'\n';
@@ -763,7 +938,7 @@ function gerar(){
   html+='<div><div class="sum-lbl">Sintomas</div><div class="sum-val">'+sintLabel+'</div></div>';
   if(modeloObj){
     html+='<div><div class="sum-lbl">Injetor</div><div class="sum-val">'+modeloObj.injetor+'</div></div>';
-    html+='<div><div class="sum-lbl">Bomba</div><div class="sum-val">'+modeloObj.bomba+'</div></div>';
+    html+='<div><div class="sum-lbl">Bomba / Pressão máx.</div><div class="sum-val">'+modeloObj.bomba+' · '+modeloObj.pmax+' bar</div></div>';
   }
   html+='<div><div class="sum-lbl">Tipo de falha</div><div class="sum-val">'+tipoFalhaLabel+'</div></div>';
   html+='<div><div class="sum-lbl">Motor quente?</div><div class="sum-val">'+motorQuenteLabel+'</div></div>';
@@ -782,6 +957,13 @@ function gerar(){
     html+='<div class="diag-lbl">● Possíveis causas</div><div class="causa-list">'+caH+'</div>';
     if(d.codigos.length){html+='<div class="diag-lbl">● Códigos OBD relacionados</div><div class="code-list">'+cH+'</div>';}
     html+='<div class="diag-lbl">● Estimativa de custo</div><div class="custo-val">'+d.custo+'</div>';
+    const stps=STEPS[d.id]||[];
+    if(stps.length){
+      html+='<div class="diag-lbl" style="margin-top:1.2rem;">● Próximos passos recomendados</div>';
+      html+='<ol style="margin:0.6rem 0 0 1.3rem;padding:0;list-style:decimal;">';
+      stps.forEach(function(st){html+='<li style="font-size:0.82rem;opacity:0.65;margin-bottom:0.4rem;line-height:1.55;">'+st+'</li>';});
+      html+='</ol>';
+    }
     html+='</div>';
   });
 
