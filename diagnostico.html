@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Diagnóstico Diesel – SNX Diesel Lab</title>
+<meta name="description" content="Simulador de diagnóstico diesel. Responda às perguntas sobre sintomas e códigos do seu veículo e receba um diagnóstico técnico detalhado com possíveis causas e estimativa de custo.">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Diagnóstico Diesel Guiado – SNX Diesel Lab">
+<meta property="og:description" content="Informe os sintomas e códigos OBD do seu diesel e receba diagnóstico com possíveis causas e estimativa de custo.">
+<meta property="og:url" content="https://snx-diesel-lab.vercel.app/diagnostico.html">
+<meta property="og:image" content="https://snx-diesel-lab.vercel.app/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:#252525; color:#F0EDE8; font-family:'Barlow',sans-serif; font-weight:300; min-height:100vh; overflow-x:hidden; }
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); opacity:0.035; pointer-events:none; z-index:9999; }
+nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; height:64px; background:rgba(26,26,26,0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(204,34,0,0.3); }
+.nav-logo { text-decoration:none; }
+.nav-logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem; letter-spacing:0.05em; color:#F0EDE8; }
+.nav-logo-text span { color:#CC2200; }
+.nav-back { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; color:#F0EDE8; text-decoration:none; opacity:0.6; transition:opacity 0.2s; }
+.nav-back:hover { opacity:1; }
+.tool-links{display:flex;align-items:center;gap:0.3rem}
+.tool-link{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,237,232,0.45);text-decoration:none;padding:0.2rem 0.55rem;border:1px solid rgba(240,237,232,0.1);transition:all 0.2s;white-space:nowrap}
+.tool-link:hover{color:#F0EDE8;border-color:rgba(204,34,0,0.5);background:rgba(204,34,0,0.06)}
+.tool-link.active-page{color:#CC2200;border-color:rgba(204,34,0,0.4);background:rgba(204,34,0,0.08)}
+@media(max-width:560px){.tool-link{font-size:0.65rem;padding:0.15rem 0.35rem}}
+.hero { padding:120px 2rem 50px; text-align:center; max-width:700px; margin:0 auto; }
+.hero-badge { display:inline-flex; align-items:center; gap:0.5rem; border:1px solid #CC2200; padding:0.3rem 1rem; font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:#CC2200; margin-bottom:1.5rem; }
+.hero h1 { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(2.5rem,7vw,4.5rem); line-height:1; text-transform:uppercase; margin-bottom:1rem; }
+.hero h1 span { color:#CC2200; }
+.hero p { font-size:1rem; opacity:0.7; line-height:1.6; }
+.progress-wrap { max-width:600px; margin:0 auto 3rem; padding:0 1rem; }
+.step-dots { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:0.8rem; }
+.step-dot { width:32px; height:32px; border-radius:50%; border:1px solid rgba(240,237,232,0.15); display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.75rem; color:rgba(240,237,232,0.3); transition:all 0.3s; flex-shrink:0; position:relative; z-index:1; background:#252525; }
+.step-dot.done { border-color:rgba(204,34,0,0.5); color:#CC2200; background:rgba(204,34,0,0.08); }
+.step-dot.current { border-color:#CC2200; color:#CC2200; background:rgba(204,34,0,0.15); box-shadow:0 0 0 3px rgba(204,34,0,0.15); }
+.step-line { flex:1; height:1px; background:rgba(240,237,232,0.08); transition:background 0.3s; }
+.step-line.done { background:rgba(204,34,0,0.3); }
+.progress-text { display:flex; justify-content:space-between; font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:0.1em; opacity:0.4; margin-top:0.5rem; }
+.wizard { max-width:620px; margin:0 auto 5rem; padding:0 1rem; }
+.step { display:none; animation:fadeUp 0.35s ease; }
+.step.active { display:block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.step-question { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.4rem; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.3rem; line-height:1.2; }
+.step-sub { font-size:0.85rem; opacity:0.5; margin-bottom:1.2rem; }
+.multi-hint { font-size:0.78rem; opacity:0.4; margin-bottom:1rem; font-style:italic; }
+.options { display:grid; gap:0.45rem; }
+.opt { background:#1A1A1A; border:1px solid rgba(240,237,232,0.1); padding:0.9rem 1.1rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.9rem; text-align:left; position:relative; border-left:2px solid transparent; }
+.opt:hover { border-color:rgba(204,34,0,0.4); border-left-color:#CC2200; background:rgba(204,34,0,0.04); transform:translateX(2px); }
+.opt.selected { border-color:rgba(204,34,0,0.5); border-left-color:#CC2200; background:rgba(204,34,0,0.09); }
+.opt.multi.selected::after { content:'✓'; position:absolute; right:1rem; font-family:'Barlow Condensed',sans-serif; font-weight:900; color:#CC2200; font-size:1.1rem; }
+.opt-icon { font-size:1.1rem; flex-shrink:0; width:24px; text-align:center; }
+.opt-label { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.92rem; text-transform:uppercase; letter-spacing:0.05em; }
+.opt-desc { font-size:0.76rem; opacity:0.5; margin-top:0.12rem; }
+.step-nav { display:flex; justify-content:space-between; margin-top:1.5rem; gap:1rem; }
+.btn-prev { background:transparent; border:1px solid rgba(240,237,232,0.2); color:#F0EDE8; padding:0.7rem 1.2rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; opacity:0.5; transition:opacity 0.2s; }
+.btn-prev:hover { opacity:1; }
+.btn-next { background:#CC2200; border:none; color:white; padding:0.7rem 2rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:background 0.2s; flex:1; }
+.btn-next:hover { background:#E53010; }
+.btn-next:disabled { opacity:0.3; cursor:not-allowed; }
+.code-input-row { display:flex; gap:0.5rem; margin-bottom:0.6rem; }
+.code-input { flex:1; background:#1A1A1A; border:1px solid rgba(240,237,232,0.15); outline:none; padding:0.7rem 1rem; font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#F0EDE8; caret-color:#CC2200; transition:border-color 0.2s; }
+.code-input:focus { border-color:#CC2200; }
+.btn-add { background:#CC2200; border:none; color:white; padding:0.7rem 1rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; white-space:nowrap; }
+.codes-wrap { display:flex; flex-wrap:wrap; gap:0.4rem; min-height:24px; margin-bottom:1rem; }
+.c-chip { background:rgba(204,34,0,0.15); border:1px solid rgba(204,34,0,0.4); padding:0.2rem 0.6rem; font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; font-weight:700; letter-spacing:0.1em; display:flex; align-items:center; gap:0.4rem; color:#F0EDE8; }
+.c-rm { cursor:pointer; opacity:0.5; font-size:0.9rem; }
+.c-rm:hover { opacity:1; color:#CC2200; }
+.result-wrap { max-width:700px; margin:0 auto 5rem; padding:0 1rem; display:none; animation:fadeUp 0.4s ease; }
+.result-header { text-align:center; margin-bottom:2rem; }
+.result-header h2 { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:2.5rem; text-transform:uppercase; margin-bottom:0.4rem; }
+.result-header h2 span { color:#CC2200; }
+.diag-card { background:#1A1A1A; border:1px solid rgba(204,34,0,0.25); border-left:4px solid #CC2200; padding:1.5rem; margin-bottom:1rem; }
+.diag-top { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:0.7rem; }
+.diag-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.1rem; text-transform:uppercase; letter-spacing:0.04em; line-height:1.2; }
+.prob-num { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.6rem; color:#CC2200; white-space:nowrap; }
+.urg-badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.7rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.8rem; }
+.urg-badge.alta { background:rgba(204,34,0,0.15); border:1px solid #CC2200; color:#ff6b6b; }
+.urg-badge.media { background:rgba(255,165,0,0.1); border:1px solid rgba(255,165,0,0.4); color:#ffa500; }
+.urg-badge.baixa { background:rgba(34,204,100,0.1); border:1px solid rgba(34,204,100,0.3); color:#22cc64; }
+.diag-desc { font-size:0.88rem; opacity:0.75; line-height:1.65; margin-bottom:0.8rem; }
+.diag-lbl { font-family:'Barlow Condensed',sans-serif; font-size:0.68rem; letter-spacing:0.2em; color:#CC2200; text-transform:uppercase; margin-bottom:0.35rem; margin-top:0.8rem; }
+.causa-list { display:flex; flex-wrap:wrap; gap:0.35rem; }
+.causa-tag { background:rgba(204,34,0,0.07); border:1px solid rgba(204,34,0,0.2); padding:0.2rem 0.55rem; font-size:0.78rem; opacity:0.85; }
+.code-list { display:flex; flex-wrap:wrap; gap:0.35rem; }
+.code-bdg { background:rgba(240,237,232,0.05); border:1px solid rgba(240,237,232,0.18); padding:0.2rem 0.55rem; font-family:'Barlow Condensed',sans-serif; font-size:0.82rem; font-weight:700; letter-spacing:0.08em; }
+.code-bdg.match { background:rgba(204,34,0,0.15); border-color:#CC2200; color:#FF8070; }
+.custo-val { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem; color:#CC2200; margin-top:0.3rem; }
+.sum-box { background:#1A1A1A; border:1px solid rgba(240,237,232,0.07); padding:1.2rem 1.5rem; margin-bottom:1.2rem; display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+.sum-lbl { font-size:0.72rem; opacity:0.4; margin-bottom:0.2rem; }
+.sum-val { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.92rem; }
+.cta-box { background:rgba(204,34,0,0.07); border:1px solid rgba(204,34,0,0.25); padding:1.5rem; text-align:center; margin-top:0.5rem; }
+.cta-box p { font-size:0.88rem; opacity:0.7; margin-bottom:1rem; line-height:1.5; }
+.btn-wa { display:flex; align-items:center; justify-content:center; gap:0.6rem; background:#25D366; color:white; text-decoration:none; padding:0.9rem 1.5rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.8rem; transition:background 0.2s; }
+.btn-wa:hover { background:#1da851; }
+.btn-restart { background:transparent; border:1px solid rgba(240,237,232,0.15); color:#F0EDE8; padding:0.6rem 1.5rem; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; opacity:0.5; transition:opacity 0.2s; }
+.btn-restart:hover { opacity:1; }
+.whatsapp-float { position:fixed; bottom:2rem; right:2rem; z-index:200; text-decoration:none; }
+.wa-btn { width:60px; height:60px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,0.4); transition:transform 0.2s; position:relative; }
+.wa-btn:hover { transform:scale(1.1); }
+.wa-btn::before { content:''; position:absolute; width:60px; height:60px; border-radius:50%; border:2px solid #25D366; animation:waPing 2s ease-out infinite; }
+@keyframes waPing { 0% { transform:scale(1); opacity:0.8; } 100% { transform:scale(1.6); opacity:0; } }
+footer { border-top:1px solid rgba(204,34,0,0.15); padding:2rem; text-align:center; font-size:0.8rem; opacity:0.35; font-family:'Barlow Condensed',sans-serif; }
+@media(max-width:600px) { .sum-box { grid-template-columns:1fr; } .diag-top { flex-direction:column; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-text">SNX DIESEL<span>LAB</span></div></a>
+  <div class="tool-links">
+    <a href="index.html" class="tool-link">← Início</a>
+    <a href="diagnostico.html" class="tool-link active-page">Diagnóstico</a>
+    <a href="obd.html" class="tool-link">OBD</a>
+    <a href="retorno.html" class="tool-link">Retorno</a>
+    <a href="injetor.html" class="tool-link">Injetores</a>
+    <a href="catalogo.html" class="tool-link">Catálogo</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">● Diagnóstico Inteligente</div>
+  <h1>SIMULADOR DE<br><span>DIAGNÓSTICO</span> DIESEL</h1>
+  <p>Responda as perguntas, informe os códigos do scanner e receba um diagnóstico preciso com possíveis causas e estimativa de custo.</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="step-dots" id="stepDots">
+    <div class="step-dot current" id="sd1">1</div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">2</div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step-dot" id="sd3">3</div>
+    <div class="step-line" id="sl3"></div>
+    <div class="step-dot" id="sd4">4</div>
+    <div class="step-line" id="sl4"></div>
+    <div class="step-dot" id="sd5">5</div>
+    <div class="step-line" id="sl5"></div>
+    <div class="step-dot" id="sd6">6</div>
+    <div class="step-line" id="sl6"></div>
+    <div class="step-dot" id="sd7">7</div>
+    <div class="step-line" id="sl7"></div>
+    <div class="step-dot" id="sd8">8</div>
+  </div>
+  <div class="progress-text"><span id="pLabel">Etapa 1 de 8</span><span id="pPct"></span></div>
+</div>
+
+<div class="wizard" id="wizard">
+
+  <!-- STEP 1: Marca -->
+
+  <div class="step active" id="step1">
+    <div class="step-question">Qual a marca do veículo?</div>
+    <div class="step-sub">Selecione para filtrar os modelos disponíveis</div>
+    <div class="options">
+      <div class="opt" onclick="selMarca(this,'Toyota')"><span class="opt-icon">🚙</span><div><div class="opt-label">Toyota</div><div class="opt-desc">Hilux 1KD / 1GD</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Volkswagen')"><span class="opt-icon">🚙</span><div><div class="opt-label">Volkswagen</div><div class="opt-desc">Amarok TDI / BiTDI / V6</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Chevrolet')"><span class="opt-icon">🚙</span><div><div class="opt-label">Chevrolet</div><div class="opt-desc">S10 Duramax 2.8</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Ford')"><span class="opt-icon">🚙</span><div><div class="opt-label">Ford</div><div class="opt-desc">Ranger 2.2 / 3.2 TDCi</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Mitsubishi')"><span class="opt-icon">🚙</span><div><div class="opt-label">Mitsubishi</div><div class="opt-desc">L200 Triton / Pajero</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Fiat')"><span class="opt-icon">🚐</span><div><div class="opt-label">Fiat</div><div class="opt-desc">Ducato 2.3 Multijet</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Peugeot')"><span class="opt-icon">🚐</span><div><div class="opt-label">Peugeot</div><div class="opt-desc">Boxer 2.2 / 2.3 HDi</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Citroen')"><span class="opt-icon">🚐</span><div><div class="opt-label">Citroën</div><div class="opt-desc">Jumper 2.2 / 2.3 HDi</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Mercedes-Benz')"><span class="opt-icon">🚐</span><div><div class="opt-label">Mercedes-Benz</div><div class="opt-desc">Sprinter 2.2 CDI (Bosch ou Delphi)</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Renault')"><span class="opt-icon">🚐</span><div><div class="opt-label">Renault</div><div class="opt-desc">Master 2.3 dCi</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Nissan')"><span class="opt-icon">🚙</span><div><div class="opt-label">Nissan</div><div class="opt-desc">Frontier 2.5 YD25</div></div></div>
+      <div class="opt" onclick="selMarca(this,'Outro')"><span class="opt-icon">🚗</span><div><div class="opt-label">Outro diesel</div><div class="opt-desc">Frontier, Duster Oroch, Transit...</div></div></div>
+    </div>
+    <div class="step-nav"><button class="btn-next" id="next1" onclick="go(2)" disabled>Próxima →</button></div>
+  </div>
+
+  <!-- STEP 2: Modelo -->
+
+  <div class="step" id="step2">
+    <div class="step-question">Qual o modelo e ano?</div>
+    <div class="step-sub" id="s2sub">Selecione o modelo exato para diagnóstico preciso</div>
+    <div class="options" id="modelosOpts"></div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(1)">← Voltar</button>
+      <button class="btn-next" id="next2" onclick="go(3)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Sintomas (múltipla escolha) -->
+
+  <div class="step" id="step3">
+    <div class="step-question">Quais os sintomas?</div>
+    <div class="multi-hint">Pode selecionar mais de um</div>
+    <div class="options">
+      <div class="opt multi" onclick="toggleSint(this,'potencia')"><span class="opt-icon">📉</span><div><div class="opt-label">Perda de potência</div><div class="opt-desc">Sem força, não acelera direito</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'fumaca')"><span class="opt-icon">💨</span><div><div class="opt-label">Fumaça no escapamento</div><div class="opt-desc">Preta, branca ou azul</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'falha')"><span class="opt-icon">⚡</span><div><div class="opt-label">Falha / tranco / vibração</div><div class="opt-desc">Motor batendo ou engasgando</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'consumo')"><span class="opt-icon">⛽</span><div><div class="opt-label">Consumo alto de combustível</div><div class="opt-desc">Enchendo o tanque muito mais</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'ligar')"><span class="opt-icon">🔑</span><div><div class="opt-label">Dificuldade para ligar</div><div class="opt-desc">Motor demora ou não pega</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'luz')"><span class="opt-icon">⚠️</span><div><div class="opt-label">Luz de injeção acesa</div><div class="opt-desc">Luz laranja de avaria no painel</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'marcha')"><span class="opt-icon">🔄</span><div><div class="opt-label">Marcha lenta irregular</div><div class="opt-desc">RPM instável parado</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'ruido')"><span class="opt-icon">🔊</span><div><div class="opt-label">Ruído anormal no motor</div><div class="opt-desc">Barulho diferente, batida metálica</div></div></div>
+      <div class="opt multi" onclick="toggleSint(this,'superaq')"><span class="opt-icon">🌡️</span><div><div class="opt-label">Superaquecimento</div><div class="opt-desc">Temperatura subindo acima do normal</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(2)">← Voltar</button>
+      <button class="btn-next" id="next3" onclick="go(4)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Luz de injeção -->
+
+  <div class="step" id="step4">
+    <div class="step-question">Como está a luz de injeção?</div>
+    <div class="step-sub">Descreva o comportamento das luzes no painel</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'luz','fixa')"><span class="opt-icon">🔴</span><div><div class="opt-label">Luz de injeção fixa</div><div class="opt-desc">Acesa o tempo todo desde que acendeu</div></div></div>
+      <div class="opt" onclick="sel(this,'luz','piscando')"><span class="opt-icon">🔆</span><div><div class="opt-label">Luz de injeção piscando</div><div class="opt-desc">Acende e apaga durante o uso</div></div></div>
+      <div class="opt" onclick="sel(this,'luz','acendeu_apagou')"><span class="opt-icon">💡</span><div><div class="opt-label">Acendeu e apagou sozinha</div><div class="opt-desc">Apareceu uma vez e sumiu</div></div></div>
+      <div class="opt" onclick="sel(this,'luz','dpf')"><span class="opt-icon">🟡</span><div><div class="opt-label">Luz do DPF / Filtro acesa</div><div class="opt-desc">Símbolo de filtro de partículas no painel</div></div></div>
+      <div class="opt" onclick="sel(this,'luz','turbo')"><span class="opt-icon">🟠</span><div><div class="opt-label">Luz do turbo acesa</div><div class="opt-desc">Indicador de pressão de boost</div></div></div>
+      <div class="opt" onclick="sel(this,'luz','temp')"><span class="opt-icon">🌡️</span><div><div class="opt-label">Luz de temperatura alta</div><div class="opt-desc">Ponteiro de temperatura no vermelho</div></div></div>
+      <div class="opt" onclick="sel(this,'luz','nenhuma')"><span class="opt-icon">✅</span><div><div class="opt-label">Nenhuma luz acesa</div><div class="opt-desc">Painel normal, sem avisos</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(3)">← Voltar</button>
+      <button class="btn-next" id="next4" onclick="go(5)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Potência reduzida -->
+
+  <div class="step" id="step5">
+    <div class="step-question">O veículo perdeu potência de repente?</div>
+    <div class="step-sub">Indica modo de proteção ativado pela ECU (limp mode)</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'limp','sim')"><span class="opt-icon">🐢</span><div><div class="opt-label">Sim — travou, ficou lento sem resposta</div><div class="opt-desc">Acelerador pesado, rotação travada, não passa de 80 km/h</div></div></div>
+      <div class="opt" onclick="sel(this,'limp','parcial')"><span class="opt-icon">⚡</span><div><div class="opt-label">Perda gradual de força</div><div class="opt-desc">Foi perdendo potência aos poucos</div></div></div>
+      <div class="opt" onclick="sel(this,'limp','nao')"><span class="opt-icon">✅</span><div><div class="opt-label">Não — potência normal</div><div class="opt-desc">Acelerador responde normalmente</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(4)">← Voltar</button>
+      <button class="btn-next" id="next5" onclick="go(6)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 6: Fumaça e quando -->
+
+  <div class="step" id="step6">
+    <div class="step-question">Cor da fumaça e quando ocorre?</div>
+    <div class="step-sub">Selecione as opções que se aplicam</div>
+    <div class="multi-hint">Pode selecionar mais de uma</div>
+    <div class="options">
+      <div class="opt multi" onclick="toggleMulti(this,'fum','preta')"><span class="opt-icon">⬛</span><div><div class="opt-label">Fumaça preta</div><div class="opt-desc">Combustível sobrando — má combustão</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','preta_forte')"><span class="opt-icon">🖤</span><div><div class="opt-label">Fumaça preta intensa e constante</div><div class="opt-desc">Mesmo sem acelerar</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','branca')"><span class="opt-icon">⬜</span><div><div class="opt-label">Fumaça branca</div><div class="opt-desc">Possível água no diesel ou junta</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','branca_fria')"><span class="opt-icon">🌫️</span><div><div class="opt-label">Fumaça branca só no frio</div><div class="opt-desc">Some quando o motor esquenta</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','azul')"><span class="opt-icon">🔵</span><div><div class="opt-label">Fumaça azul / cinza</div><div class="opt-desc">Óleo sendo queimado junto com diesel</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','acelerando')"><span class="opt-icon">🏎️</span><div><div class="opt-label">Piora ao acelerar forte</div><div class="opt-desc">Subidas, ultrapassagens, plena carga</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','frio')"><span class="opt-icon">🌡️</span><div><div class="opt-label">Piora com motor frio</div><div class="opt-desc">No início, melhora quando esquenta</div></div></div>
+      <div class="opt multi" onclick="toggleMulti(this,'fum','sem')"><span class="opt-icon">✅</span><div><div class="opt-label">Sem fumaça visível</div><div class="opt-desc">Escapamento normal</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(5)">← Voltar</button>
+      <button class="btn-next" id="next6" onclick="go(7)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 7: KM -->
+
+  <div class="step" id="step7">
+    <div class="step-question">Quilometragem do veículo?</div>
+    <div class="step-sub">Ajuda a identificar problemas por desgaste</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'km','novo')"><span class="opt-icon">🆕</span><div><div class="opt-label">Até 50.000 km</div><div class="opt-desc">Veículo relativamente novo</div></div></div>
+      <div class="opt" onclick="sel(this,'km','medio')"><span class="opt-icon">📊</span><div><div class="opt-label">50.000 a 120.000 km</div><div class="opt-desc">Uso moderado</div></div></div>
+      <div class="opt" onclick="sel(this,'km','alto')"><span class="opt-icon">⚙️</span><div><div class="opt-label">120.000 a 220.000 km</div><div class="opt-desc">Desgaste natural esperado</div></div></div>
+      <div class="opt" onclick="sel(this,'km','muito')"><span class="opt-icon">🔧</span><div><div class="opt-label">Acima de 220.000 km</div><div class="opt-desc">Alta quilometragem</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(6)">← Voltar</button>
+      <button class="btn-next" id="next7" onclick="go(8)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 8: Motor quente -->
+
+  <div class="step" id="step8">
+    <div class="step-question">O motor estava quente quando a falha ocorreu?</div>
+    <div class="step-sub">Temperatura ideal: 70–90°C — impacta muito o diagnóstico</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'motorQuente','sim')"><span class="opt-icon">🌡️</span><div><div class="opt-label">Sim — motor quente</div><div class="opt-desc">Temperatura normal de operação, 70–90°C</div></div></div>
+      <div class="opt" onclick="sel(this,'motorQuente','frio')"><span class="opt-icon">❄️</span><div><div class="opt-label">Não — motor frio ou morno</div><div class="opt-desc">Falha logo ao ligar ou antes de esquentar</div></div></div>
+      <div class="opt" onclick="sel(this,'motorQuente','ambos')"><span class="opt-icon">🔄</span><div><div class="opt-label">Ocorre nos dois casos</div><div class="opt-desc">Tanto a frio quanto a quente</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(7)">← Voltar</button>
+      <button class="btn-next" id="next8" onclick="go(9)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 9: Posto -->
+
+  <div class="step" id="step9">
+    <div class="step-question">Abasteceu recentemente em posto diferente?</div>
+    <div class="step-sub">Diesel de baixa qualidade ou adulterado é causa frequente de falhas</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'posto','sim')"><span class="opt-icon">⛽</span><div><div class="opt-label">Sim — abasteceu em posto diferente</div><div class="opt-desc">Falha começou após o abastecimento</div></div></div>
+      <div class="opt" onclick="sel(this,'posto','nao')"><span class="opt-icon">✅</span><div><div class="opt-label">Não — mesmo posto de sempre</div><div class="opt-desc">Não houve mudança no combustível</div></div></div>
+      <div class="opt" onclick="sel(this,'posto','naoSabe')"><span class="opt-icon">❓</span><div><div class="opt-label">Não sei informar</div><div class="opt-desc">Não tenho certeza</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(8)">← Voltar</button>
+      <button class="btn-next" id="next9" onclick="go(10)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 10: Tipo de falha -->
+
+  <div class="step" id="step10">
+    <div class="step-question">A falha começou de repente ou foi progressiva?</div>
+    <div class="step-sub">Ajuda a identificar se é falha mecânica ou desgaste gradual</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'tipoFalha','repentina')"><span class="opt-icon">⚡</span><div><div class="opt-label">De repente — falha brusca</div><div class="opt-desc">Funcionava normal e parou de repente</div></div></div>
+      <div class="opt" onclick="sel(this,'tipoFalha','progressiva')"><span class="opt-icon">📉</span><div><div class="opt-label">Progressiva — piorou aos poucos</div><div class="opt-desc">Foi perdendo desempenho com o tempo</div></div></div>
+      <div class="opt" onclick="sel(this,'tipoFalha','intermitente')"><span class="opt-icon">🔆</span><div><div class="opt-label">Intermitente — aparece e some</div><div class="opt-desc">Às vezes falha, às vezes funciona normal</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(9)">← Voltar</button>
+      <button class="btn-next" id="next10" onclick="go(11)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 11: Manutenção recente -->
+
+  <div class="step" id="step11">
+    <div class="step-question">Foi feita alguma manutenção recente?</div>
+    <div class="step-sub">Trocas recentes podem estar relacionadas ao problema atual</div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'manutencao','filtro')"><span class="opt-icon">🔧</span><div><div class="opt-label">Sim — troca de filtro de combustível</div><div class="opt-desc">Filtro trocado recentemente</div></div></div>
+      <div class="opt" onclick="sel(this,'manutencao','injetor')"><span class="opt-icon">💉</span><div><div class="opt-label">Sim — troca ou calibração de injetor</div><div class="opt-desc">Injetor substituído ou calibrado</div></div></div>
+      <div class="opt" onclick="sel(this,'manutencao','bomba')"><span class="opt-icon">⚙️</span><div><div class="opt-label">Sim — troca de bomba</div><div class="opt-desc">Bomba de alta pressão substituída</div></div></div>
+      <div class="opt" onclick="sel(this,'manutencao','outro')"><span class="opt-icon">🔩</span><div><div class="opt-label">Sim — outra manutenção</div><div class="opt-desc">Outro serviço realizado recentemente</div></div></div>
+      <div class="opt" onclick="sel(this,'manutencao','nao')"><span class="opt-icon">❌</span><div><div class="opt-label">Não — sem manutenção recente</div><div class="opt-desc">Nenhum serviço realizado</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(10)">← Voltar</button>
+      <button class="btn-next" id="next11" onclick="go(12)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- STEP 12: Códigos -->
+
+  <div class="step" id="step12">
+    <div class="step-question">Tem códigos do scanner?</div>
+    <div class="step-sub">Se tiver, adicione abaixo — deixa o diagnóstico muito mais preciso</div>
+    <div class="code-input-row">
+      <input type="text" class="code-input" id="cIn" placeholder="Ex: P0087" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')addC()"/>
+      <button class="btn-add" onclick="addC()">+ Adicionar</button>
+    </div>
+    <div class="codes-wrap" id="codesWrap"></div>
+    <div class="options">
+      <div class="opt" onclick="sel(this,'temC','nao')" id="optSemC"><span class="opt-icon">❌</span><div><div class="opt-label">Não tenho códigos de falha</div><div class="opt-desc">Nenhum scanner foi usado ainda</div></div></div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-prev" onclick="go(11)">← Voltar</button>
+      <button class="btn-next" id="next12" onclick="gerar()">Ver Diagnóstico →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- RESULTADO -->
+
+<div class="result-wrap" id="resultWrap">
+  <div class="result-header">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:0.2em;color:#CC2200;text-transform:uppercase;margin-bottom:0.5rem;">● Diagnóstico Concluído</div>
+    <h2>SEU <span>DIAGNÓSTICO</span></h2>
+    <p style="opacity:0.55;font-size:0.88rem;margin-top:0.4rem;">Baseado nos sintomas e códigos — confirme com técnico especializado</p>
+  </div>
+  <div id="rContent"></div>
+  <div style="margin-top:1rem;text-align:center;">
+    <button class="btn-restart" onclick="restart()">↺ Novo diagnóstico</button>
+  </div>
+</div>
+
+<footer>© 2026 SNX Diesel Lab · Consultoria em Injeção Eletrônica Diesel</footer>
+
+<a href="https://wa.me/5567996342998?text=Olá!%20Gostaria%20de%20uma%20consultoria%20em%20injeção%20eletrônica%20diesel." class="whatsapp-float" target="_blank" rel="noopener" aria-label="Falar com especialista no WhatsApp">
+  <div class="wa-btn">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="white" width="30" height="30"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.27 13.27 0 0 1-6.784-1.858l-.486-.29-5.002 1.193 1.224-4.874-.317-.5A13.267 13.267 0 0 1 2.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333zm7.27-9.97c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1-.398-.2-1.682-.62-3.204-1.977-1.184-1.057-1.983-2.363-2.215-2.76-.232-.398-.025-.613.174-.811.179-.178.398-.465.597-.697.2-.232.265-.398.398-.664.133-.265.066-.497-.033-.697-.1-.2-.896-2.16-1.228-2.957-.323-.776-.651-.67-.896-.683-.232-.012-.497-.015-.763-.015s-.697.1-1.062.497c-.365.398-1.394 1.362-1.394 3.322s1.427 3.854 1.626 4.12c.2.265 2.808 4.287 6.803 6.014.95.41 1.692.655 2.27.838.953.303 1.821.26 2.507.158.765-.114 2.355-.963 2.687-1.893.332-.93.332-1.727.232-1.893-.1-.166-.365-.265-.763-.465z"/></svg>
+  </div>
+</a>
+<script>
+const R={};
+let sintomas=[];
+let fumaças=[];
+let codigos=[];
+const TOTAL=12;
+let cur=1;
+
+const MODELOS={
+  Toyota:[
+    {id:'hilux_05_11',label:'Hilux 3.0 1KD-FTV',sub:'2005 a 2011 — Denso HP3, solenoide',injetor:'Denso solenoide 23670-0L090 / 095000-8290',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','bomba_desgaste','filtro']},
+    {id:'hilux_12_15',label:'Hilux 3.0 1KD-FTV Piezo',sub:'2012 a 2015 — Denso HP3, piezo',injetor:'Denso piezo 23670-3270',bomba:'Denso HP3',pmax:1800,falhasComuns:['retorno_injetor','sensor_rail','agua_combustivel']},
+    {id:'hilux_16_24',label:'Hilux 2.8 1GD-FTV',sub:'2016 em diante — Denso HP5, 2500 bar',injetor:'Denso solenoide G4 / 23670-0E010',bomba:'Denso HP5',pmax:2500,falhasComuns:['sensor_rail','dpf','scv']},
+    {id:'sw4',label:'SW4 / Land Cruiser 2.8',sub:'2016 em diante — Denso HP5, 2500 bar',injetor:'Denso solenoide G4 / 23670-0E010',bomba:'Denso HP5',pmax:2500,falhasComuns:['sensor_rail','dpf','scv']},
+  ],
+  Volkswagen:[
+    {id:'amarok_10_16',label:'Amarok 2.0 TDI EA189',sub:'2010 a 2016 — Bosch CP4.1, CRI2.2/CRI2.16',injetor:'Bosch CRI2.2 / 0445116030',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','contaminacao','baixa_pressao']},
+    {id:'amarok_17_24',label:'Amarok 2.0 TDI EA288',sub:'2017 a 2024 — Bosch CP4.2, Euro 6',injetor:'Bosch solenoide / 0445110646',bomba:'Bosch CP4.2',pmax:2000,falhasComuns:['egr','dpf','sensor_pressao']},
+    {id:'amarok_v6',label:'Amarok 3.0 V6 TDI',sub:'2018 a 2024 — Bosch CP4, piezo, 2200 bar',injetor:'Bosch piezo / 0445116035',bomba:'Bosch CP4',pmax:2200,falhasComuns:['dpf','sensor_pressao','egr']},
+  ],
+  Chevrolet:[
+    {id:'s10_05_11',label:'S10 2.8 MWM Common Rail',sub:'2005 a 2011 — Bosch CP3, 0445110231',injetor:'Bosch solenoide 0445110231',bomba:'Bosch CP3',pmax:1600,falhasComuns:['injetor_entupido','filtro','sensor_rail']},
+    {id:'s10_12_13',label:'S10 2.8 Duramax (2012–2013)',sub:'2012 a 2013 — Bosch CP4.1, 0445110424',injetor:'Bosch solenoide 0445110424',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','contaminacao','partida']},
+    {id:'s10_14_24',label:'S10 2.8 Duramax (2014–2024)',sub:'2014 a 2024 — Denso HP3, 12640381',injetor:'Denso solenoide 12640381 / 095000-6310',bomba:'Denso HP3',pmax:2000,falhasComuns:['retorno_injetor','sensor_rail','filtro']},
+  ],
+  Ford:[
+    {id:'ranger_32',label:'Ranger 3.2 TDCi',sub:'2013 a 2024 — Continental/Siemens VDO, 5 cil.',injetor:'Siemens/Continental VDO piezo / A2C59513554',bomba:'Continental A2C59517043',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
+    {id:'ranger_22',label:'Ranger 2.2 TDCi',sub:'2013 a 2024 — Continental/Siemens VDO, 4 cil.',injetor:'Siemens/Continental VDO solenoide / A2C59513484',bomba:'Continental',pmax:1800,falhasComuns:['injetor','filtro','sensor_rail']},
+    {id:'ranger_v6',label:'Ranger 3.0 V6 TDCi',sub:'2023 a 2024 — Bosch CP4.2, piezo CRI3',injetor:'Bosch piezo CRI3 / 0445117092',bomba:'Bosch CP4.2',pmax:2000,falhasComuns:['bomba_cp4','dpf','sensor_pressao']},
+  ],
+  Mitsubishi:[
+    {id:'l200_08_21',label:'L200 Triton 3.2 DID 4M41',sub:'2008 a 2021 — Denso HP3',injetor:'Denso solenoide 1465A041 / 095000-5600',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','marcha_lenta','partida']},
+    {id:'pajero_dakar',label:'Pajero Full/Dakar 3.2 DID',sub:'2008 a 2021 — Denso HP3',injetor:'Denso solenoide 1465A041 / 095000-5600',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','filtro','bomba_desgaste']},
+  ],
+  Fiat:[
+    {id:'ducato_06_24',label:'Ducato 2.3 Multijet II',sub:'2006 a 2024 — Bosch CP1H/CP3, 1800 bar',injetor:'Bosch solenoide 0445110351',bomba:'Bosch CP1H/CP3',pmax:1800,falhasComuns:['injetor_entupido','sensor_rail','partida']},
+  ],
+  'Mercedes-Benz':[
+    {id:'sprinter_bosch',label:'Sprinter 2.2 CDI (Bosch)',sub:'2013 a 2024 — Bosch, injetor 0445110189',injetor:'Bosch solenoide 0445110189',bomba:'Bosch 0445010024',pmax:1800,falhasComuns:['dpf','sensor_pressao','falha_eletrica']},
+    {id:'sprinter_delphi',label:'Sprinter 2.2 CDI (Delphi)',sub:'2013 a 2024 — Delphi, injetor 28342997',injetor:'Delphi solenoide 28342997',bomba:'A6510700601',pmax:2000,falhasComuns:['dpf','sensor_pressao','falha_eletrica']},
+  ],
+  Renault:[
+    {id:'master_10_24',label:'Master 2.3 dCi',sub:'2010 a 2024 — Bosch/Delphi, 1600 bar',injetor:'Bosch 0445110230 / Delphi 28232251',bomba:'Bosch/Delphi',pmax:1600,falhasComuns:['injetor','egr','sensor_rail']},
+  ],
+  Nissan:[
+    {id:'frontier_25',label:'Frontier 2.5 YD25',sub:'2008 a 2021 — Denso HP3',injetor:'Denso solenoide 16600-VM00A / 095000-6240',bomba:'Denso HP3',pmax:1600,falhasComuns:['retorno_injetor','marcha_lenta','partida']},
+  ],
+  Peugeot:[
+    {id:'boxer_22',label:'Boxer 2.2 HDi',sub:'2018 a 2024 — Bosch CP4.1, CRI3',injetor:'Bosch CRI3 / 0445117018',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','dpf','sensor_pressao']},
+    {id:'boxer_23',label:'Boxer 2.3 HDi',sub:'2010 a 2017 — Bosch CP1H/CP3, solenoide',injetor:'Bosch solenoide 0445110252',bomba:'Bosch CP1H/CP3',pmax:1600,falhasComuns:['injetor_entupido','sensor_rail','egr']},
+  ],
+  Citroen:[
+    {id:'jumper_22',label:'Jumper 2.2 HDi',sub:'2018 a 2024 — Bosch CP4.1, CRI3',injetor:'Bosch CRI3 / 0445117018',bomba:'Bosch CP4.1',pmax:1800,falhasComuns:['bomba_cp4','dpf','sensor_pressao']},
+    {id:'jumper_23',label:'Jumper 2.3 HDi',sub:'2010 a 2017 — Bosch CP1H/CP3, solenoide',injetor:'Bosch solenoide 0445110252',bomba:'Bosch CP1H/CP3',pmax:1600,falhasComuns:['injetor_entupido','sensor_rail','egr']},
+  ],
+  Outro:[
+    {id:'outro_diesel',label:'Outro veículo diesel',sub:'Transit, Duster Oroch, Toro, etc.',injetor:'Variável',bomba:'Variável',pmax:1800,falhasComuns:[]},
+  ]
+};
+
+// BASE DE DIAGNÓSTICOS
+const DB=[
+  {id:'rail_baixo',titulo:'Pressão do Rail Abaixo do Especificado',urg:'alta',
+   desc:'A bomba não entrega pressão suficiente no rail. Common Rail precisa atingir entre 250 e 1800 bar (ou 2500 bar no Hilux 1GD) em plena carga. Abaixo disso: injeção deficiente, perda de potência, fumaça preta.',
+   causas:['Bomba de alta pressão desgastada (CP4/HP3/HP5)','Filtro de combustível saturado ou nunca trocado','Regulador de pressão com defeito','Injetores com retorno excessivo','Válvula SCV com defeito (Denso)','Linha de combustível entupida ou dobrada'],
+   codigos:['P0087','P0088','P0089','P0090','P0091','P0093'],
+   custo:'R$ 600 – R$ 4.500',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('potencia'))sc+=25;if(s.includes('fumaca'))sc+=20;if(s.includes('falha'))sc+=15;if(f.includes('preta'))sc+=20;if(f.includes('acelerando'))sc+=20;if(r.limp==='sim')sc+=15;if(['alto','muito'].includes(r.km))sc+=10;if(r.tipoFalha==='progressiva')sc+=15;if(r.posto==='sim')sc+=10;return sc;}},
+
+  {id:'injetor_defeito',titulo:'Injetor(es) Fora de Calibração ou com Defeito',urg:'alta',
+   desc:'Injetores descalibrados ou desgastados causam diferença de contribuição entre cilindros: tranco, vibração, consumo elevado, fumaça preta. Problema mais comum em diesel acima de 100.000 km.',
+   causas:['Injetor desgastado ou entupido','Injetor com retorno excessivo (vazamento interno)','Injetor preso aberto ou fechado','Injetor fora da calibração de fábrica','Código de calibração IMA/QR não programado após troca'],
+   codigos:['P0201','P0202','P0203','P0204','P0261','P0263','P0266','P0269','P0272'],
+   custo:'R$ 950 – R$ 1.800 por injetor',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('falha'))sc+=35;if(s.includes('consumo'))sc+=30;if(s.includes('marcha'))sc+=25;if(f.includes('preta'))sc+=15;if(['alto','muito'].includes(r.km))sc+=20;if(r.tipoFalha==='progressiva')sc+=20;if(r.manutencao==='injetor')sc+=15;return sc;}},
+
+  {id:'turbo_vgt',titulo:'Falha no Turbocompressor / VGT Travado',urg:'alta',
+   desc:'O turbo não constrói pressão de boost adequada. Em turbos VGT (geometria variável), as palhetas acumulam carbono e travam. Resultado: perda severa de potência em acelerações e subidas, fumaça preta.',
+   causas:['Palhetas do VGT travadas por depósito de carbono','Atuador eletropneumático com defeito','Vazamento nas mangueiras de intercooler ou admissão','Turbo com rolamentos desgastados (folga excessiva)','Sensor MAP com leitura incorreta'],
+   codigos:['P0299','P0234','P0235','P0236','P0237','P0238'],
+   custo:'R$ 600 – R$ 4.500',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('potencia'))sc+=30;if(f.includes('acelerando'))sc+=25;if(r.limp==='sim'||r.limp==='parcial')sc+=20;if(f.includes('preta')||f.includes('preta_forte'))sc+=15;if(r.luz==='turbo')sc+=30;if(['alto','muito'].includes(r.km))sc+=10;if(r.tipoFalha==='progressiva')sc+=10;return sc;}},
+
+  {id:'sensor_rail',titulo:'Sensor de Pressão do Rail com Defeito',urg:'alta',
+   desc:'O sensor manda sinal incorreto para a ECU, que acende a luz de injeção e pode ativar modo de proteção. O motor pode parecer funcionar normalmente, mas a ECU perde o controle da injeção.',
+   causas:['Sensor de pressão do rail defeituoso','Conector do sensor com oxidação ou folga','Fiação danificada entre sensor e ECU','Contaminação por água no combustível'],
+   codigos:['P0191','P0192','P0193','P0194'],
+   custo:'R$ 350 – R$ 900',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('luz'))sc+=40;if(['fixa','piscando'].includes(r.luz))sc+=25;if(r.limp==='sim')sc+=20;if(r.tipoFalha==='intermitente')sc+=15;return sc;}},
+
+  {id:'maf_defeito',titulo:'Sensor de Fluxo de Ar (MAF) com Defeito',urg:'media',
+   desc:'O MAF mede o ar que entra no motor. Contaminado por óleo do blow-by, a ECU calcula a injeção de forma incorreta: luz acesa, consumo alto, fumaça preta, perda de potência.',
+   causas:['MAF contaminado por óleo do blow-by','Vazamento no duto de admissão após o MAF','Filtro de ar entupido','Defeito elétrico no sensor','Conector com mau contato'],
+   codigos:['P0100','P0101','P0102','P0103'],
+   custo:'R$ 300 – R$ 800',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('luz'))sc+=20;if(s.includes('consumo'))sc+=25;if(f.includes('preta'))sc+=20;if(r.luz==='fixa')sc+=15;if(f.includes('acelerando'))sc+=10;if(r.tipoFalha==='progressiva')sc+=10;return sc;}},
+
+  {id:'egr_entupida',titulo:'Válvula EGR Entupida / com Defeito',urg:'media',
+   desc:'A EGR acumula carbono com o uso e pode travar aberta ou fechada. Travada aberta: fumaça preta e marcha lenta instável. Travada fechada: luz de injeção acesa sem outros sintomas.',
+   causas:['Válvula EGR travada por depósito de carbono','Atuador da EGR com defeito elétrico ou mecânico','Sensor de posição da EGR com falha','Resfriador de EGR entupido','Tubulação de EGR obstruída'],
+   codigos:['P0400','P0401','P0402','P0403','P0404','P0405','P0406'],
+   custo:'R$ 400 – R$ 1.800',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('luz'))sc+=20;if(s.includes('marcha'))sc+=30;if(f.includes('preta_forte'))sc+=25;if(['alto','muito'].includes(r.km))sc+=15;if(r.tipoFalha==='progressiva')sc+=15;return sc;}},
+
+  {id:'dpf_saturado',titulo:'Filtro de Partículas (DPF) Saturado',urg:'alta',
+   desc:'DPF saturado bloqueia a saída dos gases causando contrapressão. Resultado: perda progressiva de potência, fumaça preta, luz do DPF acesa e possível modo de emergência.',
+   causas:['Muitas viagens curtas sem regeneração completa','Falha no sistema de regeneração ativa (pós-injeção)','Sensor de pressão diferencial do DPF com defeito','Óleo de motor inadequado ou fora do prazo','Injetores impedindo a pós-injeção correta'],
+   codigos:['P2002','P2003','P2004','P2458','P2459','P2463'],
+   custo:'R$ 500 – R$ 3.500',
+   fn:(r,s,f)=>{let sc=0;if(r.luz==='dpf')sc+=50;if(s.includes('potencia'))sc+=20;if(['sim','parcial'].includes(r.limp))sc+=20;if(f.includes('preta_forte'))sc+=15;if(['alto','muito'].includes(r.km))sc+=10;if(r.tipoFalha==='progressiva')sc+=20;return sc;}},
+
+  {id:'bomba_cp4',titulo:'Bomba de Alta Pressão CP4 Desgastada / Travada',urg:'alta',
+   desc:'A bomba Bosch CP4 (usada em Amarok, S10 2012-2013 e versão Bosch) é sensível a diesel de baixa qualidade. Quando falha, lança fragmentos metálicos por todo o sistema de combustível.',
+   causas:['Diesel de baixa qualidade ou com água','Filtro de combustível nunca trocado','Desgaste natural acima de 150.000 km','Falha repentina por cavitação (diesel ruim)'],
+   codigos:['P0087','P0093','P0090','P0628'],
+   custo:'R$ 2.500 – R$ 8.000 (pode incluir limpeza do sistema)',
+   fn:(r,s,f)=>{let sc=0;const v=r.modelo||'';
+   const cp4Veiculos=['amarok_10_16','amarok_17_24','amarok_v6','s10_12_13','boxer_22','jumper_22','ranger_v6'];
+   const naoCP4=['ranger_32','ranger_22','hilux_05_11','hilux_12_15','hilux_16_24','sw4','l200_08_21','pajero_dakar','frontier_25','s10_14_24','s10_mwm','boxer_23','jumper_23'];
+   if(naoCP4.includes(v)) return 0;
+   if(cp4Veiculos.includes(v))sc+=35;
+   if(s.includes('ligar'))sc+=20;if(r.posto==='sim')sc+=25;if(r.tipoFalha==='repentina')sc+=25;if(['alto','muito'].includes(r.km))sc+=15;if(s.includes('potencia')&&s.includes('fumaca'))sc+=10;return sc;}},
+
+  {id:'bomba_denso',titulo:'Bomba Denso HP3/HP5 com Desgaste',urg:'alta',
+   desc:'As bombas Denso HP3 (Hilux 1KD, L200, S10 2014+) e HP5 (Hilux 1GD) perdem rendimento com o desgaste. Dificuldade de partir a frio e queda de pressão em plena carga são os primeiros sinais.',
+   causas:['Desgaste natural das peças internas','Válvula SCV desgastada ou entupida','Filtro de combustível nunca trocado','Injetores sobrecarregando a bomba com retorno excessivo'],
+   codigos:['P0087','P0090','P0091','P0093'],
+   custo:'R$ 1.800 – R$ 5.500',
+   fn:(r,s,f)=>{let sc=0;const v=r.modelo||'';
+   const densoVeiculos=['hilux_05_11','hilux_12_15','hilux_16_24','sw4','l200_08_21','pajero_dakar','frontier_25','s10_14_24'];
+   const naoDeuso=['ranger_32','ranger_22','ranger_v6','amarok_10_16','amarok_17_24','amarok_v6','s10_mwm','s10_12_13','sprinter_bosch','sprinter_delphi','boxer_22','boxer_23','jumper_22','jumper_23'];
+   if(naoDeuso.includes(v)) return 0;
+   if(densoVeiculos.includes(v))sc+=25;
+   if(s.includes('ligar'))sc+=30;if(r.motorQuente==='frio')sc+=20;if(r.tipoFalha==='progressiva')sc+=15;if(['muito'].includes(r.km))sc+=25;if(['alto'].includes(r.km))sc+=10;return sc;}},
+
+  {id:'retorno_injetor',titulo:'Retorno Excessivo nos Injetores',urg:'media',
+   desc:'Injetores desgastados vazam combustível de volta para o tanque acima do limite. Aumenta consumo sem sintomas óbvios, sobrecarrega a bomba e causa queda de pressão no rail.',
+   causas:['Desgaste natural do injetor por alta quilometragem','Injetor piezo mais sensível a combustível contaminado','Uso de combustível de baixa qualidade acelerando o desgaste'],
+   codigos:['P0087','P0093','P0263','P0266','P0269'],
+   custo:'R$ 950 – R$ 1.800 por injetor',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('consumo'))sc+=35;if(['alto','muito'].includes(r.km))sc+=25;if(r.tipoFalha==='progressiva')sc+=20;const v=r.modelo||'';if(['hilux_12_15'].includes(v))sc+=20;if(s.includes('falha')&&!s.includes('ligar'))sc+=10;return sc;}},
+
+  {id:'scv_valvula',titulo:'Válvula SCV com Defeito (Bombas Denso)',urg:'media',
+   desc:'A válvula SCV regula o volume de combustível aspirado pela bomba HP3/HP5 nos modelos Toyota, L200 e S10 Denso. Quando falha, causa pressão instável no rail e marcha lenta irregular.',
+   causas:['Solenoide da SCV com desgaste elétrico','Contaminação por partículas no combustível','Filtro de combustível entupido forçando a SCV','Combustível com água danificando internamente'],
+   codigos:['P0088','P0089','P0090','P0091','P0093'],
+   custo:'R$ 400 – R$ 1.200',
+   fn:(r,s,f)=>{let sc=0;const v=r.modelo||'';
+   const scvVeiculos=['hilux_05_11','hilux_12_15','hilux_16_24','sw4','l200_08_21','pajero_dakar','s10_14_24','frontier_25'];
+   const naoSCV=['ranger_32','ranger_22','ranger_v6','amarok_10_16','amarok_17_24','amarok_v6','s10_mwm','s10_12_13','boxer_22','boxer_23','jumper_22','jumper_23'];
+   if(naoSCV.includes(v)) return 0;
+   if(scvVeiculos.includes(v))sc+=30;
+   if(s.includes('marcha'))sc+=25;if(s.includes('ligar'))sc+=20;if(s.includes('falha'))sc+=15;if(r.tipoFalha==='intermitente')sc+=20;return sc;}},
+
+  {id:'agua_combustivel',titulo:'Água / Contaminação no Combustível',urg:'alta',
+   desc:'Água no diesel causa dificuldade de partida, fumaça branca, tranco e pode danificar permanentemente bomba e injetores.',
+   causas:['Diesel adulterado ou com água no posto','Separador de água do filtro cheio e não drenado','Condensação interna no tanque em regiões frias','Tanque de combustível com corrosão interna'],
+   codigos:['P0182','P0183','P0087','P0191'],
+   custo:'R$ 400 – R$ 3.000',
+   fn:(r,s,f)=>{let sc=0;if(f.includes('branca'))sc+=40;if(s.includes('ligar'))sc+=25;if(s.includes('falha'))sc+=20;if(r.posto==='sim')sc+=30;if(r.tipoFalha==='repentina')sc+=15;if(r.motorQuente==='frio')sc+=15;return sc;}},
+
+  {id:'vela_preaquec',titulo:'Vela(s) de Pré-Aquecimento com Defeito',urg:'media',
+   desc:'As velas esquentam a câmara de combustão para facilitar a partida a frio. Com defeito, o motor dificulta a partida em dias frios e solta fumaça branca até esquentar.',
+   causas:['Vela queimada (circuito aberto)','Relé das velas com defeito','Módulo de controle das velas com falha','Fusível das velas queimado','Fiação rompida ou conector oxidado'],
+   codigos:['P0380','P0382','P0670','P0671','P0672','P0673','P0674'],
+   custo:'R$ 300 – R$ 900',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('ligar')&&r.motorQuente==='frio')sc+=50;if(f.includes('branca_fria'))sc+=30;if(f.includes('branca'))sc+=15;if(r.tipoFalha==='progressiva')sc+=10;return sc;}},
+
+  {id:'sensor_ckp',titulo:'Sensor de Posição do Virabrequim (CKP) com Falha',urg:'alta',
+   desc:'O sensor CKP informa à ECU a rotação e posição do motor para calcular o momento exato da injeção. Sem sinal, o motor pode não partir ou apagar durante o uso.',
+   causas:['Sensor CKP com defeito','Roda fônica com dente quebrado ou deformado','Fiação rompida entre sensor e ECU','Folga incorreta entre sensor e roda fônica'],
+   codigos:['P0335','P0336'],
+   custo:'R$ 200 – R$ 600',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('ligar'))sc+=25;if(s.includes('falha'))sc+=20;if(r.luz==='piscando')sc+=15;if(r.tipoFalha==='intermitente')sc+=20;return sc;}},
+
+  {id:'can_ecu',titulo:'Falha na Rede CAN / Problema na ECU',urg:'alta',
+   desc:'Falhas no barramento CAN causam luz de injeção piscando, perda de comunicação entre módulos e comportamento errático sem causa mecânica aparente.',
+   causas:['Barramento CAN com fio danificado ou em curto','Módulo eletrônico com defeito puxando o barramento','Resistor de terminação ausente ou incorreto','Falha interna na ECU'],
+   codigos:['U0001','U0100','U0073','U0121','P0600','P0606'],
+   custo:'R$ 500 – R$ 4.000',
+   fn:(r,s,f)=>{let sc=0;if(r.luz==='piscando')sc+=40;if(s.includes('luz'))sc+=15;if(r.limp==='sim')sc+=20;if(r.tipoFalha==='intermitente')sc+=25;if(r.manutencao==='injetor'||r.manutencao==='bomba')sc+=10;return sc;}},
+
+  {id:'map_sensor',titulo:'Sensor MAP / Boost com Defeito',urg:'media',
+   desc:'O sensor MAP mede a pressão de boost do turbo. Com defeito, a ECU perde o controle do turbo: luz acesa, perda de potência e consumo elevado.',
+   causas:['Sensor MAP defeituoso','Mangueira de pressão rachada ou desconectada','Conector com oxidação','Sensor contaminado por óleo'],
+   codigos:['P0105','P0106','P0107','P0108','P0235','P0237','P0238'],
+   custo:'R$ 250 – R$ 700',
+   fn:(r,s,f)=>{let sc=0;if(r.luz==='turbo')sc+=35;if(s.includes('potencia'))sc+=15;if(f.includes('acelerando'))sc+=15;if(s.includes('luz'))sc+=20;if(r.tipoFalha==='intermitente')sc+=15;return sc;}},
+
+  {id:'scr_adblue',titulo:'Sistema SCR / AdBlue com Falha',urg:'alta',
+   desc:'O sistema SCR com AdBlue/ARLA 32 reduz as emissões de NOx. Quando falha, acende luz de avaria e pode limitar a potência do veículo após alertas ignorados.',
+   causas:['AdBlue/ARLA 32 vazio ou com nível baixo','AdBlue contaminado, diluído ou cristalizado','Bico injetor de AdBlue entupido','Sensor NOx upstream ou downstream com falha'],
+   codigos:['P20EE','P204F','P2BAD'],
+   custo:'R$ 500 – R$ 3.500',
+   fn:(r,s,f)=>{let sc=0;if(s.includes('luz'))sc+=20;if(r.luz==='dpf')sc+=15;const v=r.modelo||'';if(['hilux_16_24','amarok_v6','amarok_17_24','s10_14_24'].includes(v))sc+=20;if(r.tipoFalha==='progressiva')sc+=15;return sc;}},
+];
+
+function selMarca(el,marca){
+  el.closest('.options').querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  R.marca=marca;
+  document.getElementById('next1').disabled=false;
+  // Pre-populate models for step 2
+  const modelos=MODELOS[marca]||[];
+  document.getElementById('modelosOpts').innerHTML=modelos.map(m=>
+    '<div class="opt" onclick="selModelo(this,\''+m.id+'\')"><span class="opt-icon">🚙</span><div><div class="opt-label">'+m.label+'</div><div class="opt-desc">'+m.sub+'</div></div></div>'
+  ).join('');
+  document.getElementById('next2').disabled=true;
+}
+
+function selModelo(el,id){
+  el.closest('.options').querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  R.modelo=id;
+  document.getElementById('next2').disabled=false;
+}
+
+function sel(el,k,v){
+  el.closest('.options').querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  R[k]=v;
+  const nb=document.getElementById('next'+cur);
+  if(nb) nb.disabled=false;
+}
+
+function toggleSint(el,v){
+  el.classList.toggle('selected');
+  if(sintomas.includes(v)) sintomas=sintomas.filter(x=>x!==v);
+  else sintomas.push(v);
+  document.getElementById('next3').disabled=sintomas.length===0;
+}
+
+function toggleMulti(el,k,v){
+  el.classList.toggle('selected');
+  if(!R[k]) R[k]=[];
+  if(R[k].includes(v)) R[k]=R[k].filter(x=>x!==v);
+  else R[k].push(v);
+  if(k==='fum') fumaças=R.fum||[];
+  document.getElementById('next'+cur).disabled=(R[k]||[]).length===0;
+}
+
+function addC(){
+  const inp=document.getElementById('cIn');
+  const v=inp.value.trim().toUpperCase();
+  if(!v||codigos.includes(v)){inp.value='';return;}
+  codigos.push(v);
+  R.temC='sim';
+  document.getElementById('optSemC').classList.remove('selected');
+  renderC();
+  inp.value='';
+}
+
+function renderC(){
+  document.getElementById('codesWrap').innerHTML=codigos.map(c=>'<div class="c-chip">'+c+'<span class="c-rm" onclick="rmC(\''+c+'\')">×</span></div>').join('');
+}
+
+function rmC(c){
+  codigos=codigos.filter(x=>x!==c);
+  if(!codigos.length) delete R.temC;
+  renderC();
+}
+
+function go(n){
+  document.getElementById('step'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('step'+n).classList.add('active');
+  updateBar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateBar(){
+  document.getElementById('pLabel').textContent='Etapa '+cur+' de '+TOTAL;
+  for(let i=1;i<=TOTAL;i++){
+    const dot=document.getElementById('sd'+i);
+    if(!dot)continue;
+    dot.className='step-dot'+(i<cur?' done':i===cur?' current':'');
+    dot.textContent=i<cur?'✓':i;
+    if(i<TOTAL){
+      const line=document.getElementById('sl'+i);
+      if(line)line.className='step-line'+(i<cur?' done':'');
+    }
+  }
+}
+
+const WASVG='<svg viewBox="0 0 32 32" fill="white" width="18" height="18"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.486 2.027 7.788L0 32l8.418-2.007A15.93 15.93 0 0 0 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm7.27 21.363c-.398-.2-2.355-1.162-2.72-1.294-.365-.133-.63-.2-.896.2-.265.398-1.029 1.294-1.261 1.56-.232.265-.465.298-.863.1a7 7 0 0 1-2.06-1.27 7.7 7.7 0 0 1-1.42-1.77c-.15-.26 0-.4.11-.53s.26-.3.39-.46a1.8 1.8 0 0 0 .26-.43.48.48 0 0 0 0-.46c-.07-.13-.58-1.4-.8-1.92s-.42-.44-.58-.45h-.49a.94.94 0 0 0-.68.32A2.87 2.87 0 0 0 12 17a5 5 0 0 0 1.05 2.65 11.45 11.45 0 0 0 4.38 3.87c.49.21.96.37 1.46.54a3.52 3.52 0 0 0 1.61.1 2.64 2.64 0 0 0 1.73-1.22 2.14 2.14 0 0 0 .15-1.22c-.07-.1-.24-.18-.5-.3z"/></svg>';
+
+function gerar(){
+  if(!R.temC) R.temC='nao';
+  document.getElementById('wizard').style.display='none';
+  document.querySelector('.progress-wrap').style.display='none';
+  document.getElementById('resultWrap').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // Combinações de códigos que indicam diagnóstico específico
+  const COMBINACOES=[
+    {codigos:['P0087','P0093'],id:'rail_baixo',bonus:80,label:'P0087+P0093 = vazamento sistema'},
+    {codigos:['P0087','P0628'],id:'bomba_cp4',bonus:100,label:'P0087+P0628 = bomba CP4'},
+    {codigos:['P0087','P0090'],id:'bomba_denso',bonus:80,label:'P0087+P0090 = bomba Denso SCV'},
+    {codigos:['P0087','P0091'],id:'bomba_denso',bonus:80,label:'P0087+P0091 = bomba Denso SCV'},
+    {codigos:['P0087','P0093','P0628'],id:'bomba_cp4',bonus:150,label:'P0087+P0093+P0628 = CP4 crítica'},
+    {codigos:['P0201','P0263'],id:'injetor_defeito',bonus:80,label:'P0201+P0263 = injetor cil.1'},
+    {codigos:['P0202','P0266'],id:'injetor_defeito',bonus:80,label:'P0202+P0266 = injetor cil.2'},
+    {codigos:['P0203','P0269'],id:'injetor_defeito',bonus:80,label:'P0203+P0269 = injetor cil.3'},
+    {codigos:['P0204','P0272'],id:'injetor_defeito',bonus:80,label:'P0204+P0272 = injetor cil.4'},
+    {codigos:['P0201','P0202','P0203','P0204'],id:'injetor_defeito',bonus:120,label:'4 injetores com falha'},
+    {codigos:['P0299','P0235'],id:'turbo_vgt',bonus:80,label:'P0299+P0235 = turbo sem boost'},
+    {codigos:['P0299','P0237'],id:'turbo_vgt',bonus:80,label:'P0299+P0237 = turbo baixa pressão'},
+    {codigos:['P0191','P0087'],id:'sensor_rail',bonus:70,label:'P0191+P0087 = sensor ou bomba'},
+    {codigos:['P0400','P0401'],id:'egr_entupida',bonus:80,label:'P0400+P0401 = EGR bloqueada'},
+    {codigos:['P2002','P2003'],id:'dpf_saturado',bonus:100,label:'P2002+P2003 = DPF crítico'},
+    {codigos:['P2002','P2458'],id:'dpf_saturado',bonus:80,label:'P2002+P2458 = DPF saturando'},
+    {codigos:['U0001','U0100'],id:'can_ecu',bonus:100,label:'U0001+U0100 = falha CAN total'},
+    {codigos:['P0335','P0336'],id:'sensor_ckp',bonus:100,label:'P0335+P0336 = CKP crítico'},
+    {codigos:['P0088','P0090'],id:'scv_valvula',bonus:80,label:'P0088+P0090 = SCV Denso'},
+    {codigos:['P0671','P0672','P0673','P0674'],id:'vela_preaquec',bonus:100,label:'4 velas com falha'},
+  ];
+
+  // Bônus por combinação de códigos
+  const bonusPorId={};
+  COMBINACOES.forEach(comb=>{
+    const todosPresentes=comb.codigos.every(c=>codigos.includes(c));
+    if(todosPresentes){
+      bonusPorId[comb.id]=(bonusPorId[comb.id]||0)+comb.bonus;
+    }
+  });
+
+  let res=DB.map(d=>{
+    let score=d.fn(R,sintomas,fumaças);
+    // Código único: +50 pontos
+    codigos.forEach(c=>{if(d.codigos.includes(c))score+=50;});
+    // Combinação de códigos: bônus extra
+    if(bonusPorId[d.id]) score+=bonusPorId[d.id];
+    // Múltiplos códigos do mesmo diagnóstico: bônus adicional
+    const matchCount=codigos.filter(c=>d.codigos.includes(c)).length;
+    if(matchCount>=2) score+=matchCount*30;
+    if(matchCount>=3) score+=50;
+    return {...d,score};
+  }).filter(d=>d.score>0).sort((a,b)=>b.score-a.score).slice(0,4);
+
+  if(!res.length){
+    res=[{titulo:'Diagnóstico Presencial Necessário',urg:'media',desc:'Os sintomas informados requerem avaliação com scanner e equipamentos especializados.',causas:['Requer leitura de scanner e testes específicos'],codigos:[],custo:'Consulte-nos',score:100}];
+  }
+
+  const max=res[0].score;
+  res=res.map(d=>({...d,prob:Math.min(95,Math.round((d.score/max)*95))}));
+
+  // Labels
+  const marcaLabel=R.marca||'Veículo Diesel';
+  const modeloObj=(MODELOS[R.marca]||[]).find(m=>m.id===R.modelo);
+  const modeloLabel=modeloObj?modeloObj.label:'—';
+  const sintLabel=sintomas.map(s=>({potencia:'Perda de potência',fumaca:'Fumaça',falha:'Falha/tranco',consumo:'Consumo alto',ligar:'Dificuldade de ligar',luz:'Luz de injeção',marcha:'Marcha lenta irregular',ruido:'Ruído anormal',superaq:'Superaquecimento'}[s]||s)).join(', ');
+
+  let msg='Olá! Fiz o simulador de diagnóstico da SNX.\n\n';
+  msg+='Veículo: '+marcaLabel+' '+modeloLabel+'\n';
+  msg+='Sintomas: '+sintLabel+'\n';
+  if(R.tipoFalha) msg+='Tipo de falha: '+({repentina:'Repentina',progressiva:'Progressiva',intermitente:'Intermitente'}[R.tipoFalha]||R.tipoFalha)+'\n';
+  if(R.posto==='sim') msg+='⚠ Abasteceu em posto diferente recentemente\n';
+  if(R.motorQuente==='frio') msg+='⚠ Motor frio quando ocorreu a falha\n';
+  if(codigos.length) msg+='Códigos: '+codigos.join(', ')+'\n';
+  msg+='\nDiagnóstico provável: '+res[0].titulo;
+  const wa='https://wa.me/5567996342998?text='+encodeURIComponent(msg);
+
+  const tipoFalhaLabel={repentina:'Repentina',progressiva:'Progressiva',intermitente:'Intermitente'}[R.tipoFalha]||'—';
+  const postoLabel=R.posto==='sim'?'⚠ Sim — posto diferente':R.posto==='nao'?'Não':R.posto==='naoSabe'?'Não sei':'—';
+  const motorQuenteLabel={sim:'Quente (70–90°C)',frio:'Frio / morno',ambos:'Ambas as condições'}[R.motorQuente]||'—';
+
+  let html='<div class="sum-box">';
+  html+='<div><div class="sum-lbl">Veículo</div><div class="sum-val">'+marcaLabel+' '+modeloLabel+'</div></div>';
+  html+='<div><div class="sum-lbl">Sintomas</div><div class="sum-val">'+sintLabel+'</div></div>';
+  if(modeloObj){
+    html+='<div><div class="sum-lbl">Injetor</div><div class="sum-val">'+modeloObj.injetor+'</div></div>';
+    html+='<div><div class="sum-lbl">Bomba</div><div class="sum-val">'+modeloObj.bomba+'</div></div>';
+  }
+  html+='<div><div class="sum-lbl">Tipo de falha</div><div class="sum-val">'+tipoFalhaLabel+'</div></div>';
+  html+='<div><div class="sum-lbl">Motor quente?</div><div class="sum-val">'+motorQuenteLabel+'</div></div>';
+  html+='<div><div class="sum-lbl">Posto diferente?</div><div class="sum-val">'+postoLabel+'</div></div>';
+  if(codigos.length) html+='<div style="grid-column:1/-1"><div class="sum-lbl">Códigos informados</div><div class="sum-val">'+codigos.join(' · ')+'</div></div>';
+  html+='</div>';
+
+  res.forEach((d,i)=>{
+    const ul=d.urg==='alta'?'⚠ Urgência Alta':d.urg==='media'?'◆ Urgência Média':'● Baixa';
+    const cH=d.codigos.map(c=>{const m=codigos.includes(c);return '<span class="code-bdg'+(m?' match':'')+'">'+c+(m?' ✓':'')+'</span>';}).join('');
+    const caH=d.causas.map(c=>'<span class="causa-tag">'+c+'</span>').join('');
+    html+='<div class="diag-card">';
+    html+='<div class="diag-top"><div class="diag-title">'+(i+1)+'. '+d.titulo+'</div><div class="prob-num">'+d.prob+'%</div></div>';
+    html+='<div class="urg-badge '+d.urg+'">'+ul+'</div>';
+    html+='<div class="diag-desc">'+d.desc+'</div>';
+    html+='<div class="diag-lbl">● Possíveis causas</div><div class="causa-list">'+caH+'</div>';
+    if(d.codigos.length){html+='<div class="diag-lbl">● Códigos OBD relacionados</div><div class="code-list">'+cH+'</div>';}
+    html+='<div class="diag-lbl">● Estimativa de custo</div><div class="custo-val">'+d.custo+'</div>';
+    html+='</div>';
+  });
+
+  html+='<div class="cta-box"><p>Diagnóstico gerado com base nos sintomas e códigos. Para confirmação com scanner e bancada especializada, fale com nossa equipe — o resumo completo já vai junto!</p>';
+  html+='<a href="'+wa+'" target="_blank" class="btn-wa">'+WASVG+'Confirmar com Especialista</a></div>';
+
+  document.getElementById('rContent').innerHTML=html;
+}
+
+function restart(){
+  Object.keys(R).forEach(k=>delete R[k]);
+  sintomas=[];fumaças=[];codigos=[];
+  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  document.querySelectorAll('.btn-next').forEach(b=>{if(b.id!=='next12')b.disabled=true;});
+  document.getElementById('codesWrap').innerHTML='';
+  document.getElementById('cIn').value='';
+  document.getElementById('wizard').style.display='block';
+  document.querySelector('.progress-wrap').style.display='block';
+  document.getElementById('resultWrap').style.display='none';
+  cur=1;
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step1').classList.add('active');
+  updateBar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.getElementById('next12').disabled=false;
+</script>
+
+</body>
+</html>
