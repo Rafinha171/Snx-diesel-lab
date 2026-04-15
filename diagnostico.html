@@ -1,0 +1,48 @@
+async function gerar() {
+  if (!R.temC) R.temC = 'nao';
+  
+  // 1. Interface
+  document.getElementById('wizard').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.getElementById('resultWrap').style.display = 'block';
+  document.getElementById('rContent').innerHTML = "<div class='diag-card'>Analisando dados com a IA da SNX Diesel Lab... aguarde.</div>";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // 2. Coleta dados
+  const modeloObj = (MODELOS[R.marca] || []).find(m => m.id === R.modelo);
+  const resumoDados = `Veículo: ${R.marca} ${modeloObj ? modeloObj.label : ''}. Sintomas: ${sintomas.join(', ')}. Códigos: ${codigos.join(', ')}. KM: ${R.km}.`;
+
+  try {
+    // 3. Chamada para a API
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{
+          role: "user",
+          parts: [{ text: `Como especialista SNX Diesel, analise: ${resumoDados}. Responda em HTML profissional.` }]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const diagnosticoIA = data.candidates[0].content.parts[0].text;
+
+    // 4. Monta o HTML final
+    let htmlFinal = `<div class="sum-box">
+      <div><div class="sum-lbl">Veículo</div><div class="sum-val">${R.marca}</div></div>
+      <div><div class="sum-lbl">Códigos</div><div class="sum-val">${codigos.join(' · ') || 'Nenhum'}</div></div>
+    </div>`;
+    
+    htmlFinal += `<div class="diag-card">${diagnosticoIA}</div>`;
+    
+    const waMsg = encodeURIComponent("Olá SNX! Fiz o diagnóstico da IA para meu veículo: " + resumoDados);
+    htmlFinal += `<div class="cta-box"><a href="https://wa.me/5567996342998?text=${waMsg}" target="_blank" class="btn-wa">${WASVG} Falar com Especialista</a></div>`;
+
+    document.getElementById('rContent').innerHTML = htmlFinal;
+
+  } catch (error) {
+    console.error("Erro:", error);
+    document.getElementById('rContent').innerHTML = "<div class='diag-card'>Erro ao consultar a IA. Tente novamente ou use o WhatsApp abaixo.</div>";
+  }
+}
